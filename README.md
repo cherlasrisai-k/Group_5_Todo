@@ -7,30 +7,34 @@ This project is an Android To-Do application built using Kotlin and Jetpack Comp
 # Project Structure
 
 data/
-   User.kt
-   Task.kt
-   UserDao.kt
-   TaskDao.kt
-   AppDatabase.kt
+
+    User.kt
+    Task.kt
+    UserDao.kt
+    TaskDao.kt
+    AppDatabase.kt
 
 viewmodel/
-   AuthViewModel.kt
-   TaskViewModel.kt
+
+    AuthViewModel.kt
+    TaskViewModel.kt
 
 worker/
-   ReminderWorker.kt
+
+    ReminderWorker.kt
 
 ui/
-   LoginScreen.kt
-   RegisterScreen.kt
 
-   HomeScreen.kt
-   ActiveTasksScreen.kt
-   HistoryScreen.kt
+    LoginScreen.kt
+    RegisterScreen.kt
 
-   BottomBar.kt
-   BottomNavItem.kt
+    HomeScreen.kt
+    ActiveTasksScreen.kt
+    HistoryScreen.kt
 
+    BottomBar.kt
+    BottomNavItem.kt
 MainActivity.kt
+
 MainScaffold.kt
 
