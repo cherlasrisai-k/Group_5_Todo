@@ -32,6 +32,8 @@ fun LoginScreen(vm: AuthViewModel, onLogin: () -> Unit, onRegister: () -> Unit) 
         verticalArrangement = Arrangement.Center
     ) {
         Text("To-Do Reminder", style = MaterialTheme.typography.headlineMedium)
+        Text(text="Login", style = MaterialTheme.typography.headlineSmall)
+        Text("Enter your mobile number to login")
         OutlinedTextField(mobile, { mobile = it }, label = { Text("Mobile Number") })
         Button(onClick =
             { when {
