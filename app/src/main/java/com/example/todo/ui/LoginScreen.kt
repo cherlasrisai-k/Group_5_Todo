@@ -19,31 +19,55 @@ import androidx.compose.ui.Modifier
 import com.example.todo.viewmodel.AuthViewModel
 
 @Composable
-fun LoginScreen(vm: AuthViewModel, onLogin: () -> Unit, onRegister: () -> Unit) {
+fun LoginScreen(
+    vm: AuthViewModel,
+    onLogin: () -> Unit,
+    onRegister: () -> Unit
+) {
 
     var mobile by remember { mutableStateOf("") }
     var error by remember { mutableStateOf("") }
 
-    LaunchedEffect(vm.user) { if (vm.user != null) onLogin() }
+    LaunchedEffect(vm.user) {
+        if (vm.user != null) onLogin()
+    }
 
     Column(
         Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
+
         Text("To-Do Reminder", style = MaterialTheme.typography.headlineMedium)
-        Text(text="Login", style = MaterialTheme.typography.headlineSmall)
         Text("Enter your mobile number to login")
-        Text(text="Demo")
-        OutlinedTextField(mobile, { mobile = it }, label = { Text("Mobile Number") })
-        Button(onClick =
-            { when {
+
+        OutlinedTextField(
+            value = mobile,
+            onValueChange = {
+                if (it.length <= 10 && it.all { ch -> ch.isDigit() }) {
+                    mobile = it
+                }
+            },
+            label = { Text("Mobile Number") },
+            leadingIcon = { Text("+91 ") }
+        )
+
+        Button(onClick = {
+            error = ""
+            when {
                 mobile.isBlank() -> error = "Enter mobile number"
                 mobile.length != 10 -> error = "Enter valid 10 digit number"
-                else -> vm.login(mobile)
+                else -> vm.login("$mobile")   // ✅ auto add +91
             }
-            }) { Text("Login") }
-        if (error.isNotEmpty()) Text(error, color = MaterialTheme.colorScheme.error)
-        TextButton(onClick = onRegister) { Text("New user? Register") }
+        }) {
+            Text("Login")
+        }
+
+        if (error.isNotEmpty())
+            Text(error, color = MaterialTheme.colorScheme.error)
+
+        TextButton(onClick = onRegister) {
+            Text("New user? Register")
+        }
     }
 }

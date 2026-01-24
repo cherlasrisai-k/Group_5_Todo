@@ -50,10 +50,7 @@ fun MainScaffold(taskVM: TaskViewModel,
             modifier = Modifier.padding(pad)
         ) {
             composable("home") {
-                HomeScreen(taskVM, onLogout = {
-                    authVM.logout()
-                    onLogout()
-                })
+                HomeScreen(taskVM)
             }
 
             composable("active") { ActiveTasksScreen(taskVM) }

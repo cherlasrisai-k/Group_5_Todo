@@ -32,7 +32,8 @@ fun RegisterScreen(vm: AuthViewModel, onSuccess: () -> Unit) {
         verticalArrangement = Arrangement.Center
     ) {
         OutlinedTextField(name, { name = it }, label = { Text("Name") })
-        OutlinedTextField(mobile, { mobile = it }, label = { Text("Mobile") })
+        OutlinedTextField(mobile, { mobile = it }, label = { Text("Mobile") }
+        ,leadingIcon = { Text("+91 ") })
         Button(onClick = { when {
             name.isBlank() -> error = "Enter name"
             mobile.length != 10 -> error = "Enter valid mobile number"
