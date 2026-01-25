@@ -3,9 +3,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.kapt")
     id("org.jetbrains.kotlin.plugin.compose")
-
 }
-
 
 android {
     namespace = "com.example.todo"
@@ -23,8 +21,6 @@ android {
         compose = true
     }
 
-    
-    // ✅ IMPORTANT: Align Java with JDK 21
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
@@ -35,48 +31,55 @@ android {
     }
 }
 
-/* ✅ Force all Kotlin (including kapt) to use Java 21 */
 kotlin {
     jvmToolchain(21)
 }
 
 dependencies {
-
+    // Core Android
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
 
-    implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.compose.ui)
-    implementation(libs.androidx.compose.ui.graphics)
-    implementation(libs.androidx.compose.ui.tooling.preview)
-    implementation(libs.androidx.compose.material3)
+    // ✅ Compose BOM (single place, no duplicates)
+    implementation(platform("androidx.compose:compose-bom:2024.02.00"))
 
-    // ✅ ROOM
-    implementation(libs.androidx.room.ktx)
-    implementation(libs.androidx.room.common.jvm)
+    // Compose UI + Material3 + Foundation
+    implementation("androidx.compose.ui:ui")
+    implementation("androidx.compose.material3:material3")
+    implementation("androidx.compose.foundation:foundation")
+    implementation("androidx.compose.ui:ui-tooling-preview")
+    implementation(libs.androidx.compose.foundation)
+    implementation(libs.androidx.compose.animation)
     implementation(libs.androidx.material3)
-    kapt("androidx.room:room-compiler:2.8.4")
+    implementation(libs.androidx.ui.graphics)
+    implementation(libs.androidx.compose.foundation.layout) // for previews
+    debugImplementation("androidx.compose.ui:ui-tooling")   // debug tooling
 
-    // ✅ WORKMANAGER + NAVIGATION
-    implementation(libs.androidx.work.runtime.ktx)
-    implementation("androidx.concurrent:concurrent-futures-ktx:1.2.0")
-    implementation(libs.androidx.navigation.compose)
-
-    // ✅ ICONS
+    // Icons
     implementation("androidx.compose.material:material-icons-extended")
 
+    // Navigation
+    implementation("androidx.navigation:navigation-compose:2.7.3")
 
+    // ViewModel in Compose
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
 
+    // Room
+    implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.room.common.jvm)
+    kapt("androidx.room:room-compiler:2.8.4")
 
+    // WorkManager
+    implementation(libs.androidx.work.runtime.ktx)
+    implementation("androidx.concurrent:concurrent-futures-ktx:1.2.0")
+
+    // Testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(platform("androidx.compose:compose-bom:2024.02.00"))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
-
 }
-
-

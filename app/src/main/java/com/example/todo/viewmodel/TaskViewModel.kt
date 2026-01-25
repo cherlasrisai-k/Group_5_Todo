@@ -7,8 +7,10 @@ import androidx.lifecycle.viewModelScope
 import com.example.todo.data.AppDatabase
 import com.example.todo.data.Task
 import com.example.todo.data.TaskDao
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
@@ -64,8 +66,17 @@ class TaskViewModel(private val dao: TaskDao) : ViewModel() {
         }
 
     fun updateTask(task: Task) = viewModelScope.launch { dao.update(task) }
-    fun deleteTask(task: Task) = viewModelScope.launch { dao.delete(task) }
-    fun completeTask(task: Task) =
-        viewModelScope.launch { dao.update(task.copy(isCompleted = true)) }
-}
 
+    private val _events = MutableSharedFlow<String>()
+    val events = _events.asSharedFlow()
+
+    fun completeTask(task: Task) = viewModelScope.launch {
+        dao.update(task.copy(isCompleted = true))
+        _events.emit("Hurray! Task Completed 🎉")
+    }
+
+    fun deleteTask(task: Task) = viewModelScope.launch {
+        dao.delete(task)                            // Delete from DB
+        _events.emit("Task Deleted")                // Show snackbar
+    }
+}

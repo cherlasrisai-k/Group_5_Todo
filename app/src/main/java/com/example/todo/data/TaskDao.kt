@@ -48,4 +48,12 @@ interface TaskDao {
         AND date(dateTime/1000,'unixepoch','localtime') = date('now','localtime')
     """)
     suspend fun countTodayTasks(): Int
+
+
+
+//    @Query("DELETE FROM tasks WHERE isCompleted = 1")
+//    suspend fun deleteHistory():Flow<List<Task>>
+
+
+
 }
