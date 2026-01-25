@@ -78,8 +78,6 @@ fun HomeScreen(vm: TaskViewModel, onLogout: () -> Unit) {
                 Spacer(modifier = Modifier.height(8.dp))
 
 
-                val pickDateInteraction = remember { MutableInteractionSource() }
-                val pickDateHovered by pickDateInteraction.collectIsHoveredAsState()
 
                 Button(
                     onClick = {
@@ -105,13 +103,11 @@ fun HomeScreen(vm: TaskViewModel, onLogout: () -> Unit) {
                             cal.get(Calendar.DAY_OF_MONTH)
                         ).show()
                     },
-                    interactionSource = pickDateInteraction,
+
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = if (pickDateHovered)
-                            MaterialTheme.colorScheme.primaryContainer
-                        else
-                            MaterialTheme.colorScheme.primary,
+                        containerColor = MaterialTheme.colorScheme.primary,
                         contentColor = MaterialTheme.colorScheme.onPrimary
+
                     ),
                     modifier = Modifier.fillMaxWidth()
                 ) {
@@ -120,8 +116,6 @@ fun HomeScreen(vm: TaskViewModel, onLogout: () -> Unit) {
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                val saveInteraction = remember { MutableInteractionSource() }
-                val saveHovered by saveInteraction.collectIsHoveredAsState()
 
                 Button(
                     onClick = {
@@ -129,12 +123,8 @@ fun HomeScreen(vm: TaskViewModel, onLogout: () -> Unit) {
                         topic = ""
                         heading = ""
                     },
-                    interactionSource = saveInteraction,
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = if (saveHovered)
-                            MaterialTheme.colorScheme.primaryContainer
-                        else
-                            MaterialTheme.colorScheme.primary,
+                        MaterialTheme.colorScheme.primary,
                         contentColor = MaterialTheme.colorScheme.onPrimary
                     ),
                     modifier = Modifier.fillMaxWidth()
