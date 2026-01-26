@@ -33,7 +33,7 @@ interface TaskDao {
     AND dateTime >= :now
     ORDER BY dateTime ASC
 """)
-    fun todayTasks(mobile: String,now: Long): Flow<List<Task>>
+    fun todayTasks(mobile: String, now: Long): Flow<List<Task>>
 
     @Query("SELECT * FROM tasks\n" +
             "        WHERE userMobile = :mobile\n" +
@@ -48,4 +48,12 @@ interface TaskDao {
         AND date(dateTime/1000,'unixepoch','localtime') = date('now','localtime')
     """)
     suspend fun countTodayTasks(): Int
+
+
+
+//    @Query("DELETE FROM tasks WHERE isCompleted = 1")
+//    suspend fun deleteHistory():Flow<List<Task>>
+
+
+
 }

@@ -1,16 +1,11 @@
 package com.example.todo.ui
 
 import android.app.TimePickerDialog
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -20,119 +15,196 @@ import java.util.Calendar
 import java.util.Date
 
 @Composable
-fun HomeScreen(vm: TaskViewModel) {
-
+fun HomeScreen(vm: TaskViewModel, onLogout: () -> Unit) {
     val context = LocalContext.current
 
+    // State for inputs
     var topic by remember { mutableStateOf("") }
     var heading by remember { mutableStateOf("") }
     var dateTime by remember { mutableStateOf(System.currentTimeMillis()) }
 
-
+    // State for validation errors
     var topicError by remember { mutableStateOf("") }
     var headingError by remember { mutableStateOf("") }
     var timeError by remember { mutableStateOf("") }
 
-
+    // Validation Logic
     fun validate(): Boolean {
-        var ok = true
+        var isValid = true
         topicError = ""
         headingError = ""
         timeError = ""
 
         if (topic.isBlank()) {
             topicError = "Topic cannot be empty"
-            ok = false
+            isValid = false
         }
 
         if (heading.isBlank()) {
             headingError = "Heading cannot be empty"
-            ok = false
+            isValid = false
         }
 
-        if (dateTime < System.currentTimeMillis()) {
+        // Check if selected time is at least 1 minute in the future
+        if (dateTime <= System.currentTimeMillis()) {
             timeError = "Please select a future time"
-            ok = false
+            isValid = false
         }
 
-        return ok
+        return isValid
     }
 
     Column(
-        Modifier
+        modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
+        Text("To-Do Reminder", style = MaterialTheme.typography.headlineMedium)
 
-        Text("Create New Task", style = MaterialTheme.typography.headlineSmall)
+        Spacer(modifier = Modifier.height(16.dp))
 
-        Spacer(Modifier.height(8.dp))
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+            elevation = CardDefaults.cardElevation(5.dp)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text("Create New Task", style = MaterialTheme.typography.headlineSmall)
 
-        OutlinedTextField(
-            value = topic,
-            onValueChange = { topic = it },
-            label = { Text("Topic") },
-            isError = topicError.isNotEmpty()
-        )
-        if (topicError.isNotEmpty())
-            Text(topicError, color = MaterialTheme.colorScheme.error)
+                Spacer(modifier = Modifier.height(12.dp))
 
-        Spacer(Modifier.height(8.dp))
+                // Topic Field
+                OutlinedTextField(
+                    value = topic,
+                    onValueChange = {
+                        topic = it
+                        if (it.isNotBlank()) topicError = ""
+                    },
+                    label = { Text("Topic") },
+                    isError = topicError.isNotEmpty(),
+                    modifier = Modifier.fillMaxWidth()
+                )
+                if (topicError.isNotEmpty()) {
+                    Text(
+                        text = topicError,
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.align(Alignment.Start).padding(start = 4.dp)
+                    )
+                }
 
-        OutlinedTextField(
-            value = heading,
-            onValueChange = { heading = it },
-            label = { Text("Heading") },
-            isError = headingError.isNotEmpty()
-        )
-        if (headingError.isNotEmpty())
-            Text(headingError, color = MaterialTheme.colorScheme.error)
+                Spacer(modifier = Modifier.height(8.dp))
 
-        Spacer(Modifier.height(12.dp))
+                // Heading Field
+                OutlinedTextField(
+                    value = heading,
+                    onValueChange = {
+                        heading = it
+                        if (it.isNotBlank()) headingError = ""
+                    },
+                    label = { Text("Heading") },
+                    isError = headingError.isNotEmpty(),
+                    modifier = Modifier.fillMaxWidth()
+                )
+                if (headingError.isNotEmpty()) {
+                    Text(
+                        text = headingError,
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.align(Alignment.Start).padding(start = 4.dp)
+                    )
+                }
 
-        Text(DateFormat.getDateTimeInstance().format(Date(dateTime)))
-        if (timeError.isNotEmpty())
-            Text(timeError, color = MaterialTheme.colorScheme.error)
+                Spacer(modifier = Modifier.height(12.dp))
 
-        Spacer(Modifier.height(6.dp))
+                // Date/Time Display
+                Text(
+                    text = DateFormat.getDateTimeInstance().format(Date(dateTime)),
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = if (timeError.isNotEmpty()) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
+                )
+                if (timeError.isNotEmpty()) {
+                    Text(
+                        text = timeError,
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
 
-        Button(onClick = {
-            val cal = Calendar.getInstance()
-            android.app.DatePickerDialog(
-                context,
-                { _, y, m, d ->
-                    cal.set(y, m, d)
-                    TimePickerDialog(
-                        context,
-                        { _, h, min ->
-                            cal.set(Calendar.HOUR_OF_DAY, h)
-                            cal.set(Calendar.MINUTE, min)
-                            dateTime = cal.timeInMillis
-                        },
-                        cal.get(Calendar.HOUR_OF_DAY),
-                        cal.get(Calendar.MINUTE),
-                        false
-                    ).show()
-                },
-                cal.get(Calendar.YEAR),
-                cal.get(Calendar.MONTH),
-                cal.get(Calendar.DAY_OF_MONTH)
-            ).show()
-        }) {
-            Text("Pick Date & Time")
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Date Picker Button
+                Button(
+                    onClick = {
+                        val cal = Calendar.getInstance()
+                        android.app.DatePickerDialog(
+                            context,
+                            { _, y, m, d ->
+                                cal.set(y, m, d)
+                                TimePickerDialog(
+                                    context,
+                                    { _, h, min ->
+                                        cal.set(Calendar.HOUR_OF_DAY, h)
+                                        cal.set(Calendar.MINUTE, min)
+                                        dateTime = cal.timeInMillis
+                                        timeError = "" // Clear error on selection
+                                    },
+                                    cal.get(Calendar.HOUR_OF_DAY),
+                                    cal.get(Calendar.MINUTE),
+                                    false
+                                ).show()
+                            },
+                            cal.get(Calendar.YEAR),
+                            cal.get(Calendar.MONTH),
+                            cal.get(Calendar.DAY_OF_MONTH)
+                        ).show()
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                    )
+                ) {
+                    Text("Pick Date & Time")
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                // Save Button
+                Button(
+                    onClick = {
+                        if (validate()) {
+                            vm.addTask(topic, heading, dateTime)
+                            topic = ""
+                            heading = ""
+                            dateTime = System.currentTimeMillis()
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    )
+                ) {
+                    Text("Save Task")
+                }
+            }
         }
 
-        Spacer(Modifier.height(14.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
-        Button(onClick = {
-            if (validate()) {
-                vm.addTask(topic, heading, dateTime)
-                topic = ""
-                heading = ""
-                dateTime = System.currentTimeMillis()
-            }
-        }) {
-            Text("Save Task")
+        TextButton(onClick = onLogout) {
+            Text("Logout")
         }
     }
 }

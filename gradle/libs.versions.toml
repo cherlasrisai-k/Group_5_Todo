@@ -18,6 +18,9 @@ navigationCompose = "2.9.6"
 material3 = "1.4.0"
 foundation = "1.10.1"
 compiler = "3.2.0-alpha11"
+animation = "1.10.1"
+uiGraphics = "1.10.1"
+foundationLayout = "1.10.1"
 
 [libraries]
 
@@ -44,6 +47,9 @@ androidx-navigation-compose = { group = "androidx.navigation", name = "navigatio
 androidx-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
 androidx-compose-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "foundation" }
 androidx-compiler = { group = "androidx.databinding", name = "compiler", version.ref = "compiler" }
+androidx-compose-animation = { group = "androidx.compose.animation", name = "animation", version.ref = "animation" }
+androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics", version.ref = "uiGraphics" }
+androidx-compose-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout", version.ref = "foundationLayout" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

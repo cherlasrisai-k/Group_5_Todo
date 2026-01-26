@@ -33,7 +33,7 @@ import kotlinx.coroutines.launch
 //    }
 //}
 
-class AuthViewModel(private val dao: UserDao) : ViewModel() {
+ class AuthViewModel(private val dao: UserDao) : ViewModel() {
 
     var user by mutableStateOf<User?>(null)
         private set

@@ -5,6 +5,9 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.view.WindowCompat
 
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -16,10 +19,12 @@ import androidx.work.WorkManager
 import com.example.todo.data.AppDatabase
 import com.example.todo.ui.LoginScreen
 import com.example.todo.ui.RegisterScreen
+import com.example.todo.ui.theme.TodoTheme
 import com.example.todo.viewmodel.AuthViewModel
 import com.example.todo.viewmodel.TaskViewModel
 import com.example.todo.worker.ReminderWorker
 import java.util.concurrent.TimeUnit
+import com.example.todo.ui.theme.TodoTheme
 
 class MainActivity : ComponentActivity() {
 
@@ -32,7 +37,9 @@ class MainActivity : ComponentActivity() {
 
 
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        //WindowCompat.setDecorFitsSystemWindows(window, false)
         super.onCreate(savedInstanceState)
         val db = AppDatabase.get(this)
 
@@ -60,41 +67,48 @@ class MainActivity : ComponentActivity() {
         )
 
         setContent {
+            TodoTheme{
 
-            val nav = rememberNavController()
+                val nav = rememberNavController()
 
-            NavHost(nav, startDestination = "login") {
+                NavHost(nav, startDestination = "login") {
 
-                composable("login") {
-                    LoginScreen(authVM,
-                        onLogin = {
-                            authVM.user?.let { taskVM.setUser(it.mobile) }
-                            nav.navigate("main") },
-                        onRegister = { nav.navigate("register") }
-                    )
+                    composable("login") {
+                        LoginScreen(
+                            authVM,
+                            onLogin = {
+                                authVM.user?.let { taskVM.setUser(it.mobile) }
+                                nav.navigate("main")
+                            },
+                            onRegister = { nav.navigate("register") }
+                        )
 
 
-                }
+                    }
 
-                composable("register") {
-                    RegisterScreen(authVM) {
-                        authVM.user?.let {
-                            taskVM.setUser(it.mobile)   // ✅ after register also
-                        }
-                        nav.navigate("main") }
-                }
+                    composable("register") {
+                        RegisterScreen(authVM) {
+                            authVM.user?.let {
+                                taskVM.setUser(it.mobile)   // ✅ after register also
+                            }
 
-                composable("main") {
-                    MainScaffold(taskVM, authVM) {
-                        nav.navigate("login") {
-                            popUpTo("login") { inclusive = true }
+                            nav.navigate("home")
                         }
                     }
 
+                    composable("main") {
+                        MainScaffold(taskVM, authVM) {
+                            nav.navigate("login") {
+                                popUpTo("login") { inclusive = true }
+                            }
+                        }
+
+                    }
                 }
             }
         }
     }
+
 }
 
 
