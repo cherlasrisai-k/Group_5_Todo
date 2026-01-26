@@ -46,7 +46,7 @@ class TaskViewModel(private val dao: TaskDao) : ViewModel() {
 
     val todayTasks = currentUser.flatMapLatest { mobile ->
         if (mobile == null) flowOf(emptyList())
-        else dao.todayTasks(mobile)
+        else dao.todayTasks(mobile, System.currentTimeMillis())
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
 
     val completedTasks = currentUser.flatMapLatest { mobile ->
@@ -76,7 +76,7 @@ class TaskViewModel(private val dao: TaskDao) : ViewModel() {
     }
 
     fun deleteTask(task: Task) = viewModelScope.launch {
-        dao.delete(task)                            // Delete from DB
-        _events.emit("Task Deleted")                // Show snackbar
+        dao.delete(task)
+        _events.emit("Task Deleted")
     }
 }

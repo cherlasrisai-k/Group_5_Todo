@@ -7,6 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.view.WindowCompat
 
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -36,7 +37,9 @@ class MainActivity : ComponentActivity() {
 
 
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        //WindowCompat.setDecorFitsSystemWindows(window, false)
         super.onCreate(savedInstanceState)
         val db = AppDatabase.get(this)
 
@@ -88,7 +91,8 @@ class MainActivity : ComponentActivity() {
                             authVM.user?.let {
                                 taskVM.setUser(it.mobile)   // ✅ after register also
                             }
-                            nav.navigate("main")
+
+                            nav.navigate("home")
                         }
                     }
 
