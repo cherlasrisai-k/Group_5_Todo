@@ -30,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -68,8 +69,8 @@ fun RegisterScreen(vm: AuthViewModel, onSuccess: () -> Unit) {
         verticalArrangement = Arrangement.Center
     ) {
 
-        Text(getString(context, R.string.registerScreen_Title), style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
-        Text(text=getString(context,R.string.registerScreen_Heading),style=MaterialTheme.typography.headlineSmall ,fontSize=dynamicFontSize)
+        Text(stringResource( R.string.registerScreen_Title), style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
+        Text(stringResource(R.string.registerScreen_Heading),style=MaterialTheme.typography.headlineSmall ,fontSize=dynamicFontSize)
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -88,7 +89,7 @@ fun RegisterScreen(vm: AuthViewModel, onSuccess: () -> Unit) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                Text(text=getString(context,R.string.registerScreen_CardTitle), style = MaterialTheme.typography.headlineSmall)
+                Text(text=stringResource(R.string.registerScreen_CardTitle), style = MaterialTheme.typography.headlineSmall)
 
                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -100,7 +101,7 @@ fun RegisterScreen(vm: AuthViewModel, onSuccess: () -> Unit) {
                         error = ""
                     },
                     leadingIcon = { Icon(Icons.Default.Person, contentDescription = "Name") },
-                    label = { Text(text=getString(context,R.string.TextFields_Name)) },
+                    label = { Text(text=stringResource(R.string.TextFields_Name)) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     colors= OutlinedTextFieldDefaults.colors(
@@ -117,7 +118,7 @@ fun RegisterScreen(vm: AuthViewModel, onSuccess: () -> Unit) {
                         error = ""
                     },
                     leadingIcon = { Icon(Icons.Default.Phone, contentDescription = "Mobile") },
-                    label = { Text(text=getString(context,R.string.TextFields_MobileNumber)) },
+                    label = { Text(text=stringResource(R.string.TextFields_MobileNumber)) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     colors= OutlinedTextFieldDefaults.colors(
@@ -136,11 +137,13 @@ fun RegisterScreen(vm: AuthViewModel, onSuccess: () -> Unit) {
                     )
                 }
 
+                val nameError = stringResource(R.string.RegisterScreen_NameValidation)
+                val mobileError = stringResource(R.string.RegisterScreen_MobileLengthValidation)
                 Button(
                     onClick = {
                         when {
-                            name.isBlank() -> error = context.getString(R.string.RegisterScreen_NameValidation)
-                            mobile.length != 10 -> error = context.getString(R.string.RegisterScreen_MobileLengthValidation)
+                            name.isBlank() -> error = nameError
+                            mobile.length != 10 -> error =mobileError
                             else -> vm.register(name, mobile)
                         }
 
@@ -151,7 +154,7 @@ fun RegisterScreen(vm: AuthViewModel, onSuccess: () -> Unit) {
                         contentColor = MaterialTheme.colorScheme.onPrimary
                     )
                 ) {
-                    Text(text=getString(context,R.string.Buttons_Register))
+                    Text(text=stringResource(R.string.Buttons_Register))
                 }
             }
         }

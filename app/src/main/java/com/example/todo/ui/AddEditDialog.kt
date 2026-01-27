@@ -23,6 +23,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.getString
@@ -53,7 +54,7 @@ fun AddEditDialog(
         },
         title = {
             Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                Text(context.getString(R.string.EditDialog_Title), fontWeight = FontWeight.Bold)
+                Text(stringResource(R.string.EditDialog_Title), fontWeight = FontWeight.Bold)
             }
         },
         text = {
@@ -62,8 +63,8 @@ fun AddEditDialog(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                OutlinedTextField(topic, { topic = it }, label = { Text(context.getString(R.string.EditDialog_Topic)) })
-                OutlinedTextField(heading, { heading = it }, label = { Text(context.getString(R.string.EditDialog_Heading)) })
+                OutlinedTextField(topic, { topic = it }, label = { Text(stringResource(R.string.EditDialog_Topic)) })
+                OutlinedTextField(heading, { heading = it }, label = { Text(stringResource(R.string.EditDialog_Heading)) })
 
                 Text(
                     text = DateFormat.getDateTimeInstance().format(Date(dateTime)),
@@ -109,8 +110,8 @@ fun AddEditDialog(
 
                         _events.emit("Task Updated Successfully")
                     }
-                    }) { Text(context.getString(R.string.Buttons_Save))
-                        TextButton(onClick = onDismiss) { Text(context.getString(R.string.Buttons_Cancel)) }}
+                    }) { Text(stringResource(R.string.Buttons_Save))
+                        TextButton(onClick = onDismiss) { Text(stringResource(R.string.Buttons_Cancel)) }}
                 }
             }
         }

@@ -19,6 +19,7 @@
     <string name="LoginScreen_Title">Welcome Back 👋</string>
     <string name="LoginScreen_Heading">Let’s plan something great today</string>
     <string name="LoginScreen_Registration">New user? Register </string>
+    <string name="LoginScreen_LoginText">Log in or sign up</string>
     <string name="LoginScreen_Terms">All rights reserved</string>
     <string name="LoginScreen_MobileValidation">Enter mobile number</string>
     <string name="LoginScreen_MobileLengthValidation">Enter valid 10 digit number</string>

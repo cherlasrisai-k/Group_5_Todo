@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
@@ -86,11 +87,11 @@ fun LoginScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = getString(context,R.string.LoginScreen_Title),
+                text = stringResource(R.string.LoginScreen_Title),
                 style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold
             )
             Text(
-                text = getString(context,R.string.LoginScreen_Heading),
+                text = stringResource(R.string.LoginScreen_Heading),
                 modifier = Modifier.fillMaxWidth(),
                 style = MaterialTheme.typography.headlineSmall.copy(fontSize = fontSize),
                 overflow = TextOverflow.Ellipsis,
@@ -107,7 +108,7 @@ fun LoginScreen(
             ) {
 
 
-                Text("Log in or sign up", style = MaterialTheme.typography.labelMedium)
+                Text(stringResource(R.string.LoginScreen_LoginText), style = MaterialTheme.typography.labelMedium)
 
                 OutlinedTextField(
                     value = mobile,
@@ -116,7 +117,7 @@ fun LoginScreen(
                             mobile = it
                         }
                     },
-                    label = { getString(context,R.string.TextFields_MobileNumber) },
+                    label = { stringResource(R.string.TextFields_MobileNumber) },
                     leadingIcon = { Text("+91 ") },
                     keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                     colors= OutlinedTextFieldDefaults.colors(
@@ -128,13 +129,14 @@ fun LoginScreen(
                 )
 
 
-
+                val emptyError = stringResource(R.string.LoginScreen_MobileValidation)
+                val lengthError = stringResource(R.string.LoginScreen_MobileLengthValidation)
 
                 TextButton( onClick = {
                     error = ""
                     when {
-                        mobile.isBlank() -> error = context.getString(R.string.LoginScreen_MobileValidation)
-                        mobile.length != 10 -> error = context.getString(R.string.LoginScreen_MobileLengthValidation)
+                        mobile.isBlank() -> error = emptyError
+                        mobile.length != 10 -> error = lengthError
                         else -> vm.login(mobile)
                     }
                 }) {
@@ -145,7 +147,7 @@ fun LoginScreen(
                     Text(error, color = MaterialTheme.colorScheme.error)
 
                 TextButton(onClick = onRegister) {
-                    Text(getString(context,R.string.LoginScreen_Registration))
+                    Text(stringResource(R.string.LoginScreen_Registration))
                 }
             }
         }
@@ -158,7 +160,7 @@ fun LoginScreen(
            Row(modifier = Modifier.padding(bottom = 16.dp),
                verticalAlignment = Alignment.CenterVertically,
                horizontalArrangement = Arrangement.Center) {
-               Text(getString(context,R.string.LoginScreen_Terms))
+               Text(stringResource(R.string.LoginScreen_Terms))
            }
        }
 

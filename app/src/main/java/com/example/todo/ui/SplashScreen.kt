@@ -27,6 +27,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.getString
@@ -104,7 +105,7 @@ fun SplashScreen() {
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text =getString(content,R.string.app_name),
+                    text =stringResource(R.string.app_name),
                     style = MaterialTheme.typography.displayMedium,
                     fontWeight = FontWeight.Bold,
                     color = colorResource(id = R.color.z_red),
@@ -115,7 +116,7 @@ fun SplashScreen() {
             Spacer(modifier = Modifier.height(24.dp))
 
             Text(
-                text = getString(content,R.string.SplashScreen_Text),
+                text = stringResource(R.string.SplashScreen_Text),
                 modifier = Modifier.graphicsLayer(
                     alpha = taglineAlpha.value,
                     translationY = taglineTranslationY.value

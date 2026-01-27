@@ -8,6 +8,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.getString
 import com.example.todo.viewmodel.TaskViewModel
@@ -64,7 +65,7 @@ fun HomeScreen(vm: TaskViewModel, onLogout: () -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text(text= getString(context,R.string.HomeScreen_Title), style = MaterialTheme.typography.headlineMedium)
+        Text(text= stringResource(R.string.HomeScreen_Title), style = MaterialTheme.typography.headlineMedium)
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -82,7 +83,7 @@ fun HomeScreen(vm: TaskViewModel, onLogout: () -> Unit) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                Text(getString(context,R.string.HomeScreen_CardTitle), style = MaterialTheme.typography.headlineSmall)
+                Text(stringResource(R.string.HomeScreen_CardTitle), style = MaterialTheme.typography.headlineSmall)
 
                 Spacer(modifier = Modifier.height(12.dp))
 
@@ -93,7 +94,7 @@ fun HomeScreen(vm: TaskViewModel, onLogout: () -> Unit) {
                         topic = it
                         if (it.isNotBlank()) topicError = ""
                     },
-                    label = { Text(getString(context,R.string.HomeScreen_TextFields_Topic)) },
+                    label = { Text(stringResource(R.string.HomeScreen_TextFields_Topic)) },
                     isError = topicError.isNotEmpty(),
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -115,7 +116,7 @@ fun HomeScreen(vm: TaskViewModel, onLogout: () -> Unit) {
                         heading = it
                         if (it.isNotBlank()) headingError = ""
                     },
-                    label = { Text(getString(context,R.string.HomeScreen_TextFields_Heading)) },
+                    label = { Text(stringResource(R.string.HomeScreen_TextFields_Heading)) },
                     isError = headingError.isNotEmpty(),
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -178,7 +179,7 @@ fun HomeScreen(vm: TaskViewModel, onLogout: () -> Unit) {
                         contentColor = MaterialTheme.colorScheme.onSecondaryContainer
                     )
                 ) {
-                    Text(getString(context,R.string.Buttons_SelectDate))
+                    Text(stringResource(R.string.Buttons_SelectDate))
                 }
 
                 Spacer(modifier = Modifier.height(12.dp))
@@ -199,7 +200,7 @@ fun HomeScreen(vm: TaskViewModel, onLogout: () -> Unit) {
                         contentColor = MaterialTheme.colorScheme.onPrimary
                     )
                 ) {
-                    Text(getString(context,R.string.HomeScreen_Buttons_SaveTask))
+                    Text(stringResource(R.string.HomeScreen_Buttons_SaveTask))
                 }
             }
         }
