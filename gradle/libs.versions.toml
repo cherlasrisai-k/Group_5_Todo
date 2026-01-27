@@ -21,9 +21,6 @@ compiler = "3.2.0-alpha11"
 animation = "1.10.1"
 uiGraphics = "1.10.1"
 foundationLayout = "1.10.1"
-appcompat = "1.7.1"
-ui = "1.10.1"
-remoteCreationCompose = "1.0.0-alpha02"
 
 [libraries]
 
@@ -53,9 +50,6 @@ androidx-compiler = { group = "androidx.databinding", name = "compiler", version
 androidx-compose-animation = { group = "androidx.compose.animation", name = "animation", version.ref = "animation" }
 androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics", version.ref = "uiGraphics" }
 androidx-compose-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout", version.ref = "foundationLayout" }
-androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
-androidx-ui = { group = "androidx.compose.ui", name = "ui", version.ref = "ui" }
-androidx-compose-remote-creation-compose = { group = "androidx.compose.remote", name = "remote-creation-compose", version.ref = "remoteCreationCompose" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

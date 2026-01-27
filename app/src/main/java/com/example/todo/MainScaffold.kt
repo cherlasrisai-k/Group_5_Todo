@@ -85,15 +85,15 @@ fun MainScaffold(
                         horizontalArrangement = Arrangement.Center) {
                         Box(
                             modifier = Modifier.size(50.dp).padding(5.dp).clip(CircleShape)
-                                .background(MaterialTheme.colorScheme.primary),
+                                .background(MaterialTheme.colorScheme.secondary),
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
                                 Icons.Default.Person, contentDescription = "Person Logo",
-                                tint=MaterialTheme.colorScheme.onPrimary
+                                tint=MaterialTheme.colorScheme.onSecondary
                             )
                         }
-
+                        Text(text="Welcome $")
                     }
                 },
                 actions = {

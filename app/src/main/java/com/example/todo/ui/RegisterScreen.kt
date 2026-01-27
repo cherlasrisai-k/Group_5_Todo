@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Person2
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -29,13 +30,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.ContextCompat.getString
-import com.example.todo.R
+import androidx.navigation.NavController
 import com.example.todo.viewmodel.AuthViewModel
 
 @Composable
@@ -48,9 +46,9 @@ fun RegisterScreen(vm: AuthViewModel, onSuccess: () -> Unit) {
         if (vm.user != null) onSuccess()
     }
 
-    val configurations=LocalConfiguration.current
+    var configurations=LocalConfiguration.current
 
-    val screenWidth=configurations.screenWidthDp
+    var screenWidth=configurations.screenWidthDp
 
     val fontSize = when {
         screenWidth > 400 -> 24.sp
@@ -58,8 +56,6 @@ fun RegisterScreen(vm: AuthViewModel, onSuccess: () -> Unit) {
         else -> 16.sp
     }
     val dynamicFontSize = (screenWidth / 18).sp
-
-    val  context= LocalContext.current
 
     Column(
         modifier = Modifier
@@ -69,8 +65,8 @@ fun RegisterScreen(vm: AuthViewModel, onSuccess: () -> Unit) {
         verticalArrangement = Arrangement.Center
     ) {
 
-        Text(stringResource( R.string.registerScreen_Title), style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
-        Text(stringResource(R.string.registerScreen_Heading),style=MaterialTheme.typography.headlineSmall ,fontSize=dynamicFontSize)
+        Text("Get Started", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
+        Text("Manage your tasks effortlessly",style=MaterialTheme.typography.headlineSmall ,fontSize=dynamicFontSize)
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -89,7 +85,7 @@ fun RegisterScreen(vm: AuthViewModel, onSuccess: () -> Unit) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                Text(text=stringResource(R.string.registerScreen_CardTitle), style = MaterialTheme.typography.headlineSmall)
+                Text("Create Account", style = MaterialTheme.typography.headlineSmall)
 
                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -98,10 +94,10 @@ fun RegisterScreen(vm: AuthViewModel, onSuccess: () -> Unit) {
                     value = name,
                     onValueChange = {
                         name = it
-                        error = ""
+                        error = "" // Clear error when typing
                     },
                     leadingIcon = { Icon(Icons.Default.Person, contentDescription = "Name") },
-                    label = { Text(text=stringResource(R.string.TextFields_Name)) },
+                    label = { Text("Name") },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     colors= OutlinedTextFieldDefaults.colors(
@@ -118,7 +114,7 @@ fun RegisterScreen(vm: AuthViewModel, onSuccess: () -> Unit) {
                         error = ""
                     },
                     leadingIcon = { Icon(Icons.Default.Phone, contentDescription = "Mobile") },
-                    label = { Text(text=stringResource(R.string.TextFields_MobileNumber)) },
+                    label = { Text("Mobile Number") },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     colors= OutlinedTextFieldDefaults.colors(
@@ -137,13 +133,11 @@ fun RegisterScreen(vm: AuthViewModel, onSuccess: () -> Unit) {
                     )
                 }
 
-                val nameError = stringResource(R.string.RegisterScreen_NameValidation)
-                val mobileError = stringResource(R.string.RegisterScreen_MobileLengthValidation)
                 Button(
                     onClick = {
                         when {
-                            name.isBlank() -> error = nameError
-                            mobile.length != 10 -> error =mobileError
+                            name.isBlank() -> error = "Name cannot be empty"
+                            mobile.length != 10 -> error = "Enter a valid 10-digit mobile number"
                             else -> vm.register(name, mobile)
                         }
 
@@ -154,7 +148,7 @@ fun RegisterScreen(vm: AuthViewModel, onSuccess: () -> Unit) {
                         contentColor = MaterialTheme.colorScheme.onPrimary
                     )
                 ) {
-                    Text(text=stringResource(R.string.Buttons_Register))
+                    Text("Register")
                 }
             }
         }

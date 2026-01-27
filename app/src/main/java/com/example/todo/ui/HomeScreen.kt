@@ -8,15 +8,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat.getString
 import com.example.todo.viewmodel.TaskViewModel
 import java.text.DateFormat
 import java.util.Calendar
 import java.util.Date
-import com.example.todo.R
-
 
 @Composable
 fun HomeScreen(vm: TaskViewModel, onLogout: () -> Unit) {
@@ -40,18 +36,18 @@ fun HomeScreen(vm: TaskViewModel, onLogout: () -> Unit) {
         timeError = ""
 
         if (topic.isBlank()) {
-            topicError = getString(context,R.string.HomeScreen_TopicValidation)
+            topicError = "Topic cannot be empty"
             isValid = false
         }
 
         if (heading.isBlank()) {
-            headingError = getString(context,R.string.HomeScreen_HeadingValidation)
+            headingError = "Heading cannot be empty"
             isValid = false
         }
 
         // Check if selected time is at least 1 minute in the future
         if (dateTime <= System.currentTimeMillis()) {
-            timeError = getString(context,R.string.HomeScreen_TimeValidation)
+            timeError = "Please select a future time"
             isValid = false
         }
 
@@ -65,7 +61,7 @@ fun HomeScreen(vm: TaskViewModel, onLogout: () -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text(text= stringResource(R.string.HomeScreen_Title), style = MaterialTheme.typography.headlineMedium)
+        Text("To-Do Reminder", style = MaterialTheme.typography.headlineMedium)
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -83,7 +79,7 @@ fun HomeScreen(vm: TaskViewModel, onLogout: () -> Unit) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                Text(stringResource(R.string.HomeScreen_CardTitle), style = MaterialTheme.typography.headlineSmall)
+                Text("Create New Task", style = MaterialTheme.typography.headlineSmall)
 
                 Spacer(modifier = Modifier.height(12.dp))
 
@@ -94,7 +90,7 @@ fun HomeScreen(vm: TaskViewModel, onLogout: () -> Unit) {
                         topic = it
                         if (it.isNotBlank()) topicError = ""
                     },
-                    label = { Text(stringResource(R.string.HomeScreen_TextFields_Topic)) },
+                    label = { Text("Topic") },
                     isError = topicError.isNotEmpty(),
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -116,7 +112,7 @@ fun HomeScreen(vm: TaskViewModel, onLogout: () -> Unit) {
                         heading = it
                         if (it.isNotBlank()) headingError = ""
                     },
-                    label = { Text(stringResource(R.string.HomeScreen_TextFields_Heading)) },
+                    label = { Text("Heading") },
                     isError = headingError.isNotEmpty(),
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -179,12 +175,12 @@ fun HomeScreen(vm: TaskViewModel, onLogout: () -> Unit) {
                         contentColor = MaterialTheme.colorScheme.onSecondaryContainer
                     )
                 ) {
-                    Text(stringResource(R.string.Buttons_SelectDate))
+                    Text("Pick Date & Time")
                 }
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-
+                // Save Button
                 Button(
                     onClick = {
                         if (validate()) {
@@ -200,10 +196,15 @@ fun HomeScreen(vm: TaskViewModel, onLogout: () -> Unit) {
                         contentColor = MaterialTheme.colorScheme.onPrimary
                     )
                 ) {
-                    Text(stringResource(R.string.HomeScreen_Buttons_SaveTask))
+                    Text("Save Task")
                 }
             }
         }
 
+        Spacer(modifier = Modifier.height(16.dp))
+
+        TextButton(onClick = onLogout) {
+            Text("Logout")
+        }
     }
 }

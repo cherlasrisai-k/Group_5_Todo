@@ -24,15 +24,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.ContextCompat.getString
 import com.example.todo.R
 import com.example.todo.viewmodel.AuthViewModel
 
@@ -64,8 +61,7 @@ fun LoginScreen(
 
 
 
-    Column(modifier = Modifier.fillMaxSize()) {4
-        val context=LocalContext.current
+    Column(modifier = Modifier.fillMaxSize()) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -74,7 +70,7 @@ fun LoginScreen(
         ) {
             Image(
                 painter = painterResource(R.drawable.updatedtodo),
-                contentDescription = getString(context,R.string.app_name)
+                contentDescription = "TODOImage"
             )
         }
 
@@ -87,11 +83,11 @@ fun LoginScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = stringResource(R.string.LoginScreen_Title),
+                text = "Welcome Back \uD83D\uDC4B",
                 style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold
             )
             Text(
-                text = stringResource(R.string.LoginScreen_Heading),
+                text = "Let’s plan something great today",
                 modifier = Modifier.fillMaxWidth(),
                 style = MaterialTheme.typography.headlineSmall.copy(fontSize = fontSize),
                 overflow = TextOverflow.Ellipsis,
@@ -108,7 +104,7 @@ fun LoginScreen(
             ) {
 
 
-                Text(stringResource(R.string.LoginScreen_LoginText), style = MaterialTheme.typography.labelMedium)
+                Text("Log in or sign up", style = MaterialTheme.typography.labelMedium)
 
                 OutlinedTextField(
                     value = mobile,
@@ -117,7 +113,7 @@ fun LoginScreen(
                             mobile = it
                         }
                     },
-                    label = { stringResource(R.string.TextFields_MobileNumber) },
+                    label = { Text("Mobile Number") },
                     leadingIcon = { Text("+91 ") },
                     keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                     colors= OutlinedTextFieldDefaults.colors(
@@ -129,15 +125,14 @@ fun LoginScreen(
                 )
 
 
-                val emptyError = stringResource(R.string.LoginScreen_MobileValidation)
-                val lengthError = stringResource(R.string.LoginScreen_MobileLengthValidation)
+
 
                 TextButton( onClick = {
                     error = ""
                     when {
-                        mobile.isBlank() -> error = emptyError
-                        mobile.length != 10 -> error = lengthError
-                        else -> vm.login(mobile)
+                        mobile.isBlank() -> error = "Enter mobile number"
+                        mobile.length != 10 -> error = "Enter valid 10 digit number"
+                        else -> vm.login("$mobile")
                     }
                 }) {
                     Text("Login")
@@ -147,7 +142,7 @@ fun LoginScreen(
                     Text(error, color = MaterialTheme.colorScheme.error)
 
                 TextButton(onClick = onRegister) {
-                    Text(stringResource(R.string.LoginScreen_Registration))
+                    Text("New user? Register")
                 }
             }
         }
@@ -157,10 +152,8 @@ fun LoginScreen(
            .fillMaxSize()
            .weight(1f),
            contentAlignment = Alignment.BottomCenter){
-           Row(modifier = Modifier.padding(bottom = 16.dp),
-               verticalAlignment = Alignment.CenterVertically,
-               horizontalArrangement = Arrangement.Center) {
-               Text(stringResource(R.string.LoginScreen_Terms))
+           Row() {
+               Text(text = " All rights Reserved")
            }
        }
 
