@@ -201,10 +201,5 @@ fun HomeScreen(vm: TaskViewModel, onLogout: () -> Unit) {
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        TextButton(onClick = onLogout) {
-            Text("Logout")
-        }
     }
 }

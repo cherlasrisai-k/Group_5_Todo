@@ -79,4 +79,5 @@ class TaskViewModel(private val dao: TaskDao) : ViewModel() {
         dao.delete(task)
         _events.emit("Task Deleted")
     }
+
 }
