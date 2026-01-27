@@ -9,7 +9,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -20,6 +22,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,9 +45,11 @@ fun LoginScreen(
     onRegister: () -> Unit
 ) {
 
-    var mobile by remember { mutableStateOf("") }
-    var error by remember { mutableStateOf("") }
+    var mobile by rememberSaveable  { mutableStateOf("") }
+    val error = vm.loginError
 
+
+    val scrollState = rememberScrollState()
     LaunchedEffect(vm.user) {
         if (vm.user != null) onLogin()
     }
@@ -61,16 +66,18 @@ fun LoginScreen(
 
 
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        Box(
+    Column(modifier = Modifier.fillMaxSize().verticalScroll(scrollState)) {
+        Column (
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(4f),
-            contentAlignment = Alignment.TopStart
+            verticalArrangement = Arrangement.Top
         ) {
             Image(
+                modifier  =  Modifier.fillMaxWidth(),
                 painter = painterResource(R.drawable.updatedtodo),
-                contentDescription = "TODOImage"
+                contentDescription = "TODOImage",
+                        contentScale = androidx.compose.ui.layout.ContentScale.FillWidth
             )
         }
 
@@ -87,7 +94,7 @@ fun LoginScreen(
                 style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold
             )
             Text(
-                text = "Let’s plan something great today",
+                text = " Let's plan something great today",
                 modifier = Modifier.fillMaxWidth(),
                 style = MaterialTheme.typography.headlineSmall.copy(fontSize = fontSize),
                 overflow = TextOverflow.Ellipsis,
@@ -128,18 +135,13 @@ fun LoginScreen(
 
 
                 TextButton( onClick = {
-                    error = ""
-                    when {
-                        mobile.isBlank() -> error = "Enter mobile number"
-                        mobile.length != 10 -> error = "Enter valid 10 digit number"
-                        else -> vm.login("$mobile")
-                    }
+                        vm.validateAndLogin(mobile)
                 }) {
                     Text("Login")
                 }
 
-                if (error.isNotEmpty())
-                    Text(error, color = MaterialTheme.colorScheme.error)
+                if (!vm.loginError.isNullOrEmpty())
+                    Text(vm.loginError!!, color = MaterialTheme.colorScheme.error)
 
                 TextButton(onClick = onRegister) {
                     Text("New user? Register")

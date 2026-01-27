@@ -21,6 +21,7 @@ compiler = "3.2.0-alpha11"
 animation = "1.10.1"
 uiGraphics = "1.10.1"
 foundationLayout = "1.10.1"
+runtimeSaveable = "1.10.1"
 
 [libraries]
 
@@ -50,6 +51,7 @@ androidx-compiler = { group = "androidx.databinding", name = "compiler", version
 androidx-compose-animation = { group = "androidx.compose.animation", name = "animation", version.ref = "animation" }
 androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics", version.ref = "uiGraphics" }
 androidx-compose-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout", version.ref = "foundationLayout" }
+androidx-compose-runtime-saveable = { group = "androidx.compose.runtime", name = "runtime-saveable", version.ref = "runtimeSaveable" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

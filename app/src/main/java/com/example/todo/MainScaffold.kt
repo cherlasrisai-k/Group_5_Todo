@@ -93,7 +93,7 @@ fun MainScaffold(
                                 tint=MaterialTheme.colorScheme.onSecondary
                             )
                         }
-                        Text(text="Welcome $")
+                        Text(text="Welcome ${authVM.user?.name}")
                     }
                 },
                 actions = {
@@ -138,11 +138,7 @@ fun MainScaffold(
         ) {
             composable(BottomNavItem.Home.route) {
                 HomeScreen(
-                    taskVM,
-                    onLogout = {
-                        authVM.logout()
-                        onLogout()
-                    }
+                    taskVM
                 )
             }
 
