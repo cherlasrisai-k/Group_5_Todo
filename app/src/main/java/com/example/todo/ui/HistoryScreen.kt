@@ -83,7 +83,7 @@ fun HistoryScreen(vm: TaskViewModel) {
             }
         }
 
-        // Sticky Up Arrow Icon
+
         AnimatedVisibility(
             visible = showButton,
             enter = fadeIn() + expandIn(expandFrom = Alignment.Center),
