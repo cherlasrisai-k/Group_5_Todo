@@ -9,10 +9,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat.getString
 import com.example.todo.viewmodel.TaskViewModel
 import java.text.DateFormat
 import java.util.Calendar
 import java.util.Date
+import com.example.todo.R
+
 
 @Composable
 fun HomeScreen(vm: TaskViewModel, onLogout: () -> Unit) {
@@ -36,18 +39,18 @@ fun HomeScreen(vm: TaskViewModel, onLogout: () -> Unit) {
         timeError = ""
 
         if (topic.isBlank()) {
-            topicError = "Topic cannot be empty"
+            topicError = getString(context,R.string.HomeScreen_TopicValidation)
             isValid = false
         }
 
         if (heading.isBlank()) {
-            headingError = "Heading cannot be empty"
+            headingError = getString(context,R.string.HomeScreen_HeadingValidation)
             isValid = false
         }
 
         // Check if selected time is at least 1 minute in the future
         if (dateTime <= System.currentTimeMillis()) {
-            timeError = "Please select a future time"
+            timeError = getString(context,R.string.HomeScreen_TimeValidation)
             isValid = false
         }
 
@@ -61,7 +64,7 @@ fun HomeScreen(vm: TaskViewModel, onLogout: () -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text("To-Do Reminder", style = MaterialTheme.typography.headlineMedium)
+        Text(text= getString(context,R.string.HomeScreen_Title), style = MaterialTheme.typography.headlineMedium)
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -79,7 +82,7 @@ fun HomeScreen(vm: TaskViewModel, onLogout: () -> Unit) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                Text("Create New Task", style = MaterialTheme.typography.headlineSmall)
+                Text(getString(context,R.string.HomeScreen_CardTitle), style = MaterialTheme.typography.headlineSmall)
 
                 Spacer(modifier = Modifier.height(12.dp))
 
@@ -90,7 +93,7 @@ fun HomeScreen(vm: TaskViewModel, onLogout: () -> Unit) {
                         topic = it
                         if (it.isNotBlank()) topicError = ""
                     },
-                    label = { Text("Topic") },
+                    label = { Text(getString(context,R.string.HomeScreen_TextFields_Topic)) },
                     isError = topicError.isNotEmpty(),
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -112,7 +115,7 @@ fun HomeScreen(vm: TaskViewModel, onLogout: () -> Unit) {
                         heading = it
                         if (it.isNotBlank()) headingError = ""
                     },
-                    label = { Text("Heading") },
+                    label = { Text(getString(context,R.string.HomeScreen_TextFields_Heading)) },
                     isError = headingError.isNotEmpty(),
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -175,12 +178,12 @@ fun HomeScreen(vm: TaskViewModel, onLogout: () -> Unit) {
                         contentColor = MaterialTheme.colorScheme.onSecondaryContainer
                     )
                 ) {
-                    Text("Pick Date & Time")
+                    Text(getString(context,R.string.Buttons_SelectDate))
                 }
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                // Save Button
+
                 Button(
                     onClick = {
                         if (validate()) {
@@ -196,7 +199,7 @@ fun HomeScreen(vm: TaskViewModel, onLogout: () -> Unit) {
                         contentColor = MaterialTheme.colorScheme.onPrimary
                     )
                 ) {
-                    Text("Save Task")
+                    Text(getString(context,R.string.HomeScreen_Buttons_SaveTask))
                 }
             }
         }

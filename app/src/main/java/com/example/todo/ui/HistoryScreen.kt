@@ -56,7 +56,7 @@ fun HistoryScreen(vm: TaskViewModel) {
         LazyColumn(
             state = scrollState,
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(bottom = 80.dp) // Space so button doesn't hide last card
+            contentPadding = PaddingValues(bottom = 80.dp)
         ) {
             items(tasks) { item ->
                 Card(
@@ -72,7 +72,7 @@ fun HistoryScreen(vm: TaskViewModel) {
                             text = item.topic,
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.primary // Using your RubyRed
+                            color = MaterialTheme.colorScheme.primary
                         )
                         Text(
                             text = item.heading,

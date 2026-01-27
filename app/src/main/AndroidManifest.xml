@@ -15,7 +15,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TODO">
 
-        <!-- ✅ SPLASH SCREEN (LAUNCHER) -->
+
         <activity
             android:name=".ui.SplashActivity"
             android:exported="true"
@@ -27,7 +27,7 @@
             </intent-filter>
         </activity>
 
-        <!-- ✅ MAIN COMPOSE ACTIVITY -->
+
         <activity
             android:name=".MainActivity"
             android:exported="false"

@@ -24,12 +24,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat.getString
 import com.example.todo.R
 import com.example.todo.viewmodel.AuthViewModel
 
@@ -61,7 +63,8 @@ fun LoginScreen(
 
 
 
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(modifier = Modifier.fillMaxSize()) {4
+        val context=LocalContext.current
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -70,7 +73,7 @@ fun LoginScreen(
         ) {
             Image(
                 painter = painterResource(R.drawable.updatedtodo),
-                contentDescription = "TODOImage"
+                contentDescription = getString(context,R.string.app_name)
             )
         }
 
@@ -83,11 +86,11 @@ fun LoginScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "Welcome Back \uD83D\uDC4B",
+                text = getString(context,R.string.LoginScreen_Title),
                 style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold
             )
             Text(
-                text = "Let’s plan something great today",
+                text = getString(context,R.string.LoginScreen_Heading),
                 modifier = Modifier.fillMaxWidth(),
                 style = MaterialTheme.typography.headlineSmall.copy(fontSize = fontSize),
                 overflow = TextOverflow.Ellipsis,
@@ -113,7 +116,7 @@ fun LoginScreen(
                             mobile = it
                         }
                     },
-                    label = { Text("Mobile Number") },
+                    label = { getString(context,R.string.TextFields_MobileNumber) },
                     leadingIcon = { Text("+91 ") },
                     keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                     colors= OutlinedTextFieldDefaults.colors(
@@ -130,9 +133,9 @@ fun LoginScreen(
                 TextButton( onClick = {
                     error = ""
                     when {
-                        mobile.isBlank() -> error = "Enter mobile number"
-                        mobile.length != 10 -> error = "Enter valid 10 digit number"
-                        else -> vm.login("$mobile")
+                        mobile.isBlank() -> error = context.getString(R.string.LoginScreen_MobileValidation)
+                        mobile.length != 10 -> error = context.getString(R.string.LoginScreen_MobileLengthValidation)
+                        else -> vm.login(mobile)
                     }
                 }) {
                     Text("Login")
@@ -142,7 +145,7 @@ fun LoginScreen(
                     Text(error, color = MaterialTheme.colorScheme.error)
 
                 TextButton(onClick = onRegister) {
-                    Text("New user? Register")
+                    Text(getString(context,R.string.LoginScreen_Registration))
                 }
             }
         }
@@ -152,8 +155,10 @@ fun LoginScreen(
            .fillMaxSize()
            .weight(1f),
            contentAlignment = Alignment.BottomCenter){
-           Row() {
-               Text(text = " All rights Reserved")
+           Row(modifier = Modifier.padding(bottom = 16.dp),
+               verticalAlignment = Alignment.CenterVertically,
+               horizontalArrangement = Arrangement.Center) {
+               Text(getString(context,R.string.LoginScreen_Terms))
            }
        }
 

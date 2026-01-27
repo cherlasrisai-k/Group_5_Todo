@@ -65,19 +65,22 @@ class TaskViewModel(private val dao: TaskDao) : ViewModel() {
             }
         }
 
-    fun updateTask(task: Task) = viewModelScope.launch { dao.update(task) }
+    fun updateTask(task: Task) = viewModelScope.launch {
+
+        dao.update(task)
+    }
 
     private val _events = MutableSharedFlow<String>()
     val events = _events.asSharedFlow()
 
     fun completeTask(task: Task) = viewModelScope.launch {
         dao.update(task.copy(isCompleted = true))
-        _events.emit("Hurray! Task Completed 🎉")
+        _events.emit("Hurray! Task-${task.topic} Completed 🎉")
     }
 
     fun deleteTask(task: Task) = viewModelScope.launch {
         dao.delete(task)
-        _events.emit("Task Deleted")
+        _events.emit("Task-${task.topic} Deleted")
     }
 
 }

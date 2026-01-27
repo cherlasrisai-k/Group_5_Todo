@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.provider.Settings.Global.getString
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.core.Animatable
@@ -24,9 +25,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat.getString
 import com.example.todo.MainActivity
 import com.example.todo.R
 import kotlinx.coroutines.launch
@@ -48,8 +51,12 @@ class SplashActivity : ComponentActivity() {
 val topColor = Color(0xFFE53935)
 val bottomColor = Color(0xFFB71C1C)
 
+
+
+
 @Composable
 fun SplashScreen() {
+    val content= LocalContext.current
     val circleScale = remember { Animatable(0f) }
     val textAlpha = remember { Animatable(0f) }
     val taglineAlpha = remember { Animatable(0f) }
@@ -97,7 +104,7 @@ fun SplashScreen() {
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "To-Do",
+                    text =getString(content,R.string.app_name),
                     style = MaterialTheme.typography.displayMedium,
                     fontWeight = FontWeight.Bold,
                     color = colorResource(id = R.color.z_red),
@@ -108,7 +115,7 @@ fun SplashScreen() {
             Spacer(modifier = Modifier.height(24.dp))
 
             Text(
-                text = "Plan. Act. Achieve",
+                text = getString(content,R.string.SplashScreen_Text),
                 modifier = Modifier.graphicsLayer(
                     alpha = taglineAlpha.value,
                     translationY = taglineTranslationY.value

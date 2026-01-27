@@ -17,6 +17,7 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.example.todo.data.AppDatabase
+import com.example.todo.data.Screens
 import com.example.todo.ui.LoginScreen
 import com.example.todo.ui.RegisterScreen
 import com.example.todo.ui.theme.TodoTheme
@@ -39,7 +40,6 @@ class MainActivity : ComponentActivity() {
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        //WindowCompat.setDecorFitsSystemWindows(window, false)
         super.onCreate(savedInstanceState)
         val db = AppDatabase.get(this)
 
@@ -56,7 +56,7 @@ class MainActivity : ComponentActivity() {
             OneTimeWorkRequestBuilder<ReminderWorker>().build()
         )
 
-        // 🔁 Hourly reminder
+        //  Hourly reminder
         val hourly =
             PeriodicWorkRequestBuilder<ReminderWorker>(1, TimeUnit.HOURS).build()
 
@@ -71,35 +71,35 @@ class MainActivity : ComponentActivity() {
 
                 val nav = rememberNavController()
 
-                NavHost(nav, startDestination = "login") {
+                NavHost(nav, startDestination = Screens.LoginScreen.route) {
 
-                    composable("login") {
+                    composable(Screens.LoginScreen.route) {
                         LoginScreen(
                             authVM,
                             onLogin = {
                                 authVM.user?.let { taskVM.setUser(it.mobile) }
-                                nav.navigate("main")
+                                nav.navigate(Screens.HomeScreen.route)
                             },
-                            onRegister = { nav.navigate("register") }
+                            onRegister = { nav.navigate(Screens.RegisterScreen.route) }
                         )
 
 
                     }
 
-                    composable("register") {
+                    composable(Screens.RegisterScreen.route) {
                         RegisterScreen(authVM) {
                             authVM.user?.let {
-                                taskVM.setUser(it.mobile)   // ✅ after register also
+                                taskVM.setUser(it.mobile)
                             }
 
-                            nav.navigate("home")
+                            nav.navigate(Screens.HomeScreen.route)
                         }
                     }
 
-                    composable("main") {
+                    composable(Screens.HomeScreen.route) {
                         MainScaffold(taskVM, authVM) {
-                            nav.navigate("login") {
-                                popUpTo("login") { inclusive = true }
+                            nav.navigate(Screens.LoginScreen.route) {
+                                popUpTo(Screens.LoginScreen.route) { inclusive = true }
                             }
                         }
 

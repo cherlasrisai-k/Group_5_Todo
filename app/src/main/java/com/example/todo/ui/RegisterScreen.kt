@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Person2
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -30,10 +29,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
+import androidx.core.content.ContextCompat.getString
+import com.example.todo.R
 import com.example.todo.viewmodel.AuthViewModel
 
 @Composable
@@ -46,9 +47,9 @@ fun RegisterScreen(vm: AuthViewModel, onSuccess: () -> Unit) {
         if (vm.user != null) onSuccess()
     }
 
-    var configurations=LocalConfiguration.current
+    val configurations=LocalConfiguration.current
 
-    var screenWidth=configurations.screenWidthDp
+    val screenWidth=configurations.screenWidthDp
 
     val fontSize = when {
         screenWidth > 400 -> 24.sp
@@ -56,6 +57,8 @@ fun RegisterScreen(vm: AuthViewModel, onSuccess: () -> Unit) {
         else -> 16.sp
     }
     val dynamicFontSize = (screenWidth / 18).sp
+
+    val  context= LocalContext.current
 
     Column(
         modifier = Modifier
@@ -65,8 +68,8 @@ fun RegisterScreen(vm: AuthViewModel, onSuccess: () -> Unit) {
         verticalArrangement = Arrangement.Center
     ) {
 
-        Text("Get Started", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
-        Text("Manage your tasks effortlessly",style=MaterialTheme.typography.headlineSmall ,fontSize=dynamicFontSize)
+        Text(getString(context, R.string.registerScreen_Title), style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
+        Text(text=getString(context,R.string.registerScreen_Heading),style=MaterialTheme.typography.headlineSmall ,fontSize=dynamicFontSize)
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -85,7 +88,7 @@ fun RegisterScreen(vm: AuthViewModel, onSuccess: () -> Unit) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                Text("Create Account", style = MaterialTheme.typography.headlineSmall)
+                Text(text=getString(context,R.string.registerScreen_CardTitle), style = MaterialTheme.typography.headlineSmall)
 
                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -94,10 +97,10 @@ fun RegisterScreen(vm: AuthViewModel, onSuccess: () -> Unit) {
                     value = name,
                     onValueChange = {
                         name = it
-                        error = "" // Clear error when typing
+                        error = ""
                     },
                     leadingIcon = { Icon(Icons.Default.Person, contentDescription = "Name") },
-                    label = { Text("Name") },
+                    label = { Text(text=getString(context,R.string.TextFields_Name)) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     colors= OutlinedTextFieldDefaults.colors(
@@ -114,7 +117,7 @@ fun RegisterScreen(vm: AuthViewModel, onSuccess: () -> Unit) {
                         error = ""
                     },
                     leadingIcon = { Icon(Icons.Default.Phone, contentDescription = "Mobile") },
-                    label = { Text("Mobile Number") },
+                    label = { Text(text=getString(context,R.string.TextFields_MobileNumber)) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     colors= OutlinedTextFieldDefaults.colors(
@@ -136,8 +139,8 @@ fun RegisterScreen(vm: AuthViewModel, onSuccess: () -> Unit) {
                 Button(
                     onClick = {
                         when {
-                            name.isBlank() -> error = "Name cannot be empty"
-                            mobile.length != 10 -> error = "Enter a valid 10-digit mobile number"
+                            name.isBlank() -> error = context.getString(R.string.RegisterScreen_NameValidation)
+                            mobile.length != 10 -> error = context.getString(R.string.RegisterScreen_MobileLengthValidation)
                             else -> vm.register(name, mobile)
                         }
 
@@ -148,7 +151,7 @@ fun RegisterScreen(vm: AuthViewModel, onSuccess: () -> Unit) {
                         contentColor = MaterialTheme.colorScheme.onPrimary
                     )
                 ) {
-                    Text("Register")
+                    Text(text=getString(context,R.string.Buttons_Register))
                 }
             }
         }
