@@ -6,6 +6,11 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.view.WindowCompat
 
@@ -28,35 +33,32 @@ import com.example.todo.ui.theme.TodoTheme
 
 class MainActivity : ComponentActivity() {
 
-//    private val authVM: AuthViewModel by viewModels()
-//    private val taskVM: TaskViewModel by viewModels()
-
     private lateinit var authVM: AuthViewModel
     private lateinit var taskVM: TaskViewModel
 
 
-
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
-        //WindowCompat.setDecorFitsSystemWindows(window, false)
         super.onCreate(savedInstanceState)
-        val db = AppDatabase.get(this)
 
-        val authVM = AuthViewModel(db.userDao())
-        val taskVM = TaskViewModel(db.taskDao())
+
+        val db = AppDatabase.get(applicationContext)
+
+
+        authVM = AuthViewModel(db.userDao())
+        taskVM = TaskViewModel(db.taskDao())
+
         if (Build.VERSION.SDK_INT >= 33) {
             requestPermissions(
                 arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 101
             )
         }
 
-        // 🔔 First reminder immediately
+        // First reminder immediately
         WorkManager.getInstance(this).enqueue(
             OneTimeWorkRequestBuilder<ReminderWorker>().build()
         )
 
-        // 🔁 Hourly reminder
+        // Hourly reminder
         val hourly =
             PeriodicWorkRequestBuilder<ReminderWorker>(1, TimeUnit.HOURS).build()
 
@@ -67,9 +69,18 @@ class MainActivity : ComponentActivity() {
         )
 
         setContent {
-            TodoTheme{
+            TodoTheme {
 
                 val nav = rememberNavController()
+
+
+                var savedMobile by rememberSaveable { mutableStateOf<String?>(null)
+                }
+
+
+                LaunchedEffect(savedMobile) {
+                    savedMobile?.let { taskVM.setUser(it) }
+                }
 
                 NavHost(nav, startDestination = "login") {
 
@@ -77,38 +88,40 @@ class MainActivity : ComponentActivity() {
                         LoginScreen(
                             authVM,
                             onLogin = {
-                                authVM.user?.let { taskVM.setUser(it.mobile) }
+                                authVM.user?.let {
+                                    savedMobile = it.mobile
+                                    taskVM.setUser(it.mobile)
+                                }
                                 nav.navigate("main")
                             },
                             onRegister = { nav.navigate("register") }
                         )
-
-
                     }
 
                     composable("register") {
                         RegisterScreen(authVM) {
                             authVM.user?.let {
-                                taskVM.setUser(it.mobile)   // ✅ after register also
+                                savedMobile = it.mobile
+                                taskVM.setUser(it.mobile)
                             }
-
-                            nav.navigate("home")
+                            nav.navigate("main")
                         }
                     }
 
                     composable("main") {
                         MainScaffold(taskVM, authVM) {
+                            // logout
+                            savedMobile = null
+                            authVM.logout()
                             nav.navigate("login") {
                                 popUpTo("login") { inclusive = true }
                             }
                         }
-
                     }
                 }
             }
         }
     }
-
 }
 
 
