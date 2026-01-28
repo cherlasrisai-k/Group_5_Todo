@@ -18,6 +18,9 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.example.todo.data.AppDatabase
+import com.example.todo.navigation.AppNavGraph
+import com.example.todo.navigation.Routes
+import com.example.todo.session.SessionManager
 import com.example.todo.ui.LoginScreen
 import com.example.todo.ui.RegisterScreen
 import com.example.todo.ui.theme.TodoTheme
@@ -31,89 +34,35 @@ class MainActivity : ComponentActivity() {
     private lateinit var authVM: AuthViewModel
     private lateinit var taskVM: TaskViewModel
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-
         val db = AppDatabase.get(applicationContext)
-
-
-        authVM = AuthViewModel(db.userDao())
-        taskVM = TaskViewModel(db.taskDao())
-
-        if (Build.VERSION.SDK_INT >= 33) {
-            requestPermissions(
-                arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 101
-            )
-        }
-
-        // First reminder immediately
-        WorkManager.getInstance(this).enqueue(
-            OneTimeWorkRequestBuilder<ReminderWorker>().build()
-        )
-
-        // Hourly reminder
-        val hourly =
-            PeriodicWorkRequestBuilder<ReminderWorker>(1, TimeUnit.HOURS).build()
-
-        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
-            "hourly_reminder",
-            ExistingPeriodicWorkPolicy.UPDATE,
-            hourly
-        )
+        authVM = AuthViewModel(db.userDao(),applicationContext)
+        taskVM = TaskViewModel(db.taskDao(), applicationContext)
 
         setContent {
             TodoTheme {
+                val navController = rememberNavController()
 
-                val nav = rememberNavController()
-
-
-                var savedMobile by rememberSaveable { mutableStateOf<String?>(null)
-                }
-
-
-                LaunchedEffect(savedMobile) {
-                    savedMobile?.let { taskVM.setUser(it) }
-                }
-
-                NavHost(nav, startDestination = "login") {
-
-                    composable("login") {
-                        LoginScreen(
-                            authVM,
-                            onLogin = {
-                                authVM.user?.let {
-                                    savedMobile = it.mobile
-                                    taskVM.setUser(it.mobile)
-                                }
-                                nav.navigate("main")
-                            },
-                            onRegister = { nav.navigate("register") }
-                        )
-                    }
-
-                    composable("register") {
-                        RegisterScreen(authVM) {
-                            authVM.user?.let {
-                                savedMobile = it.mobile
-                                taskVM.setUser(it.mobile)
-                            }
-                            nav.navigate("main")
-                        }
-                    }
-
-                    composable("main") {
-                        MainScaffold(taskVM, authVM) {
-                            // logout
-                            savedMobile = null
-                            authVM.logout()
-                            nav.navigate("login") {
-                                popUpTo("login") { inclusive = true }
-                            }
+                LaunchedEffect(Unit) {
+                    val savedUser = SessionManager.getUser(applicationContext)
+                    if (savedUser != null) {
+                        authVM.autoLogin(savedUser)
+                        taskVM.setUser(savedUser)
+                        navController.navigate(Routes.MAIN.route) {
+                            popUpTo(0)
                         }
                     }
                 }
+
+
+
+                AppNavGraph(
+                    navController = navController,
+                    authVM = authVM,
+                    taskVM = taskVM
+                )
             }
         }
     }

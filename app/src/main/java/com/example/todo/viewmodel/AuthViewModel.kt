@@ -1,15 +1,25 @@
 package com.example.todo.viewmodel
 
+import android.content.Context
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.todo.States.LoginRegisterUIStates
 import com.example.todo.data.User
 import com.example.todo.data.UserDao
+import com.example.todo.session.SessionManager
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
- class AuthViewModel(private val dao: UserDao) : ViewModel() {
+ class AuthViewModel(private val dao: UserDao,private val context: Context) : ViewModel() {
+
+     private val _LoginRegister = MutableStateFlow(LoginRegisterUIStates())
+     val LoginRegister = _LoginRegister.asStateFlow()
 
      var user by mutableStateOf<User?>(null)
         private set
@@ -27,6 +37,8 @@ import kotlinx.coroutines.launch
         } else {
             user = result
             loginError = null
+            _LoginRegister.value = LoginRegisterUIStates()
+            SessionManager.saveUser(context, result.mobile)
         }
     }
 
@@ -41,6 +53,9 @@ import kotlinx.coroutines.launch
              // Fetch again after insert
              user = dao.login(mobile)
              //Log.d("REGISTER_DEBUG", "New user created = $user")
+             user?.let {
+                 SessionManager.saveUser(context, it.mobile)
+             }
 
 
          } else {
@@ -52,9 +67,10 @@ import kotlinx.coroutines.launch
      }
 
 
-     fun logout() {
-        user = null
-    }
+     fun logout() = viewModelScope.launch {
+         user = null
+         SessionManager.clear(context)
+     }
 
      fun validateAndLogin(mobile: String) {
          when {
@@ -78,7 +94,25 @@ import kotlinx.coroutines.launch
              }
          }
 
+     fun onMobileChange(value: String) {
+         _LoginRegister.value = _LoginRegister.value.copy(mobile = value)
      }
+
+     fun onNameChange(value: String) {
+         _LoginRegister.value = _LoginRegister.value.copy(name = value)
+     }
+
+     fun clearLoginState() {
+         _LoginRegister.value = LoginRegisterUIStates()
+         loginError = null
+     }
+
+     fun autoLogin(mobile: String) = viewModelScope.launch {
+         user = dao.login(mobile)
+     }
+
+
+ }
 
 
 
