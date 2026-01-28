@@ -1,6 +1,6 @@
-package com.example.todo.ui
+package com.example.todo.States
 
-data class HomeUiState(
+data class AddEditUiState(
     val topic: String = "",
     val heading: String = "",
     val dateTime: Long = System.currentTimeMillis(),

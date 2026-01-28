@@ -6,5 +6,6 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "users")
 data class User(
     @PrimaryKey val mobile: String,
-    val name: String
+    val name: String,
+    val isLoggedIn:Boolean=false
 )

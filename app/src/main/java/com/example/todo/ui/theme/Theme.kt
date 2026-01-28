@@ -31,10 +31,16 @@ private val LightColorScheme = lightColorScheme(
 @Composable
 fun TodoTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
+    // Set dynamicColor to FALSE to force your RubyRed theme
     dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
+        // Comment out or remove the dynamicColor block to force your colors
+        /* dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+            val context = LocalContext.current
+            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+        } */
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }

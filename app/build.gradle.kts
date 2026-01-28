@@ -40,8 +40,8 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
-
-    // ✅ Compose BOM (single place, no duplicates)
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
+    // Compose BOM (single place, no duplicates)
     implementation(platform("androidx.compose:compose-bom:2024.02.00"))
 
     // Compose UI + Material3 + Foundation

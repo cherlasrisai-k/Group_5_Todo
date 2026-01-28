@@ -33,7 +33,7 @@ fun BottomBar(nav: NavHostController) {
                 selected = selected,
                 onClick = {
                     nav.navigate(item.route) {
-                        popUpTo(BottomNavItem.Home.route)
+                        popUpTo("home")
                         launchSingleTop = true
                     }
                 },

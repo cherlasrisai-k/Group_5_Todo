@@ -60,6 +60,9 @@ fun HistoryScreen(vm: TaskViewModel) {
             items(tasks) { item ->
                 Card(
                     Modifier.padding(8.dp).fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surface
+                    ),
                     elevation = CardDefaults.cardElevation(8.dp)
                 ) {
                     Column(
