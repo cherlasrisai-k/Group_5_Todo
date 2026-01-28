@@ -16,20 +16,20 @@ data/
 
 navigation/
 
-        AppNavGraph.kt
-        BottomNavItem.kt
-        MainNavItem.kt
-        Routes.kt
+    AppNavGraph.kt
+    BottomNavItem.kt
+    MainNavItem.kt
+    Routes.kt
 session/
 
-        SessionManager.kt
+    SessionManager.kt
 
 States/
 
-        ActiveTasksUiState.kt
-        AddEditUiState.kt
-        HomeScreenStates.kt
-        LoginRegisterStates.kt
+    ActiveTasksUiState.kt
+    AddEditUiState.kt
+    HomeScreenStates.kt
+    LoginRegisterStates.kt
         
 viewmodel/
 
