@@ -40,7 +40,7 @@ class TaskViewModel(
 
     val todayTasks :StateFlow<List<Task>>  = currentUser.flatMapLatest { mobile ->
         if (mobile == null) flowOf(emptyList())
-        else dao.todayTasks(mobile, System.currentTimeMillis())
+        else dao.todayTasks(mobile)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     val completedTasks = currentUser.flatMapLatest { mobile ->

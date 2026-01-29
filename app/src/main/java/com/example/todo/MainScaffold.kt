@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -36,7 +37,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.todo.navigation.MainNavGraph
-import com.example.todo.ui.ActiveTasksScreen
 import com.example.todo.ui.BottomBar
 import com.example.todo.navigation.BottomNavItem
 import com.example.todo.navigation.Routes
@@ -56,6 +56,10 @@ fun MainScaffold(
     val bottomNavController = rememberNavController()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
+    val currentScreen= bottomNavController.currentBackStackEntryAsState().value?.destination?.route
+
+
+
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
@@ -71,7 +75,21 @@ fun MainScaffold(
                 ),
 
                 title = {
-                    Text("Welcome ${authVM.user?.name}")
+                    if(currentScreen== Routes.HOME.route) {
+                               Text(
+                                text = "Welcome ${authVM.user?.name}",
+                                modifier = Modifier.padding( vertical = 8.dp),
+                                style = MaterialTheme.typography.titleMedium,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                    }
+                    else{
+                        IconButton(onClick = {
+                            bottomNavController.popBackStack()
+                        }, modifier = Modifier.size(30.dp)) {
+                            Icon(Icons.Default.ArrowBack, contentDescription = "NavigateBack")
+                        }
+                    }
                 },
                 actions = {
                     IconButton(onClick = {

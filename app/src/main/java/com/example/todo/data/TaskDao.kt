@@ -30,10 +30,10 @@ interface TaskDao {
     SELECT * FROM tasks
     WHERE userMobile = :mobile
     AND isCompleted = 0
-    AND dateTime >= :now
+
     ORDER BY dateTime ASC
 """)
-    fun todayTasks(mobile: String, now: Long): Flow<List<Task>>
+    fun todayTasks(mobile: String): Flow<List<Task>>
 
     @Query("SELECT * FROM tasks\n" +
             "        WHERE userMobile = :mobile\n" +
