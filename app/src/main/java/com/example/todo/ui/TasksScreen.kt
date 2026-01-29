@@ -55,7 +55,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
-import com.example.todo.ui.theme.SuccessGreen
+
 import kotlinx.coroutines.launch
 
 
@@ -94,7 +94,7 @@ fun TasksScreen(vm: TaskViewModel) {
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.surface
                     ),
-                    elevation = CardDefaults.cardElevation(8.dp)
+                    elevation = CardDefaults.cardElevation(20.dp)
                 ) {
                     Row(
                         Modifier
@@ -125,7 +125,7 @@ fun TasksScreen(vm: TaskViewModel) {
                                     Icon(
                                         Icons.Default.Check,
                                         contentDescription = "Complete",
-                                        tint = SuccessGreen
+                                        tint = Color.Green
                                     )
                                 }
                             }

@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -68,9 +69,9 @@ fun LoginScreen(
 
     // Dynamically calculate font size
     val fontSize = when {
-        screenWidth > 400 -> 24.sp   // large screen/tablet
-        screenWidth > 320 -> 20.sp   // normal phone
-        else -> 16.sp                 // small phone
+        screenWidth > 400 -> 20.sp   // large screen/tablet
+        screenWidth > 320 -> 16.sp   // normal phone
+        else -> 12.sp                 // small phone
     }
 
 
@@ -93,23 +94,26 @@ fun LoginScreen(
         }
 
 
-        Column(
+        Box(
             modifier = Modifier
                 .padding(16.dp)
                 .weight(2f),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+                contentAlignment = Alignment.Center
         ) {
-            Text(
-                text = stringResource(R.string.LoginScreen_Title),
-                style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold
-            )
-            Text(
-                text = stringResource(R.string.LoginScreen_Heading),
-                modifier = Modifier.fillMaxWidth(),
-                style = MaterialTheme.typography.headlineSmall.copy(fontSize = fontSize),
-                overflow = TextOverflow.Ellipsis,
-            )
+            Column(modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(
+                    text = stringResource(R.string.LoginScreen_Title),
+                    style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.padding(8.dp))
+                Text(
+                    text = stringResource(R.string.LoginScreen_Heading),
+                    style = MaterialTheme.typography.headlineSmall.copy(fontSize = fontSize),
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
         }
 
         Box(contentAlignment = Alignment.Center,
