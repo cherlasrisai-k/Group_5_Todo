@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import com.example.todo.States.HomeUiState
-import com.example.todo.States.ActiveTasksUiState
+import com.example.todo.States.TasksUiState
 import com.example.todo.States.AddEditUiState
 import com.example.todo.worker.ReminderWorker
 import kotlinx.coroutines.flow.*
@@ -106,7 +106,7 @@ class TaskViewModel(
     private val _addEditState = MutableStateFlow(AddEditUiState())
     val addEditState = _addEditState.asStateFlow()
 
-    private val _activeUiState = MutableStateFlow(ActiveTasksUiState())
+    private val _activeUiState = MutableStateFlow(TasksUiState())
     val activeUiState = _activeUiState.asStateFlow()
 
     fun startEdit(task: Task) {
@@ -116,7 +116,7 @@ class TaskViewModel(
             heading = task.heading,
             dateTime = task.dateTime
         )
-        _activeUiState.value = ActiveTasksUiState(showDialog = true, editingTask=task)
+        _activeUiState.value = TasksUiState(showDialog = true, editingTask=task)
     }
 
     fun onEditTopicChange(value: String) {

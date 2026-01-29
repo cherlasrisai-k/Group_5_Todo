@@ -19,6 +19,8 @@ import android.app.DatePickerDialog
 import androidx.compose.foundation.background
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.ui.res.stringResource
+import com.example.todo.R
 
 @Composable
 fun HomeScreen(vm: TaskViewModel) {
@@ -48,7 +50,7 @@ Column(
     horizontalAlignment = Alignment.CenterHorizontally
 ) {
 
-    Text("To-Do Reminder", style = MaterialTheme.typography.headlineMedium)
+    Text(stringResource(R.string.HomeScreen_Title), style = MaterialTheme.typography.headlineMedium)
 
     Spacer(modifier = Modifier.height(16.dp))
 
@@ -70,13 +72,13 @@ Column(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            Text("Create New Task", style = MaterialTheme.typography.headlineSmall)
+            Text(stringResource(R.string.HomeScreen_CardTitle), style = MaterialTheme.typography.headlineSmall)
             Spacer(modifier = Modifier.height(12.dp))
 
             OutlinedTextField(
                 value = state.topic,
                 onValueChange = vm::onTopicChange,
-                label = { Text("Topic") },
+                label = { Text(stringResource(R.string.HomeScreen_TextFields_Topic)) },
                 isError = state.topicError.isNotEmpty(),
                 modifier = Modifier.fillMaxWidth()
             )
@@ -90,7 +92,7 @@ Column(
             OutlinedTextField(
                 value = state.heading,
                 onValueChange = vm::onHeadingChange,
-                label = { Text("Heading") },
+                label = { Text(stringResource(R.string.HomeScreen_TextFields_Heading)) },
                 isError = state.headingError.isNotEmpty(),
                 modifier = Modifier.fillMaxWidth()
             )
@@ -159,7 +161,7 @@ Column(
                     modifier = Modifier.padding(end = 8.dp)
                 )
 
-                Text("Pick Date & Time")
+                Text(stringResource(R.string.Buttons_SelectDate))
             }
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -173,7 +175,7 @@ Column(
 
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Save Task")
+                Text(stringResource(R.string.HomeScreen_Buttons_SaveTask))
             }
         }
     }

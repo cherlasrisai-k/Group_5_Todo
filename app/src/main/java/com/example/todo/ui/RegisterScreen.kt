@@ -34,10 +34,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.todo.R
 import com.example.todo.navigation.Routes
 import com.example.todo.viewmodel.AuthViewModel
 
@@ -78,8 +80,8 @@ fun RegisterScreen(vm: AuthViewModel, navController: NavController) {
         verticalArrangement = Arrangement.Center
     ) {
 
-        Text("Get Started", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
-        Text("Manage your tasks effortlessly",style=MaterialTheme.typography.headlineSmall ,fontSize=dynamicFontSize)
+        Text(stringResource(R.string.registerScreen_Title), style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
+        Text(stringResource(R.string.registerScreen_Heading),style=MaterialTheme.typography.headlineSmall ,fontSize=dynamicFontSize)
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -98,7 +100,7 @@ fun RegisterScreen(vm: AuthViewModel, navController: NavController) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                Text("Create Account", style = MaterialTheme.typography.headlineSmall)
+                Text(stringResource(R.string.registerScreen_CardTitle), style = MaterialTheme.typography.headlineSmall)
 
                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -109,7 +111,7 @@ fun RegisterScreen(vm: AuthViewModel, navController: NavController) {
                         vm.onNameChange(it)
                     },
                     leadingIcon = { Icon(Icons.Default.Person, contentDescription = "Name") },
-                    label = { Text("Name") },
+                    label = { Text(stringResource(R.string.TextFields_Name)) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     colors= OutlinedTextFieldDefaults.colors(
@@ -127,7 +129,7 @@ fun RegisterScreen(vm: AuthViewModel, navController: NavController) {
                         }
                     },
                     leadingIcon = { Icon(Icons.Default.Phone, contentDescription = "Mobile") },
-                    label = { Text("Mobile Number") },
+                    label = { Text(stringResource(R.string.TextFields_MobileNumber)) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     colors= OutlinedTextFieldDefaults.colors(
@@ -156,7 +158,7 @@ fun RegisterScreen(vm: AuthViewModel, navController: NavController) {
                         contentColor = MaterialTheme.colorScheme.onPrimary
                     )
                 ) {
-                    Text("Register")
+                    Text(stringResource(R.string.Buttons_Register))
                 }
             }
         }

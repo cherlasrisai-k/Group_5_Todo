@@ -8,8 +8,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.todo.R
 import com.example.todo.viewmodel.TaskViewModel
 import java.text.DateFormat
 import java.util.*
@@ -25,7 +27,7 @@ fun AddEditDialog(vm: TaskViewModel) {
         confirmButton = {},
         title = {
             Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                Text("Task", fontWeight = FontWeight.Bold)
+                Text(stringResource(R.string.EditDialog_Title), fontWeight = FontWeight.Bold)
             }
         },
         text = {
@@ -38,7 +40,7 @@ fun AddEditDialog(vm: TaskViewModel) {
                 OutlinedTextField(
                     value = state.topic,
                     onValueChange = vm::onEditTopicChange,
-                    label = { Text("Topic") },
+                    label = { Text(stringResource(R.string.EditDialog_Topic)) },
                     isError = state.topicError.isNotEmpty()
                 )
                 if (state.topicError.isNotEmpty())
@@ -47,7 +49,7 @@ fun AddEditDialog(vm: TaskViewModel) {
                 OutlinedTextField(
                     value = state.heading,
                     onValueChange = vm::onEditHeadingChange,
-                    label = { Text("Heading") },
+                    label = { Text(stringResource(R.string.EditDialog_Heading)) },
                     isError = state.headingError.isNotEmpty()
                 )
                 if (state.headingError.isNotEmpty())
@@ -89,13 +91,13 @@ fun AddEditDialog(vm: TaskViewModel) {
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Pick Date & Time")
+                    Text(stringResource(R.string.Buttons_SelectDate))
                 }
 
 
                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    TextButton(onClick = vm::updateEditedTask) { Text("Save") }
-                    TextButton(onClick = vm::onDialogDismiss) { Text("Cancel") }
+                    TextButton(onClick = vm::updateEditedTask) { Text(stringResource(R.string.Buttons_Save)) }
+                    TextButton(onClick = vm::onDialogDismiss) { Text(stringResource(R.string.Buttons_Cancel)) }
                 }
             }
         }
