@@ -15,7 +15,8 @@ import com.example.todo.viewmodel.TaskViewModel
 fun AppNavGraph(
     navController: NavHostController,
     authVM: AuthViewModel,
-    taskVM: TaskViewModel
+    taskVM: TaskViewModel,
+    startDestination: String
 ) {
     var savedMobile by rememberSaveable { mutableStateOf<String?>(null) }
 
@@ -25,7 +26,7 @@ fun AppNavGraph(
 
     NavHost(
         navController = navController,
-        startDestination = Routes.LOGIN.route
+        startDestination = startDestination
     ) {
 
         composable(Routes.LOGIN.route) {
