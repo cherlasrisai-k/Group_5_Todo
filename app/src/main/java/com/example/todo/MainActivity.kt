@@ -37,7 +37,8 @@ class MainActivity : ComponentActivity() {
         val db = AppDatabase.get(this)
 
         val authVM = AuthViewModel(db.userDao())
-        val taskVM = TaskViewModel(db.taskDao())
+        //val taskVM = TaskViewModel(db.taskDao())
+        val taskVM = TaskViewModel(db.taskDao(), this)
         if (Build.VERSION.SDK_INT >= 33) {
             requestPermissions(
                 arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 101
@@ -50,14 +51,14 @@ class MainActivity : ComponentActivity() {
         )
 
         // 🔁 Hourly reminder
-        val hourly =
-            PeriodicWorkRequestBuilder<ReminderWorker>(1, TimeUnit.HOURS).build()
-
-        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
-            "hourly_reminder",
-            ExistingPeriodicWorkPolicy.UPDATE,
-            hourly
-        )
+//        val hourly =
+//            PeriodicWorkRequestBuilder<ReminderWorker>(1, TimeUnit.HOURS).build()
+//
+//        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+//            "hourly_reminder",
+//            ExistingPeriodicWorkPolicy.UPDATE,
+//            hourly
+//        )
 
         setContent {
 
