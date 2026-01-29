@@ -12,6 +12,6 @@ sealed class BottomNavItem(
     val icon: ImageVector
 ) {
     object Home : BottomNavItem(Routes.HOME, "Home", Icons.Default.Home)
-    object Active : BottomNavItem(Routes.ACTIVE, "Active", Icons.Default.List)
+    object Active : BottomNavItem(Routes.ACTIVE, "Tasks", Icons.Default.List)
     object History : BottomNavItem(Routes.HISTORY, "History", Icons.Default.CheckCircle)
 }
