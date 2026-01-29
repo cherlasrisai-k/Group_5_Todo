@@ -10,25 +10,23 @@ import androidx.core.app.NotificationCompat
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.example.todo.R
-import com.example.todo.data.AppDatabase
-import kotlinx.coroutines.runBlocking
 
 class ReminderWorker(ctx: Context, params: WorkerParameters) : Worker(ctx, params) {
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun doWork(): Result {
 
-        val count = runBlocking {
-            AppDatabase.get(applicationContext)
-                .taskDao().countTodayTasks()
-        }
+        // Get task details passed from ViewModel
+        val topic = inputData.getString("topic") ?: return Result.failure()
+        val heading = inputData.getString("heading") ?: ""
 
-        if (count > 0) showNotification(count)
+        showNotification(topic, heading)
+
         return Result.success()
     }
 
     @SuppressLint("ServiceCast")
-    private fun showNotification(count: Int) {
+    private fun showNotification(topic:String,heading:String) {
 
         val channelId = "todo_channel"
         val manager =
@@ -46,8 +44,8 @@ class ReminderWorker(ctx: Context, params: WorkerParameters) : Worker(ctx, param
 
         val notification = NotificationCompat.Builder(applicationContext, channelId)
             .setSmallIcon(R.drawable.ic_launcher_foreground)
-            .setContentTitle("Today's Tasks Reminder")
-            .setContentText("You have $count active task(s) today.")
+            .setContentTitle("Hurry Up! Task Reminder: $topic")
+            .setContentText(heading)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setAutoCancel(true)
             .build()

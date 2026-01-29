@@ -40,8 +40,8 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
-
-    // ✅ Compose BOM (single place, no duplicates)
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
+    // Compose BOM (single place, no duplicates)
     implementation(platform("androidx.compose:compose-bom:2024.02.00"))
 
     // Compose UI + Material3 + Foundation
@@ -53,7 +53,8 @@ dependencies {
     implementation(libs.androidx.compose.animation)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.ui.graphics)
-    implementation(libs.androidx.compose.foundation.layout) // for previews
+    implementation(libs.androidx.compose.foundation.layout)
+    implementation(libs.androidx.compose.runtime.saveable) // for previews
     debugImplementation("androidx.compose.ui:ui-tooling")   // debug tooling
 
     // Icons

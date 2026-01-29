@@ -9,7 +9,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -17,20 +19,25 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.todo.R
+import com.example.todo.navigation.Routes
 import com.example.todo.viewmodel.AuthViewModel
 
 
@@ -38,15 +45,22 @@ import com.example.todo.viewmodel.AuthViewModel
 @Composable
 fun LoginScreen(
     vm: AuthViewModel,
-    onLogin: () -> Unit,
-    onRegister: () -> Unit
+    navController: NavController
 ) {
 
-    var mobile by remember { mutableStateOf("") }
-    var error by remember { mutableStateOf("") }
+    val state by vm.LoginRegister.collectAsState()
 
+    val error = vm.loginError
+
+
+    val scrollState = rememberScrollState()
     LaunchedEffect(vm.user) {
-        if (vm.user != null) onLogin()
+        if (vm.user != null) {
+            navController.navigate(Routes.MAIN.route) {
+                popUpTo(Routes.LOGIN.route) { inclusive = true }
+            }
+
+        }
     }
 
     val configuration = LocalConfiguration.current
@@ -61,16 +75,20 @@ fun LoginScreen(
 
 
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        Box(
+    Column(modifier = Modifier
+        .fillMaxSize()
+        .verticalScroll(scrollState)) {
+        Column (
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(4f),
-            contentAlignment = Alignment.TopStart
+            verticalArrangement = Arrangement.Top
         ) {
             Image(
+                modifier  =  Modifier.fillMaxWidth(),
                 painter = painterResource(R.drawable.updatedtodo),
-                contentDescription = "TODOImage"
+                contentDescription = "TODOImage",
+                        contentScale = androidx.compose.ui.layout.ContentScale.FillWidth
             )
         }
 
@@ -83,11 +101,11 @@ fun LoginScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "Welcome Back \uD83D\uDC4B",
+                text = stringResource(R.string.LoginScreen_Title),
                 style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold
             )
             Text(
-                text = "Let’s plan something great today",
+                text = stringResource(R.string.LoginScreen_Heading),
                 modifier = Modifier.fillMaxWidth(),
                 style = MaterialTheme.typography.headlineSmall.copy(fontSize = fontSize),
                 overflow = TextOverflow.Ellipsis,
@@ -104,16 +122,16 @@ fun LoginScreen(
             ) {
 
 
-                Text("Log in or sign up", style = MaterialTheme.typography.labelMedium)
+                Text(stringResource(R.string.LoginScreen_LoginText), style = MaterialTheme.typography.labelMedium)
 
                 OutlinedTextField(
-                    value = mobile,
+                    value = state.mobile,
                     onValueChange = {
                         if (it.length <= 10 && it.all { ch -> ch.isDigit() }) {
-                            mobile = it
+                            vm.onMobileChange(it)
                         }
                     },
-                    label = { Text("Mobile Number") },
+                    label = { Text(stringResource(R.string.TextFields_MobileNumber)) },
                     leadingIcon = { Text("+91 ") },
                     keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                     colors= OutlinedTextFieldDefaults.colors(
@@ -128,21 +146,20 @@ fun LoginScreen(
 
 
                 TextButton( onClick = {
-                    error = ""
-                    when {
-                        mobile.isBlank() -> error = "Enter mobile number"
-                        mobile.length != 10 -> error = "Enter valid 10 digit number"
-                        else -> vm.login("$mobile")
-                    }
+                        vm.validateAndLogin(state.mobile)
                 }) {
-                    Text("Login")
+                    Text(stringResource(R.string.Buttons_Login))
                 }
 
-                if (error.isNotEmpty())
-                    Text(error, color = MaterialTheme.colorScheme.error)
+                if (!vm.loginError.isNullOrEmpty())
+                    Text(vm.loginError!!, color = MaterialTheme.colorScheme.error)
 
-                TextButton(onClick = onRegister) {
-                    Text("New user? Register")
+                TextButton(onClick = {
+                    vm.clearLoginState()
+                    navController.navigate(Routes.REGISTER.route)
+
+                }) {
+                    Text(stringResource(R.string.LoginScreen_Registration))
                 }
             }
         }
@@ -153,7 +170,7 @@ fun LoginScreen(
            .weight(1f),
            contentAlignment = Alignment.BottomCenter){
            Row() {
-               Text(text = " All rights Reserved")
+               Text(text = stringResource(R.string.LoginScreen_Terms))
            }
        }
 

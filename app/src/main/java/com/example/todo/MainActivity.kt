@@ -4,10 +4,11 @@ import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.core.view.WindowCompat
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -17,6 +18,9 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.example.todo.data.AppDatabase
+import com.example.todo.navigation.AppNavGraph
+import com.example.todo.navigation.Routes
+import com.example.todo.session.SessionManager
 import com.example.todo.ui.LoginScreen
 import com.example.todo.ui.RegisterScreen
 import com.example.todo.ui.theme.TodoTheme
@@ -24,92 +28,59 @@ import com.example.todo.viewmodel.AuthViewModel
 import com.example.todo.viewmodel.TaskViewModel
 import com.example.todo.worker.ReminderWorker
 import java.util.concurrent.TimeUnit
-import com.example.todo.ui.theme.TodoTheme
 
 class MainActivity : ComponentActivity() {
-
-//    private val authVM: AuthViewModel by viewModels()
-//    private val taskVM: TaskViewModel by viewModels()
 
     private lateinit var authVM: AuthViewModel
     private lateinit var taskVM: TaskViewModel
 
-
-
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
-        //WindowCompat.setDecorFitsSystemWindows(window, false)
         super.onCreate(savedInstanceState)
-        val db = AppDatabase.get(this)
 
-        val authVM = AuthViewModel(db.userDao())
-        val taskVM = TaskViewModel(db.taskDao())
-        if (Build.VERSION.SDK_INT >= 33) {
-            requestPermissions(
-                arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 101
-            )
-        }
-
-        // 🔔 First reminder immediately
-        WorkManager.getInstance(this).enqueue(
-            OneTimeWorkRequestBuilder<ReminderWorker>().build()
-        )
-
-        // 🔁 Hourly reminder
-        val hourly =
-            PeriodicWorkRequestBuilder<ReminderWorker>(1, TimeUnit.HOURS).build()
-
-        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
-            "hourly_reminder",
-            ExistingPeriodicWorkPolicy.UPDATE,
-            hourly
-        )
+        val db = AppDatabase.get(applicationContext)
+        authVM = AuthViewModel(db.userDao(),applicationContext)
+        taskVM = TaskViewModel(db.taskDao(), applicationContext)
 
         setContent {
-            TodoTheme{
+            TodoTheme {
 
-                val nav = rememberNavController()
+                var startRoute by rememberSaveable { mutableStateOf<String?>(null) }
 
-                NavHost(nav, startDestination = "login") {
+                LaunchedEffect(Unit) {
+                    try {
+                        val savedUser = SessionManager.getUser(applicationContext)
 
-                    composable("login") {
-                        LoginScreen(
-                            authVM,
-                            onLogin = {
-                                authVM.user?.let { taskVM.setUser(it.mobile) }
-                                nav.navigate("main")
-                            },
-                            onRegister = { nav.navigate("register") }
-                        )
-
-
-                    }
-
-                    composable("register") {
-                        RegisterScreen(authVM) {
-                            authVM.user?.let {
-                                taskVM.setUser(it.mobile)   // ✅ after register also
-                            }
-
-                            nav.navigate("home")
+                        startRoute = if (savedUser != null) {
+                            authVM.autoLogin(savedUser)
+                            taskVM.setUser(savedUser)
+                            Routes.MAIN.route
+                        } else {
+                            Routes.LOGIN.route
                         }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        startRoute = Routes.LOGIN.route
                     }
+                }
 
-                    composable("main") {
-                        MainScaffold(taskVM, authVM) {
-                            nav.navigate("login") {
-                                popUpTo("login") { inclusive = true }
-                            }
-                        }
+                if (startRoute == null) {
+                    // Optional: splash / loader (or keep empty)
+                } else {
+                    val navController = rememberNavController()
 
-                    }
+                    AppNavGraph(
+                        navController = navController,
+                        authVM = authVM,
+                        taskVM = taskVM,
+                        startDestination = startRoute!!
+                    )
                 }
             }
         }
-    }
 
+            }
 }
+
 
 
 

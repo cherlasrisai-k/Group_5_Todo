@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Person2
@@ -23,32 +25,44 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.todo.R
+import com.example.todo.navigation.Routes
 import com.example.todo.viewmodel.AuthViewModel
 
 @Composable
-fun RegisterScreen(vm: AuthViewModel, onSuccess: () -> Unit) {
-    var name by remember { mutableStateOf("") }
-    var mobile by remember { mutableStateOf("") }
-    var error by remember { mutableStateOf("") }
+fun RegisterScreen(vm: AuthViewModel, navController: NavController) {
+
+
+    val state by vm.LoginRegister.collectAsState()
+
+    val scrollState = rememberScrollState()
 
     LaunchedEffect(vm.user) {
-        if (vm.user != null) onSuccess()
+        if (vm.user != null) {
+            navController.navigate(Routes.MAIN.route) {
+                popUpTo(Routes.REGISTER.route) { inclusive = true }
+            }
+
+        }
     }
 
-    var configurations=LocalConfiguration.current
+    val configurations=LocalConfiguration.current
 
-    var screenWidth=configurations.screenWidthDp
+    val screenWidth=configurations.screenWidthDp
 
     val fontSize = when {
         screenWidth > 400 -> 24.sp
@@ -60,13 +74,14 @@ fun RegisterScreen(vm: AuthViewModel, onSuccess: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .verticalScroll(scrollState)
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
 
-        Text("Get Started", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
-        Text("Manage your tasks effortlessly",style=MaterialTheme.typography.headlineSmall ,fontSize=dynamicFontSize)
+        Text(stringResource(R.string.registerScreen_Title), style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
+        Text(stringResource(R.string.registerScreen_Heading),style=MaterialTheme.typography.headlineSmall ,fontSize=dynamicFontSize)
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -85,19 +100,18 @@ fun RegisterScreen(vm: AuthViewModel, onSuccess: () -> Unit) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                Text("Create Account", style = MaterialTheme.typography.headlineSmall)
+                Text(stringResource(R.string.registerScreen_CardTitle), style = MaterialTheme.typography.headlineSmall)
 
                 Spacer(modifier = Modifier.height(16.dp))
 
 
                 OutlinedTextField(
-                    value = name,
+                    value = state.name,
                     onValueChange = {
-                        name = it
-                        error = "" // Clear error when typing
+                        vm.onNameChange(it)
                     },
                     leadingIcon = { Icon(Icons.Default.Person, contentDescription = "Name") },
-                    label = { Text("Name") },
+                    label = { Text(stringResource(R.string.TextFields_Name)) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     colors= OutlinedTextFieldDefaults.colors(
@@ -108,13 +122,14 @@ fun RegisterScreen(vm: AuthViewModel, onSuccess: () -> Unit) {
                 Spacer(modifier = Modifier.height(8.dp))
 
                 OutlinedTextField(
-                    value = mobile,
+                    value = state.mobile,
                     onValueChange = {
-                        mobile = it
-                        error = ""
+                        if (it.length <= 10 && it.all { ch -> ch.isDigit() }) {
+                            vm.onMobileChange(it)
+                        }
                     },
                     leadingIcon = { Icon(Icons.Default.Phone, contentDescription = "Mobile") },
-                    label = { Text("Mobile Number") },
+                    label = { Text(stringResource(R.string.TextFields_MobileNumber)) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     colors= OutlinedTextFieldDefaults.colors(
@@ -124,9 +139,9 @@ fun RegisterScreen(vm: AuthViewModel, onSuccess: () -> Unit) {
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                if (error.isNotEmpty()) {
+                if (!vm.RegisterError.isNullOrEmpty()) {
                     Text(
-                        text = error,
+                        text = vm.RegisterError!!,
                         color = MaterialTheme.colorScheme.error,
                         style = MaterialTheme.typography.bodySmall,
                         modifier = Modifier.padding(bottom = 8.dp)
@@ -135,12 +150,7 @@ fun RegisterScreen(vm: AuthViewModel, onSuccess: () -> Unit) {
 
                 Button(
                     onClick = {
-                        when {
-                            name.isBlank() -> error = "Name cannot be empty"
-                            mobile.length != 10 -> error = "Enter a valid 10-digit mobile number"
-                            else -> vm.register(name, mobile)
-                        }
-
+                        vm.validateAndRegister(state.name,state.mobile)
                     },
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(
@@ -148,7 +158,7 @@ fun RegisterScreen(vm: AuthViewModel, onSuccess: () -> Unit) {
                         contentColor = MaterialTheme.colorScheme.onPrimary
                     )
                 ) {
-                    Text("Register")
+                    Text(stringResource(R.string.Buttons_Register))
                 }
             }
         }
