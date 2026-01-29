@@ -19,6 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,7 +34,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.todo.R
+import com.example.todo.navigation.Routes
 import com.example.todo.viewmodel.AuthViewModel
 
 
@@ -41,17 +44,22 @@ import com.example.todo.viewmodel.AuthViewModel
 @Composable
 fun LoginScreen(
     vm: AuthViewModel,
-    onLogin: () -> Unit,
-    onRegister: () -> Unit
+    navController: NavController
 ) {
 
-    var mobile by rememberSaveable  { mutableStateOf("") }
+    val state by vm.LoginRegister.collectAsState()
+
     val error = vm.loginError
 
 
     val scrollState = rememberScrollState()
     LaunchedEffect(vm.user) {
-        if (vm.user != null) onLogin()
+        if (vm.user != null) {
+            navController.navigate(Routes.MAIN.route) {
+                popUpTo(Routes.LOGIN.route) { inclusive = true }
+            }
+
+        }
     }
 
     val configuration = LocalConfiguration.current
@@ -66,7 +74,9 @@ fun LoginScreen(
 
 
 
-    Column(modifier = Modifier.fillMaxSize().verticalScroll(scrollState)) {
+    Column(modifier = Modifier
+        .fillMaxSize()
+        .verticalScroll(scrollState)) {
         Column (
             modifier = Modifier
                 .fillMaxWidth()
@@ -114,10 +124,10 @@ fun LoginScreen(
                 Text("Log in or sign up", style = MaterialTheme.typography.labelMedium)
 
                 OutlinedTextField(
-                    value = mobile,
+                    value = state.mobile,
                     onValueChange = {
                         if (it.length <= 10 && it.all { ch -> ch.isDigit() }) {
-                            mobile = it
+                            vm.onMobileChange(it)
                         }
                     },
                     label = { Text("Mobile Number") },
@@ -135,7 +145,7 @@ fun LoginScreen(
 
 
                 TextButton( onClick = {
-                        vm.validateAndLogin(mobile)
+                        vm.validateAndLogin(state.mobile)
                 }) {
                     Text("Login")
                 }
@@ -143,7 +153,11 @@ fun LoginScreen(
                 if (!vm.loginError.isNullOrEmpty())
                     Text(vm.loginError!!, color = MaterialTheme.colorScheme.error)
 
-                TextButton(onClick = onRegister) {
+                TextButton(onClick = {
+                    vm.clearLoginState()
+                    navController.navigate(Routes.REGISTER.route)
+
+                }) {
                     Text("New user? Register")
                 }
             }

@@ -2,10 +2,4 @@
 <resources>
 
     <style name="Theme.TODO" parent="android:Theme.Material.Light.NoActionBar" />
-
-    <style name="Theme.TODO.Splash" parent="android:Theme.Material.Light.NoActionBar">
-        <item name="android:windowBackground">@color/z_red</item>
-    </style>
-
 </resources>
-

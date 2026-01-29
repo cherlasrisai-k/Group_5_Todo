@@ -25,6 +25,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,15 +38,24 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.todo.navigation.Routes
 import com.example.todo.viewmodel.AuthViewModel
 
 @Composable
-fun RegisterScreen(vm: AuthViewModel, onSuccess: () -> Unit) {
-    var name by rememberSaveable  { mutableStateOf("") }
-    var mobile by rememberSaveable  { mutableStateOf("") }
+fun RegisterScreen(vm: AuthViewModel, navController: NavController) {
+
+
+    val state by vm.LoginRegister.collectAsState()
+
     val scrollState = rememberScrollState()
+
     LaunchedEffect(vm.user) {
-        if (vm.user != null) onSuccess()
+        if (vm.user != null) {
+            navController.navigate(Routes.MAIN.route) {
+                popUpTo(Routes.REGISTER.route) { inclusive = true }
+            }
+
+        }
     }
 
     val configurations=LocalConfiguration.current
@@ -94,9 +104,9 @@ fun RegisterScreen(vm: AuthViewModel, onSuccess: () -> Unit) {
 
 
                 OutlinedTextField(
-                    value = name,
+                    value = state.name,
                     onValueChange = {
-                        name = it
+                        vm.onNameChange(it)
                     },
                     leadingIcon = { Icon(Icons.Default.Person, contentDescription = "Name") },
                     label = { Text("Name") },
@@ -110,10 +120,10 @@ fun RegisterScreen(vm: AuthViewModel, onSuccess: () -> Unit) {
                 Spacer(modifier = Modifier.height(8.dp))
 
                 OutlinedTextField(
-                    value = mobile,
+                    value = state.mobile,
                     onValueChange = {
                         if (it.length <= 10 && it.all { ch -> ch.isDigit() }) {
-                            mobile = it
+                            vm.onMobileChange(it)
                         }
                     },
                     leadingIcon = { Icon(Icons.Default.Phone, contentDescription = "Mobile") },
@@ -138,7 +148,7 @@ fun RegisterScreen(vm: AuthViewModel, onSuccess: () -> Unit) {
 
                 Button(
                     onClick = {
-                        vm.validateAndRegister(name,mobile)
+                        vm.validateAndRegister(state.name,state.mobile)
                     },
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(
