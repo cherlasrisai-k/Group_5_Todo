@@ -80,7 +80,7 @@ fun MainScaffold(
                                 text = "Welcome ${authVM.user?.name}",
                                 modifier = Modifier.padding( vertical = 8.dp),
                                 style = MaterialTheme.typography.titleMedium,
-                                color = MaterialTheme.colorScheme.onSurface
+                                color = MaterialTheme.colorScheme.onPrimary
                             )
                     }
                     else{

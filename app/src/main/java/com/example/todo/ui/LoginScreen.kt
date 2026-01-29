@@ -29,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
@@ -100,11 +101,11 @@ fun LoginScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "Welcome Back \uD83D\uDC4B",
+                text = stringResource(R.string.LoginScreen_Title),
                 style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold
             )
             Text(
-                text = " Let's plan something great today",
+                text = stringResource(R.string.LoginScreen_Heading),
                 modifier = Modifier.fillMaxWidth(),
                 style = MaterialTheme.typography.headlineSmall.copy(fontSize = fontSize),
                 overflow = TextOverflow.Ellipsis,
@@ -121,7 +122,7 @@ fun LoginScreen(
             ) {
 
 
-                Text("Log in or sign up", style = MaterialTheme.typography.labelMedium)
+                Text(stringResource(R.string.LoginScreen_LoginText), style = MaterialTheme.typography.labelMedium)
 
                 OutlinedTextField(
                     value = state.mobile,
@@ -130,7 +131,7 @@ fun LoginScreen(
                             vm.onMobileChange(it)
                         }
                     },
-                    label = { Text("Mobile Number") },
+                    label = { Text(stringResource(R.string.TextFields_MobileNumber)) },
                     leadingIcon = { Text("+91 ") },
                     keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                     colors= OutlinedTextFieldDefaults.colors(
@@ -147,7 +148,7 @@ fun LoginScreen(
                 TextButton( onClick = {
                         vm.validateAndLogin(state.mobile)
                 }) {
-                    Text("Login")
+                    Text(stringResource(R.string.Buttons_Login))
                 }
 
                 if (!vm.loginError.isNullOrEmpty())
@@ -158,7 +159,7 @@ fun LoginScreen(
                     navController.navigate(Routes.REGISTER.route)
 
                 }) {
-                    Text("New user? Register")
+                    Text(stringResource(R.string.LoginScreen_Registration))
                 }
             }
         }
@@ -169,7 +170,7 @@ fun LoginScreen(
            .weight(1f),
            contentAlignment = Alignment.BottomCenter){
            Row() {
-               Text(text = " All rights Reserved")
+               Text(text = stringResource(R.string.LoginScreen_Terms))
            }
        }
 
