@@ -43,30 +43,44 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             TodoTheme {
-                val navController = rememberNavController()
+
+                var startRoute by rememberSaveable { mutableStateOf<String?>(null) }
 
                 LaunchedEffect(Unit) {
-                    val savedUser = SessionManager.getUser(applicationContext)
-                    if (savedUser != null) {
-                        authVM.autoLogin(savedUser)
-                        taskVM.setUser(savedUser)
-                        navController.navigate(Routes.MAIN.route) {
-                            popUpTo(0)
+                    try {
+                        val savedUser = SessionManager.getUser(applicationContext)
+
+                        startRoute = if (savedUser != null) {
+                            authVM.autoLogin(savedUser)
+                            taskVM.setUser(savedUser)
+                            Routes.MAIN.route
+                        } else {
+                            Routes.LOGIN.route
                         }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        startRoute = Routes.LOGIN.route
                     }
                 }
 
+                if (startRoute == null) {
+                    // Optional: splash / loader (or keep empty)
+                } else {
+                    val navController = rememberNavController()
 
-
-                AppNavGraph(
-                    navController = navController,
-                    authVM = authVM,
-                    taskVM = taskVM
-                )
+                    AppNavGraph(
+                        navController = navController,
+                        authVM = authVM,
+                        taskVM = taskVM,
+                        startDestination = startRoute!!
+                    )
+                }
             }
         }
-    }
+
+            }
 }
+
 
 
 
