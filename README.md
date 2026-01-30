@@ -14,6 +14,23 @@ data/
     TaskDao.kt
     AppDatabase.kt
 
+navigation/
+
+    AppNavGraph.kt
+    BottomNavItem.kt
+    MainNavItem.kt
+    Routes.kt
+session/
+
+    SessionManager.kt
+
+States/
+
+    ActiveTasksUiState.kt
+    AddEditUiState.kt
+    HomeScreenStates.kt
+    LoginRegisterStates.kt
+        
 viewmodel/
 
     AuthViewModel.kt
@@ -27,13 +44,12 @@ ui/
 
     LoginScreen.kt
     RegisterScreen.kt
-
     HomeScreen.kt
     ActiveTasksScreen.kt
     HistoryScreen.kt
-
+    AddEditDialog.kt
     BottomBar.kt
-    BottomNavItem.kt
+    
 MainActivity.kt
 
 MainScaffold.kt
