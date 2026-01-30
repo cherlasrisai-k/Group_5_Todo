@@ -3,13 +3,21 @@ package com.example.todo.ui
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
+
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.todo.R
 import com.example.todo.viewmodel.TaskViewModel
@@ -21,6 +29,7 @@ fun AddEditDialog(vm: TaskViewModel) {
 
     val state by vm.addEditState.collectAsState()
     val context = LocalContext.current
+    var scrollState= rememberScrollState()
 
     AlertDialog(
         onDismissRequest = vm::onDialogDismiss,
@@ -32,17 +41,34 @@ fun AddEditDialog(vm: TaskViewModel) {
         },
         text = {
             Column(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().verticalScroll(scrollState),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+
+                val focusManager = LocalFocusManager.current
 
                 OutlinedTextField(
                     value = state.topic,
                     onValueChange = vm::onEditTopicChange,
                     label = { Text(stringResource(R.string.EditDialog_Topic)) },
-                    isError = state.topicError.isNotEmpty()
+                    isError = state.topicError.isNotEmpty(),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.secondary,
+                        errorBorderColor = MaterialTheme.colorScheme.error
+                    ),
+                    keyboardOptions = KeyboardOptions(
+                        imeAction = ImeAction.Done,
+                        keyboardType = KeyboardType.Text
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onDone = { focusManager.clearFocus() }
+                    ),
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
                 )
+
                 if (state.topicError.isNotEmpty())
                     Text(state.topicError, color = MaterialTheme.colorScheme.error)
 
@@ -50,7 +76,18 @@ fun AddEditDialog(vm: TaskViewModel) {
                     value = state.heading,
                     onValueChange = vm::onEditHeadingChange,
                     label = { Text(stringResource(R.string.EditDialog_Heading)) },
-                    isError = state.headingError.isNotEmpty()
+                    isError = state.headingError.isNotEmpty(),
+                    colors= OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.secondary,
+                        errorBorderColor = MaterialTheme.colorScheme.error),
+                    keyboardOptions = KeyboardOptions(
+                        imeAction = ImeAction.Done,
+                        keyboardType = KeyboardType.Text
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onDone = { focusManager.clearFocus() }
+                    ),
                 )
                 if (state.headingError.isNotEmpty())
                     Text(state.headingError, color = MaterialTheme.colorScheme.error)

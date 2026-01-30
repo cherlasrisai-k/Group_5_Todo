@@ -55,7 +55,7 @@ fun HistoryScreen(vm: TaskViewModel) {
         LazyColumn(
             state = scrollState,
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(bottom = 80.dp)
+            contentPadding = PaddingValues(bottom = 80.dp) // Space so button doesn't hide last card
         ) {
             items(tasks) { item ->
                 Card(
@@ -74,7 +74,7 @@ fun HistoryScreen(vm: TaskViewModel) {
                             text = item.topic,
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.primary
+                            color = MaterialTheme.colorScheme.primary // Using your RubyRed
                         )
                         Text(
                             text = item.heading,
@@ -85,7 +85,7 @@ fun HistoryScreen(vm: TaskViewModel) {
             }
         }
 
-
+        // Sticky Up Arrow Icon
         AnimatedVisibility(
             visible = showButton,
             enter = fadeIn() + expandIn(expandFrom = Alignment.Center),

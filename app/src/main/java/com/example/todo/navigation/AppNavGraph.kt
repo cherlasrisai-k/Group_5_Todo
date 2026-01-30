@@ -1,5 +1,6 @@
 package com.example.todo.navigation
 
+import androidx.activity.ComponentActivity
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.navigation.NavHostController
@@ -16,7 +17,8 @@ fun AppNavGraph(
     navController: NavHostController,
     authVM: AuthViewModel,
     taskVM: TaskViewModel,
-    startDestination: String
+    startDestination: String,
+    activity: ComponentActivity
 ) {
     var savedMobile by rememberSaveable { mutableStateOf<String?>(null) }
 
@@ -32,12 +34,13 @@ fun AppNavGraph(
         composable(Routes.LOGIN.route) {
             LoginScreen(
                 vm = authVM,
-                navController = navController
+                navController = navController,
+                activity
             )
         }
 
         composable(Routes.REGISTER.route) {
-            RegisterScreen(authVM,navController = navController)
+            RegisterScreen(authVM,navController = navController,activity)
         }
 
         composable(Routes.MAIN.route) {
@@ -51,7 +54,8 @@ fun AppNavGraph(
             MainScaffold(
                 taskVM = taskVM,
                 authVM = authVM,
-                appNavController = navController
+                appNavController = navController,
+                activity
             )
         }
     }

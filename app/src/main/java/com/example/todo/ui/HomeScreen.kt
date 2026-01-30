@@ -17,6 +17,7 @@ import java.util.Calendar
 import java.util.Date
 import android.app.DatePickerDialog
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -26,6 +27,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import com.example.todo.R
+import androidx.compose.ui.graphics.Color
+
+
+
 
 @Composable
 fun HomeScreen(vm: TaskViewModel) {
@@ -42,6 +47,12 @@ fun HomeScreen(vm: TaskViewModel) {
         }
     }
 
+    val textFieldBorderColor= if(isSystemInDarkTheme()){
+        Color.White
+    }
+    else{
+        Color.Black
+    }
 
     Box(
         modifier = Modifier
@@ -62,7 +73,6 @@ fun HomeScreen(vm: TaskViewModel) {
                 ),
                 border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
                 elevation = CardDefaults.cardElevation(5.dp),
-
                 ) {
                 Column(
                     modifier = Modifier
@@ -87,6 +97,14 @@ fun HomeScreen(vm: TaskViewModel) {
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
                         keyboardActions = KeyboardActions(
                             onDone = { focus.clearFocus() }
+                        ),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = textFieldBorderColor,
+                            focusedLabelColor = textFieldBorderColor,
+                            unfocusedBorderColor = textFieldBorderColor,
+                            unfocusedLabelColor = textFieldBorderColor,
+                            cursorColor = textFieldBorderColor,
+                            focusedTextColor = textFieldBorderColor
                         )
                     )
 
@@ -107,7 +125,15 @@ fun HomeScreen(vm: TaskViewModel) {
                             onDone = { focus.clearFocus() }
                         ),
                         singleLine = false,
-                        maxLines = 3
+                        maxLines = 3,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = textFieldBorderColor,
+                            focusedLabelColor = textFieldBorderColor,
+                            unfocusedBorderColor = textFieldBorderColor,
+                            unfocusedLabelColor = textFieldBorderColor,
+                            cursorColor = textFieldBorderColor,
+                            focusedTextColor = textFieldBorderColor
+                        )
                     )
 
                     if (state.headingError.isNotEmpty()) {
@@ -130,7 +156,7 @@ fun HomeScreen(vm: TaskViewModel) {
 
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    Button(
+                    OutlinedButton(
                         onClick = {
                             val cal = Calendar.getInstance()
 
@@ -163,8 +189,11 @@ fun HomeScreen(vm: TaskViewModel) {
                             ).show()
                         },
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.secondary,
-                            contentColor = MaterialTheme.colorScheme.onSecondary
+                            containerColor = MaterialTheme.colorScheme.surface,
+                            contentColor = MaterialTheme.colorScheme.onSurface,
+                            disabledContainerColor = textFieldBorderColor
+
+
                         ),
                         modifier = Modifier.fillMaxWidth()
                     ) {
@@ -179,11 +208,12 @@ fun HomeScreen(vm: TaskViewModel) {
 
                     Spacer(modifier = Modifier.height(12.dp))
 
-                    Button(
+                    OutlinedButton(
                         onClick = vm::saveTask,
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.primary,
-                            contentColor = MaterialTheme.colorScheme.onPrimary
+                            containerColor = MaterialTheme.colorScheme.surface,
+                            contentColor = MaterialTheme.colorScheme.onSurface,
+
                         ),
 
                         modifier = Modifier.fillMaxWidth()
