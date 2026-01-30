@@ -146,7 +146,7 @@ fun RegisterScreen(vm: AuthViewModel, navController: NavController,activity: Com
                     onValueChange = {
                         vm.onNameChange(it)
                     },
-                    isError = !vm.RegisterError.isNullOrEmpty(),
+                    isError = !vm.registerError.isNullOrEmpty(),
                     leadingIcon = { Icon(Icons.Default.Person, contentDescription = "Name") },
                     label = {
                         Text(
@@ -185,7 +185,7 @@ fun RegisterScreen(vm: AuthViewModel, navController: NavController,activity: Com
                             modifier = Modifier.alpha(0.5f)
                         )
                     },
-                    isError = !vm.RegisterError.isNullOrEmpty(),
+                    isError = !vm.registerError.isNullOrEmpty(),
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     colors = OutlinedTextFieldDefaults.colors(
@@ -199,7 +199,8 @@ fun RegisterScreen(vm: AuthViewModel, navController: NavController,activity: Com
                     ),
                     keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                     keyboardActions = KeyboardActions(
-                        onDone = { focus.clearFocus(),vm.validateAndRegister(state.name, state.mobile) })
+                        onDone = { vm.validateAndRegister(state.name, state.mobile) })
+                    //focus.clearFocus(),
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
