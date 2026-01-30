@@ -7,38 +7,30 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
-private val LightColorScheme = lightColorScheme(
-    primary = SpotifyGreenMuted,
+private val DarkColorScheme = darkColorScheme(
+    primary = RubyRed,
     onPrimary = Color.White,
-    primaryContainer = Color(0xFFD1F7DE),
-    onPrimaryContainer = SpotifyGreenMuted,
-
-    secondary = SpotifyDeepGreyText,
-    onSecondary = Color.White,
-
-    background = SpotifyLightGreyBg,
-    onBackground = SpotifyDeepGreyText,
-
-    surface = SpotifySurfaceWhite,
-    onSurface = SpotifyDeepGreyText,
-    surfaceVariant = SpotifyLightGreyVariant,
-    onSurfaceVariant = SpotifyMutedText,
-
-    outline = SpotifyLightGreyVariant,
-    error = ErrorRed
+    primaryContainer = DarkRuby,
+    onPrimaryContainer = Color.White,
+    secondary = CyanAccent,
+    onSecondary = Color.Black,
+    background = DeepSpace,
+    onBackground = Color.White,
+    surface = SlateGray,
+    onSurface = Color.White
 )
 
-private val DarkColorScheme = darkColorScheme(
-    primary = SpotifyGreenMuted,
+private val LightColorScheme = lightColorScheme(
+    primary = RubyRed,
     onPrimary = Color.White,
-
-    background = SpotifyBlack,
-    onBackground = Color.White,
-
-    surface = Color(0xFF181818),
-    onSurface = Color.White,
-
-    outline = Color(0xFF282828)
+    primaryContainer = LightRuby,
+    onPrimaryContainer = Color.White,
+    secondary = CyanAccent,
+    onSecondary = Color.White,
+    background = SoftWhite,
+    onBackground = DeepSpace,
+    surface = Color.White,
+    onSurface = DeepSpace
 )
 
 @Composable

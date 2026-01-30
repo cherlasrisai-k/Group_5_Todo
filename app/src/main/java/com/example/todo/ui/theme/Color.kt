@@ -2,12 +2,13 @@ package com.example.todo.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val SpotifyGreenMuted = Color(0xFF169C46)
-val SpotifyBlack = Color(0xFF121212)
-val SpotifyLightGreyBg = Color(0xFFF2F2F2)
-val SpotifySurfaceWhite = Color(0xFFFFFFFF)
-val SpotifyLightGreyVariant = Color(0xFFE0E0E0)
-val SpotifyDeepGreyText = Color(0xFF191414)
-val SpotifyMutedText = Color(0xFF535353)
+val RubyRed = Color(0xFFE53935)
+val DarkRuby = Color(0xFFAB000D)
+val LightRuby = Color(0xFFFF6F60)
 
-val ErrorRed = Color(0xFFCD1A2B)
+val DeepSpace = Color(0xFF121212)
+val SlateGray = Color(0xFF1E1E1E)
+val SoftWhite = Color(0xFFFAFAFA)
+
+val White = Color(0xFFFFFFFF)
+val CyanAccent = Color(0xFF26C6DA)
