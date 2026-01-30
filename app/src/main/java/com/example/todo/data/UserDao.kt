@@ -14,6 +14,4 @@ interface UserDao {
     @Query("SELECT * FROM users WHERE mobile = :mobile LIMIT 1")
     suspend fun login(mobile: String): User?
 
-//    @Query("SELECT *from users where isLoggedIn = 1 LIMIT 1")
-//    suspend fun getLoggedInUser():User?
 }

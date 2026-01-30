@@ -28,7 +28,7 @@ class TaskViewModel(
     private val context: Context
 ) : ViewModel() {
 
-    // ---------------- USER ----------------
+
 
     private val currentUser = MutableStateFlow<String?>(null)
 
@@ -36,11 +36,11 @@ class TaskViewModel(
         currentUser.value = mobile
     }
 
-    // ---------------- TASK LIST FLOWS ----------------
+
 
     val todayTasks :StateFlow<List<Task>>  = currentUser.flatMapLatest { mobile ->
         if (mobile == null) flowOf(emptyList())
-        else dao.todayTasks(mobile, System.currentTimeMillis())
+        else dao.todayTasks(mobile)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     val completedTasks = currentUser.flatMapLatest { mobile ->
@@ -48,7 +48,6 @@ class TaskViewModel(
         else dao.completedTasks(mobile)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
-    // ---------------- HOME (ADD TASK) STATE ----------------
 
     private val _homeState = MutableStateFlow(HomeUiState())
     val homeState = _homeState.asStateFlow()
@@ -101,7 +100,7 @@ class TaskViewModel(
         _events.emit("Task added successfully ✅")
     }
 
-    // ---------------- EDIT TASK (DIALOG) STATE ----------------
+
     private var editingTask: Task? = null
     private val _addEditState = MutableStateFlow(AddEditUiState())
     val addEditState = _addEditState.asStateFlow()
@@ -169,10 +168,8 @@ class TaskViewModel(
         editingTask = null
         _addEditState.value = AddEditUiState()
         _activeUiState.value = _activeUiState.value.copy(showDialog = false,editingTask=null)
-       // _activeUiState.value = ActiveTasksUiState(false, null)
     }
 
-    // ---------------- OTHER ACTIONS ----------------
 
     fun completeTask(task: Task) = viewModelScope.launch {
         dao.update(task.copy(isCompleted = true))
@@ -184,12 +181,12 @@ class TaskViewModel(
         _events.emit("Task deleted 🗑️")
     }
 
-    // ---------------- EVENTS ----------------
+
 
     private val _events = MutableSharedFlow<String>()
     val events = _events.asSharedFlow()
 
-    // ---------------- REMINDER ----------------
+
 
     private fun scheduleReminder(task: Task) {
         val reminderTime = task.dateTime - (5 * 60 * 1000)

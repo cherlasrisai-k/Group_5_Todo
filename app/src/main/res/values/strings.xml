@@ -11,7 +11,6 @@
     <string name="RegisterScreen_MobileValidation">Enter mobile number</string>
     <string name="RegisterScreen_MobileLengthValidation">Enter valid 10-digit number</string>
     <string name="RegisterScreen_NameValidation">Name cannot be empty</string>
-    "
     <string name="TextFields_Name">Name</string>
     <string name="Buttons_Register">Register</string>
 

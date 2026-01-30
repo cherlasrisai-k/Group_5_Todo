@@ -17,23 +17,14 @@ interface TaskDao {
     @Delete
     suspend fun delete(task: Task)
 
-    // Only TODAY active tasks, sorted
-//    @Query("""
-//        SELECT * FROM tasks
-//        WHERE isCompleted = 0
-//        AND date(dateTime/1000,'unixepoch','localtime') = date('now','localtime')
-//        ORDER BY dateTime ASC
-//    """)
-//    fun todayTasks(): Flow<List<Task>>
-
     @Query("""
     SELECT * FROM tasks
     WHERE userMobile = :mobile
     AND isCompleted = 0
-    AND dateTime >= :now
+
     ORDER BY dateTime ASC
 """)
-    fun todayTasks(mobile: String, now: Long): Flow<List<Task>>
+    fun todayTasks(mobile: String): Flow<List<Task>>
 
     @Query("SELECT * FROM tasks\n" +
             "        WHERE userMobile = :mobile\n" +
@@ -51,8 +42,6 @@ interface TaskDao {
 
 
 
-//    @Query("DELETE FROM tasks WHERE isCompleted = 1")
-//    suspend fun deleteHistory():Flow<List<Task>>
 
 
 

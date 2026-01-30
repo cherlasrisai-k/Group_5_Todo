@@ -5,6 +5,6 @@ enum class Routes(val route: String) {
     REGISTER("register"),
     MAIN("main"),
     HOME("home"),
-    ACTIVE("active"),
+    ACTIVE("tasks"),
     HISTORY("history")
 }

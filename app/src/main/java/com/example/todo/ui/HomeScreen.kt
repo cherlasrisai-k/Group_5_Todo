@@ -17,9 +17,14 @@ import java.util.Calendar
 import java.util.Date
 import android.app.DatePickerDialog
 import androidx.compose.foundation.background
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import com.example.todo.R
 
 @Composable
@@ -37,149 +42,177 @@ fun HomeScreen(vm: TaskViewModel) {
         }
     }
 
-    Scaffold(
-        snackbarHost = { SnackbarHost(snackbarHostState) }
-    ) { padding ->
 
-Column(
-    modifier = Modifier
-        .fillMaxSize()
-        .padding(padding)
-        .background(MaterialTheme.colorScheme.background)
-        .padding(16.dp),
-    horizontalAlignment = Alignment.CenterHorizontally
-) {
-
-    Text(stringResource(R.string.HomeScreen_Title), style = MaterialTheme.typography.headlineMedium)
-
-    Spacer(modifier = Modifier.height(16.dp))
-
-    Card(
+    Box(
         modifier = Modifier
-            .fillMaxWidth()
-            .verticalScroll(scrollState),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        ),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
-        elevation = CardDefaults.cardElevation(5.dp),
-
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+            .padding(16.dp),
+        contentAlignment = Alignment.Center
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
 
-            Text(stringResource(R.string.HomeScreen_CardTitle), style = MaterialTheme.typography.headlineSmall)
-            Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
-            OutlinedTextField(
-                value = state.topic,
-                onValueChange = vm::onTopicChange,
-                label = { Text(stringResource(R.string.HomeScreen_TextFields_Topic)) },
-                isError = state.topicError.isNotEmpty(),
-                modifier = Modifier.fillMaxWidth()
-            )
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(scrollState),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surface
+                ),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+                elevation = CardDefaults.cardElevation(5.dp),
 
-            if (state.topicError.isNotEmpty()) {
-                Text(state.topicError, color = MaterialTheme.colorScheme.error)
-            }
+                ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
 
-            Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        stringResource(R.string.HomeScreen_CardTitle),
+                        style = MaterialTheme.typography.headlineSmall
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
 
-            OutlinedTextField(
-                value = state.heading,
-                onValueChange = vm::onHeadingChange,
-                label = { Text(stringResource(R.string.HomeScreen_TextFields_Heading)) },
-                isError = state.headingError.isNotEmpty(),
-                modifier = Modifier.fillMaxWidth()
-            )
+                    val focus= LocalFocusManager.current
+                    OutlinedTextField(
+                        value = state.topic,
+                        onValueChange = vm::onTopicChange,
+                        label = { Text(stringResource(R.string.HomeScreen_TextFields_Topic)) },
+                        isError = state.topicError.isNotEmpty(),
+                        modifier = Modifier.fillMaxWidth(),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+                        keyboardActions = KeyboardActions(
+                            onDone = { focus.clearFocus() }
+                        )
+                    )
 
-            if (state.headingError.isNotEmpty()) {
-                Text(state.headingError, color = MaterialTheme.colorScheme.error)
-            }
+                    if (state.topicError.isNotEmpty()) {
+                        Text(state.topicError, color = MaterialTheme.colorScheme.error)
+                    }
 
-            Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
 
-            Text(
-                text = DateFormat.getDateTimeInstance().format(Date(state.dateTime)),
-                style = MaterialTheme.typography.bodyLarge,
-                color = if (state.timeError.isNotEmpty())
-                    MaterialTheme.colorScheme.error
-                else MaterialTheme.colorScheme.onSurface
-            )
+                    OutlinedTextField(
+                        value = state.heading,
+                        onValueChange = vm::onHeadingChange,
+                        label = { Text(stringResource(R.string.HomeScreen_TextFields_Heading)) },
+                        isError = state.headingError.isNotEmpty(),
+                        modifier = Modifier.fillMaxWidth(),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+                        keyboardActions = KeyboardActions(
+                            onDone = { focus.clearFocus() }
+                        ),
+                        singleLine = false,
+                        maxLines = 3
+                    )
 
-            if (state.timeError.isNotEmpty()) {
-                Text(state.timeError, color = MaterialTheme.colorScheme.error)
-            }
+                    if (state.headingError.isNotEmpty()) {
+                        Text(state.headingError, color = MaterialTheme.colorScheme.error)
+                    }
 
-            Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
 
-            Button(
-                onClick = {
-                    val cal = Calendar.getInstance()
+                    Text(
+                        text = DateFormat.getDateTimeInstance().format(Date(state.dateTime)),
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = if (state.timeError.isNotEmpty())
+                            MaterialTheme.colorScheme.error
+                        else MaterialTheme.colorScheme.onSurface
+                    )
 
-                    DatePickerDialog(
-                        context,
-                        { _, y, m, d ->
+                    if (state.timeError.isNotEmpty()) {
+                        Text(state.timeError, color = MaterialTheme.colorScheme.error)
+                    }
 
-                            val timeCal = Calendar.getInstance()
-                            timeCal.set(Calendar.YEAR, y)
-                            timeCal.set(Calendar.MONTH, m)
-                            timeCal.set(Calendar.DAY_OF_MONTH, d)
+                    Spacer(modifier = Modifier.height(8.dp))
 
-                            TimePickerDialog(
+                    Button(
+                        onClick = {
+                            val cal = Calendar.getInstance()
+
+                            DatePickerDialog(
                                 context,
-                                { _, h, min ->
-                                    timeCal.set(Calendar.HOUR_OF_DAY, h)
-                                    timeCal.set(Calendar.MINUTE, min)
-                                    timeCal.set(Calendar.SECOND, 0)
+                                { _, y, m, d ->
 
-                                    vm.onDateTimeChange(timeCal.timeInMillis)
+                                    val timeCal = Calendar.getInstance()
+                                    timeCal.set(Calendar.YEAR, y)
+                                    timeCal.set(Calendar.MONTH, m)
+                                    timeCal.set(Calendar.DAY_OF_MONTH, d)
+
+                                    TimePickerDialog(
+                                        context,
+                                        { _, h, min ->
+                                            timeCal.set(Calendar.HOUR_OF_DAY, h)
+                                            timeCal.set(Calendar.MINUTE, min)
+                                            timeCal.set(Calendar.SECOND, 0)
+
+                                            vm.onDateTimeChange(timeCal.timeInMillis)
+                                        },
+                                        timeCal.get(Calendar.HOUR_OF_DAY),
+                                        timeCal.get(Calendar.MINUTE),
+                                        false
+                                    ).show()
                                 },
-                                timeCal.get(Calendar.HOUR_OF_DAY),
-                                timeCal.get(Calendar.MINUTE),
-                                false
+                                cal.get(Calendar.YEAR),
+                                cal.get(Calendar.MONTH),
+                                cal.get(Calendar.DAY_OF_MONTH)
                             ).show()
                         },
-                        cal.get(Calendar.YEAR),
-                        cal.get(Calendar.MONTH),
-                        cal.get(Calendar.DAY_OF_MONTH)
-                    ).show()
-                },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.secondary,
-                    contentColor = MaterialTheme.colorScheme.onSecondary
-                ),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Icon(
-                    imageVector = Icons.Default.DateRange,
-                    contentDescription = null,
-                    modifier = Modifier.padding(end = 8.dp)
-                )
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.secondary,
+                            contentColor = MaterialTheme.colorScheme.onSecondary
+                        ),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.DateRange,
+                            contentDescription = null,
+                            modifier = Modifier.padding(end = 8.dp)
+                        )
 
-                Text(stringResource(R.string.Buttons_SelectDate))
+                        Text(stringResource(R.string.Buttons_SelectDate))
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    Button(
+                        onClick = vm::saveTask,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary
+                        ),
+
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(stringResource(R.string.HomeScreen_Buttons_SaveTask))
+                    }
+                }
             }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            Button(
-                onClick = vm::saveTask,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary
-                ),
-
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(stringResource(R.string.HomeScreen_Buttons_SaveTask))
+            SnackbarHost(
+                hostState = snackbarHostState,
+                modifier = Modifier.align(Alignment.BottomCenter)
+                    .padding(16.dp)
+            ) { snackbarData ->
+                Snackbar(modifier = Modifier.fillMaxWidth()) {
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = snackbarData.visuals.message,
+                            style = MaterialTheme.typography.bodyMedium,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
             }
         }
+
     }
-}
-}
-}
+
+
 
