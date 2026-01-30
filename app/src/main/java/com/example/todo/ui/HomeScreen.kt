@@ -1,5 +1,11 @@
 package com.example.todo.ui
 
+import android.app.DatePickerDialog
+import android.app.TimePickerDialog
+import androidx.activity.ComponentActivity
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -16,6 +22,11 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material3.*
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
+import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
+import androidx.compose.runtime.*
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -43,45 +54,50 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.todo.R
+import com.example.todo.viewmodel.TaskViewModel
+import java.text.DateFormat
+import java.util.*
 import com.example.todo.ui.utils.showDateTimePicker
 import com.example.todo.viewmodel.TaskViewModel
 import java.text.DateFormat
 import java.util.Date
 
 
+@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
-fun HomeScreen(vm: TaskViewModel) {
+fun HomeScreen(vm: TaskViewModel, activity: ComponentActivity) {
 
     val state by vm.homeState.collectAsState()
     val context = LocalContext.current
     val scrollState = rememberScrollState()
     val snackbarHostState = remember { SnackbarHostState() }
+    val focus = LocalFocusManager.current
 
-    // Collect one-time events
     LaunchedEffect(Unit) {
         vm.events.collect { msg ->
             snackbarHostState.showSnackbar(msg)
         }
     }
 
-    val textFieldBorderColor = if (isSystemInDarkTheme()) {
-        Color.White
-    } else {
-        Color.Black
+    val textFieldBorderColor = if (isSystemInDarkTheme()) Color.White else Color.Black
+    val windowSizeClass = calculateWindowSizeClass(activity)
+
+    val cardWidthMultiplier = when (windowSizeClass.widthSizeClass) {
+        WindowWidthSizeClass.Compact -> 1f
+        WindowWidthSizeClass.Medium -> 0.7f
+        WindowWidthSizeClass.Expanded -> 0.5f
+        else -> 1f
     }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .padding(16.dp), contentAlignment = Alignment.Center
+            .padding(16.dp),
+        contentAlignment = Alignment.Center
     ) {
-
-        Spacer(modifier = Modifier.height(16.dp))
-
         Card(
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxWidth(cardWidthMultiplier)
                 .verticalScroll(scrollState),
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.surface
@@ -100,9 +116,9 @@ fun HomeScreen(vm: TaskViewModel) {
                     stringResource(R.string.HomeScreen_CardTitle),
                     style = MaterialTheme.typography.headlineSmall
                 )
+
                 Spacer(modifier = Modifier.height(12.dp))
 
-                val focus = LocalFocusManager.current
                 OutlinedTextField(
                     value = state.topic,
                     onValueChange = vm::onTopicChange,
@@ -110,20 +126,25 @@ fun HomeScreen(vm: TaskViewModel) {
                     isError = state.topicError.isNotEmpty(),
                     modifier = Modifier.fillMaxWidth(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-                    keyboardActions = KeyboardActions(
-                        onDone = { focus.clearFocus() }),
+                    keyboardActions = KeyboardActions(onDone = { focus.clearFocus() }),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = textFieldBorderColor,
                         focusedLabelColor = textFieldBorderColor,
                         unfocusedBorderColor = textFieldBorderColor,
                         unfocusedLabelColor = textFieldBorderColor,
                         cursorColor = textFieldBorderColor,
-                        focusedTextColor = textFieldBorderColor
+                        focusedTextColor = textFieldBorderColor,
+                        errorBorderColor = MaterialTheme.colorScheme.error,
                     )
                 )
 
                 if (state.topicError.isNotEmpty()) {
-                    Text(state.topicError, color = MaterialTheme.colorScheme.error)
+                    Text(
+                        text = state.topicError,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Start
+                    )
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -135,8 +156,7 @@ fun HomeScreen(vm: TaskViewModel) {
                     isError = state.headingError.isNotEmpty(),
                     modifier = Modifier.fillMaxWidth(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-                    keyboardActions = KeyboardActions(
-                        onDone = { focus.clearFocus() }),
+                    keyboardActions = KeyboardActions(onDone = { focus.clearFocus() }),
                     singleLine = false,
                     maxLines = 3,
                     colors = OutlinedTextFieldDefaults.colors(
@@ -145,13 +165,21 @@ fun HomeScreen(vm: TaskViewModel) {
                         unfocusedBorderColor = textFieldBorderColor,
                         unfocusedLabelColor = textFieldBorderColor,
                         cursorColor = textFieldBorderColor,
-                        focusedTextColor = textFieldBorderColor
+                       focusedTextColor = textFieldBorderColor,
+                        errorBorderColor = MaterialTheme.colorScheme.error,
                     )
                 )
 
+                  
                 if (state.headingError.isNotEmpty()) {
-                    Text(state.headingError, color = MaterialTheme.colorScheme.error)
+                    Text(
+                        text = state.headingError,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Start
+                    )
                 }
+                
 
                 Spacer(modifier = Modifier.height(12.dp))
 
@@ -207,6 +235,7 @@ fun HomeScreen(vm: TaskViewModel) {
                 }
             }
         }
+
         SnackbarHost(
             hostState = snackbarHostState,
             modifier = Modifier

@@ -1,5 +1,9 @@
 package com.example.todo.ui
 
+import android.app.DatePickerDialog
+import android.app.TimePickerDialog
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,6 +25,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
@@ -55,6 +60,13 @@ fun AddEditDialog(vm: TaskViewModel) {
         ) {
 
             val focusManager = LocalFocusManager.current
+          
+          val textFieldBorderColor= if(isSystemInDarkTheme()){
+                    Color.White
+                }
+                else{
+                    Color.Black
+                }
 
             OutlinedTextField(
                 value = state.topic,

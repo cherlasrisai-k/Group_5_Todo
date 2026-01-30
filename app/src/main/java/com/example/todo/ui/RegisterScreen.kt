@@ -34,12 +34,14 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -52,7 +54,7 @@ import com.example.todo.viewmodel.AuthViewModel
 
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
-fun RegisterScreen(vm: AuthViewModel, navController: NavController) {
+fun RegisterScreen(vm: AuthViewModel, navController: NavController,activity: ComponentActivity) {
 
 
     val state by vm.loginRegister.collectAsState()
@@ -67,15 +69,22 @@ fun RegisterScreen(vm: AuthViewModel, navController: NavController) {
 
         }
     }
-    val context = LocalContext.current
-    val windowSizeClass = calculateWindowSizeClass(context as ComponentActivity)
+
+    val windowSizeClass = calculateWindowSizeClass(activity)
+
+   val focus= LocalFocusManager.current
 
     val dynamicFontSize = when (windowSizeClass.widthSizeClass) {
         WindowWidthSizeClass.Expanded -> 24.sp
         WindowWidthSizeClass.Medium -> 20.sp
         else -> 16.sp
     }
-
+    val cardWidthMultiplier = when (windowSizeClass.widthSizeClass) {
+        WindowWidthSizeClass.Compact -> 1f
+        WindowWidthSizeClass.Medium -> 0.7f
+        WindowWidthSizeClass.Expanded -> 0.5f
+        else -> 1f
+    }
 
 
     Column(
@@ -103,7 +112,7 @@ fun RegisterScreen(vm: AuthViewModel, navController: NavController) {
 
         Card(
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxWidth(cardWidthMultiplier)
                 .padding(16.dp),
             border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
             elevation = CardDefaults.cardElevation(5.dp)
@@ -137,6 +146,7 @@ fun RegisterScreen(vm: AuthViewModel, navController: NavController) {
                     onValueChange = {
                         vm.onNameChange(it)
                     },
+                    isError = !vm.RegisterError.isNullOrEmpty(),
                     leadingIcon = { Icon(Icons.Default.Person, contentDescription = "Name") },
                     label = {
                         Text(
@@ -152,7 +162,8 @@ fun RegisterScreen(vm: AuthViewModel, navController: NavController) {
                         unfocusedBorderColor = textFieldBorderColor,
                         unfocusedLabelColor = textFieldBorderColor,
                         cursorColor = textFieldBorderColor,
-                        focusedTextColor = textFieldBorderColor
+                        focusedTextColor = textFieldBorderColor,
+                        errorBorderColor = MaterialTheme.colorScheme.error
                     )
                 )
 
@@ -174,6 +185,7 @@ fun RegisterScreen(vm: AuthViewModel, navController: NavController) {
                             modifier = Modifier.alpha(0.5f)
                         )
                     },
+                    isError = !vm.RegisterError.isNullOrEmpty(),
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     colors = OutlinedTextFieldDefaults.colors(
@@ -182,11 +194,12 @@ fun RegisterScreen(vm: AuthViewModel, navController: NavController) {
                         unfocusedBorderColor = textFieldBorderColor,
                         unfocusedLabelColor = textFieldBorderColor,
                         cursorColor = textFieldBorderColor,
-                        focusedTextColor = textFieldBorderColor
+                        focusedTextColor = textFieldBorderColor,
+                        errorBorderColor = MaterialTheme.colorScheme.error
                     ),
                     keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                     keyboardActions = KeyboardActions(
-                        onDone = { vm.validateAndRegister(state.name, state.mobile) })
+                        onDone = { focus.clearFocus(),vm.validateAndRegister(state.name, state.mobile) })
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))

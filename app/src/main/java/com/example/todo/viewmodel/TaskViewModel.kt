@@ -8,10 +8,17 @@ import androidx.work.WorkManager
 import androidx.work.workDataOf
 import com.example.todo.data.Task
 import com.example.todo.data.TaskDao
+import com.example.todo.states.AddEditUiState
+import com.example.todo.states.HomeUiState
+import com.example.todo.states.TasksUiState
+import com.example.todo.worker.ReminderWorker
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
@@ -20,6 +27,7 @@ import com.example.todo.States.HomeUiState
 import com.example.todo.States.TasksUiState
 import com.example.todo.States.AddEditUiState
 import com.example.todo.worker.ReminderWorker
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import java.util.concurrent.TimeUnit
 
@@ -27,7 +35,6 @@ class TaskViewModel(
     private val dao: TaskDao,
     private val context: Context
 ) : ViewModel() {
-
 
 
     private val currentUser = MutableStateFlow<String?>(null)
@@ -38,11 +45,13 @@ class TaskViewModel(
 
 
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     val todayTasks :StateFlow<List<Task>>  = currentUser.flatMapLatest { mobile ->
         if (mobile == null) flowOf(emptyList())
         else dao.todayTasks(mobile)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     val completedTasks = currentUser.flatMapLatest { mobile ->
         if (mobile == null) flowOf(emptyList())
         else dao.completedTasks(mobile)
@@ -97,7 +106,7 @@ class TaskViewModel(
         scheduleReminder(task)
 
         _homeState.value = HomeUiState()
-        _events.emit("Task added successfully ✅")
+        _events.emit("Task-${task.topic} added successfully ✅")
     }
 
 
@@ -115,7 +124,7 @@ class TaskViewModel(
             heading = task.heading,
             dateTime = task.dateTime
         )
-        _activeUiState.value = TasksUiState(showDialog = true, editingTask=task)
+        _activeUiState.value = TasksUiState(showDialog = true, editingTask = task)
     }
 
     fun onEditTopicChange(value: String) {
@@ -158,7 +167,7 @@ class TaskViewModel(
         )
 
         dao.update(updatedTask)
-        _events.emit("Task updated ✏️")
+        _events.emit("Task-${updatedTask.topic} updated ✏️")
 
         _addEditState.value = AddEditUiState()
         onDialogDismiss()
@@ -167,25 +176,23 @@ class TaskViewModel(
     fun onDialogDismiss() {
         editingTask = null
         _addEditState.value = AddEditUiState()
-        _activeUiState.value = _activeUiState.value.copy(showDialog = false,editingTask=null)
+        _activeUiState.value = _activeUiState.value.copy(showDialog = false, editingTask = null)
     }
 
 
     fun completeTask(task: Task) = viewModelScope.launch {
         dao.update(task.copy(isCompleted = true))
-        _events.emit("Hurray! Task completed 🎉")
+        _events.emit("Hurray! Task-${task.topic} completed 🎉")
     }
 
     fun deleteTask(task: Task) = viewModelScope.launch {
         dao.delete(task)
-        _events.emit("Task deleted 🗑️")
+        _events.emit("Task-${task.topic} deleted 🗑️")
     }
-
 
 
     private val _events = MutableSharedFlow<String>()
     val events = _events.asSharedFlow()
-
 
 
     private fun scheduleReminder(task: Task) {

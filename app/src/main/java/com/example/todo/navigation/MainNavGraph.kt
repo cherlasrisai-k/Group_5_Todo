@@ -1,19 +1,24 @@
 package com.example.todo.navigation
 
 
+import androidx.activity.ComponentActivity
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.todo.ui.*
+import androidx.navigation.navDeepLink
+import com.example.todo.ui.HistoryScreen
+import com.example.todo.ui.HomeScreen
+import com.example.todo.ui.TasksScreen
 import com.example.todo.viewmodel.TaskViewModel
 
 @Composable
 fun MainNavGraph(
     navController: NavHostController,
     taskVM: TaskViewModel,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    activity: ComponentActivity
 ) {
     NavHost(
         navController = navController,
@@ -21,15 +26,22 @@ fun MainNavGraph(
         modifier = modifier
     ) {
         composable(BottomNavItem.Home.screen.route) {
-            HomeScreen(taskVM)
+            HomeScreen(taskVM,activity)
         }
 
-        composable(BottomNavItem.Active.screen.route) {
-             TasksScreen(taskVM)
+        composable(
+            BottomNavItem.Active.screen.route,
+            deepLinks = listOf(
+                navDeepLink {
+                    uriPattern = "todo://active_tasks"
+                }
+            )
+        ) {
+            TasksScreen(taskVM)
         }
 
         composable(BottomNavItem.History.screen.route) {
-            HistoryScreen(taskVM)
+            HistoryScreen(taskVM,activity)
         }
     }
 }
