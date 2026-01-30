@@ -37,7 +37,7 @@ fun MainNavGraph(
                 }
             )
         ) {
-            TasksScreen(taskVM)
+            TasksScreen(taskVM,activity)
         }
 
         composable(BottomNavItem.History.screen.route) {
