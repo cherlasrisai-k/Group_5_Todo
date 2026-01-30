@@ -1,4 +1,10 @@
 package com.example.todo
+import androidx.activity.ComponentActivity
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -15,6 +21,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
@@ -31,14 +40,21 @@ import com.example.todo.viewmodel.TaskViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScaffold(
-    taskVM: TaskViewModel, authVM: AuthViewModel, appNavController: NavController
+    taskVM: TaskViewModel,
+    authVM: AuthViewModel,
+    appNavController : NavController,
+    activity: ComponentActivity
 ) {
     val bottomNavController = rememberNavController()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     val currentScreen = bottomNavController.currentBackStackEntryAsState().value?.destination?.route
 
-
+    val isBarVisible by remember {
+        derivedStateOf {
+            scrollBehavior.state.heightOffset >= -1f
+        }
+    }
 
     Scaffold(
         modifier = Modifier
@@ -84,15 +100,23 @@ fun MainScaffold(
         },
 
         bottomBar = {
-            BottomBar(bottomNavController)
+            AnimatedVisibility(
+                visible = isBarVisible,
+                enter = slideInVertically(initialOffsetY = { it }) + fadeIn(),
+                exit = slideOutVertically(targetOffsetY = { it }) + fadeOut()
+            ) {
+                BottomBar(bottomNavController)
+            }
         }
 
     ) { padding ->
         MainNavGraph(
             navController = bottomNavController,
             taskVM = taskVM,
-            modifier = Modifier.padding(padding)
+            modifier = Modifier.padding(padding),
+            activity
         )
+
     }
 }
 

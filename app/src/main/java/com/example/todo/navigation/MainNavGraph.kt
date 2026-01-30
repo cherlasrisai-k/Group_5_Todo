@@ -1,6 +1,7 @@
 package com.example.todo.navigation
 
 
+import androidx.activity.ComponentActivity
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
@@ -16,7 +17,8 @@ import com.example.todo.viewmodel.TaskViewModel
 fun MainNavGraph(
     navController: NavHostController,
     taskVM: TaskViewModel,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    activity: ComponentActivity
 ) {
     NavHost(
         navController = navController,
@@ -24,7 +26,7 @@ fun MainNavGraph(
         modifier = modifier
     ) {
         composable(BottomNavItem.Home.screen.route) {
-            HomeScreen(taskVM)
+            HomeScreen(taskVM,activity)
         }
 
         composable(
@@ -39,7 +41,7 @@ fun MainNavGraph(
         }
 
         composable(BottomNavItem.History.screen.route) {
-            HistoryScreen(taskVM)
+            HistoryScreen(taskVM,activity)
         }
     }
 }

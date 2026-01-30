@@ -31,7 +31,6 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             TodoTheme {
-
                 var startRoute by rememberSaveable { mutableStateOf<String?>(null) }
 
                 LaunchedEffect(Unit) {
@@ -51,20 +50,21 @@ class MainActivity : ComponentActivity() {
                     }
                 }
 
-                if (startRoute == null) {
-                    // Optional: splash / loader (or keep empty)
-                } else {
+
                     val navController = rememberNavController()
 
                     AppNavGraph(
                         navController = navController,
                         authVM = authVM,
                         taskVM = taskVM,
-                        startDestination = startRoute!!
+                        startDestination = Routes.LOGIN.route,
+                        activity = this
                     )
                 }
             }
         }
+
+            }
 
     }
 }
