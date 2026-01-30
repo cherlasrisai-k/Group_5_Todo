@@ -4,15 +4,11 @@ import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.core.view.WindowCompat
 
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -32,7 +28,6 @@ import com.example.todo.viewmodel.AuthViewModel
 import com.example.todo.viewmodel.TaskViewModel
 import com.example.todo.worker.ReminderWorker
 import java.util.concurrent.TimeUnit
-import com.example.todo.ui.theme.TodoTheme
 
 class MainActivity : ComponentActivity() {
 
@@ -48,6 +43,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             TodoTheme {
+
                 var startRoute by rememberSaveable { mutableStateOf<String?>(null) }
 
                 LaunchedEffect(Unit) {
@@ -67,22 +63,23 @@ class MainActivity : ComponentActivity() {
                     }
                 }
 
-
+                if (startRoute == null) {
+                    // Optional: splash / loader (or keep empty)
+                } else {
                     val navController = rememberNavController()
 
                     AppNavGraph(
                         navController = navController,
                         authVM = authVM,
                         taskVM = taskVM,
-                        startDestination = Routes.LOGIN.route,
-                        activity = this
+                        startDestination = startRoute!!
                     )
                 }
             }
         }
 
             }
-
+}
 
 
 

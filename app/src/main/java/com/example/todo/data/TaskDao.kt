@@ -12,37 +12,38 @@ interface TaskDao {
 
     @Insert
     suspend fun insert(task: Task)
+
     @Update
     suspend fun update(task: Task)
+
     @Delete
     suspend fun delete(task: Task)
 
-    @Query("""
+    @Query(
+        """
     SELECT * FROM tasks
     WHERE userMobile = :mobile
     AND isCompleted = 0
 
     ORDER BY dateTime ASC
-""")
+"""
+    )
     fun todayTasks(mobile: String): Flow<List<Task>>
 
-    @Query("SELECT * FROM tasks\n" +
-            "        WHERE userMobile = :mobile\n" +
-            "        AND isCompleted = 1\n" +
-            "        ORDER BY dateTime DESC")
+    @Query(
+        "SELECT * FROM tasks\n" + "        WHERE userMobile = :mobile\n" + "        AND isCompleted = 1\n" + "        ORDER BY dateTime DESC"
+    )
     fun completedTasks(mobile: String): Flow<List<Task>>
 
     // For reminder
-    @Query("""
+    @Query(
+        """
         SELECT COUNT(*) FROM tasks
         WHERE isCompleted = 0
         AND date(dateTime/1000,'unixepoch','localtime') = date('now','localtime')
-    """)
+    """
+    )
     suspend fun countTodayTasks(): Int
-
-
-
-
 
 
 }

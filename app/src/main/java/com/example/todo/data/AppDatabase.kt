@@ -21,7 +21,7 @@
                         AppDatabase::class.java,
                         "todo_db"
                     )
-                        .fallbackToDestructiveMigration() // 🔥 important
+                        .fallbackToDestructiveMigration()
                         .build().also { INSTANCE = it }
                 }
         }

@@ -17,10 +17,9 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import com.example.todo.States.HomeUiState
-import com.example.todo.States.ActiveTasksUiState
+import com.example.todo.States.TasksUiState
 import com.example.todo.States.AddEditUiState
 import com.example.todo.worker.ReminderWorker
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import java.util.concurrent.TimeUnit
 
@@ -39,13 +38,11 @@ class TaskViewModel(
 
 
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     val todayTasks :StateFlow<List<Task>>  = currentUser.flatMapLatest { mobile ->
         if (mobile == null) flowOf(emptyList())
         else dao.todayTasks(mobile)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     val completedTasks = currentUser.flatMapLatest { mobile ->
         if (mobile == null) flowOf(emptyList())
         else dao.completedTasks(mobile)
@@ -100,7 +97,7 @@ class TaskViewModel(
         scheduleReminder(task)
 
         _homeState.value = HomeUiState()
-        _events.emit("Task-${task.topic} added successfully ✅")
+        _events.emit("Task added successfully ✅")
     }
 
 
@@ -108,7 +105,7 @@ class TaskViewModel(
     private val _addEditState = MutableStateFlow(AddEditUiState())
     val addEditState = _addEditState.asStateFlow()
 
-    private val _activeUiState = MutableStateFlow(ActiveTasksUiState())
+    private val _activeUiState = MutableStateFlow(TasksUiState())
     val activeUiState = _activeUiState.asStateFlow()
 
     fun startEdit(task: Task) {
@@ -118,7 +115,7 @@ class TaskViewModel(
             heading = task.heading,
             dateTime = task.dateTime
         )
-        _activeUiState.value = ActiveTasksUiState(showDialog = true, editingTask=task)
+        _activeUiState.value = TasksUiState(showDialog = true, editingTask=task)
     }
 
     fun onEditTopicChange(value: String) {
@@ -161,7 +158,7 @@ class TaskViewModel(
         )
 
         dao.update(updatedTask)
-        _events.emit("Task-${updatedTask.topic} updated ✏️")
+        _events.emit("Task updated ✏️")
 
         _addEditState.value = AddEditUiState()
         onDialogDismiss()
@@ -176,12 +173,12 @@ class TaskViewModel(
 
     fun completeTask(task: Task) = viewModelScope.launch {
         dao.update(task.copy(isCompleted = true))
-        _events.emit("Hurray! Task-${task.topic} completed 🎉")
+        _events.emit("Hurray! Task completed 🎉")
     }
 
     fun deleteTask(task: Task) = viewModelScope.launch {
         dao.delete(task)
-        _events.emit("Task-${task.topic} deleted 🗑️")
+        _events.emit("Task deleted 🗑️")
     }
 
 

@@ -1,5 +1,8 @@
 package com.example.todo.ui
 
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -32,7 +35,8 @@ fun BottomBar(nav: NavHostController) {
 
     NavigationBar(
         containerColor = MaterialTheme.colorScheme.primary,
-        contentColor = MaterialTheme.colorScheme.onPrimary
+        contentColor = MaterialTheme.colorScheme.onPrimary,
+        tonalElevation = 8.dp
     ) {
         items.forEach { item ->
             val selected = currentRoute == item.screen.route

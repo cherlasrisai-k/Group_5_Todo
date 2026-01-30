@@ -1,4 +1,4 @@
-package com.example.todo.States
+package com.example.todo.states
 
 data class HomeUiState(
     val topic: String = "",
