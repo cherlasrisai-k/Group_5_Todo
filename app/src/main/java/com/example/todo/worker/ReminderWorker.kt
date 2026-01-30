@@ -3,13 +3,18 @@ package com.example.todo.worker
 import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
+import androidx.core.net.toUri
 import androidx.work.Worker
 import androidx.work.WorkerParameters
+import com.example.todo.MainActivity
 import com.example.todo.R
+
 
 class ReminderWorker(ctx: Context, params: WorkerParameters) : Worker(ctx, params) {
 
@@ -26,7 +31,7 @@ class ReminderWorker(ctx: Context, params: WorkerParameters) : Worker(ctx, param
     }
 
     @SuppressLint("ServiceCast")
-    private fun showNotification(topic:String,heading:String) {
+    private fun showNotification(topic: String, heading: String) {
 
         val channelId = "todo_channel"
         val manager =
@@ -42,11 +47,29 @@ class ReminderWorker(ctx: Context, params: WorkerParameters) : Worker(ctx, param
             )
         }
 
+
+        val intent = Intent(
+            Intent.ACTION_VIEW,
+            "todo://active_tasks".toUri(),
+            applicationContext,
+            MainActivity::class.java
+        )
+
+
+        val pendingIntent = PendingIntent.getActivity(
+            applicationContext,
+            0,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+
         val notification = NotificationCompat.Builder(applicationContext, channelId)
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setContentTitle("Hurry Up! Task Reminder: $topic")
             .setContentText(heading)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setContentIntent(pendingIntent)
             .setAutoCancel(true)
             .build()
 

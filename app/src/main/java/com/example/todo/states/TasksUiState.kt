@@ -1,4 +1,4 @@
-package com.example.todo.States
+package com.example.todo.states
 
 import com.example.todo.data.Task
 

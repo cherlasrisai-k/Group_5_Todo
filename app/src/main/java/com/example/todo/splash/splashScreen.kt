@@ -11,7 +11,13 @@ import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -29,7 +35,6 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat.getString
 import com.example.todo.MainActivity
 import com.example.todo.R
 import kotlinx.coroutines.launch
@@ -52,11 +57,9 @@ val topColor = Color(0xFFE53935)
 val bottomColor = Color(0xFFB71C1C)
 
 
-
-
 @Composable
 fun SplashScreen() {
-    val content= LocalContext.current
+    val content = LocalContext.current
     val circleScale = remember { Animatable(0f) }
     val textAlpha = remember { Animatable(0f) }
     val taglineAlpha = remember { Animatable(0f) }
@@ -69,10 +72,8 @@ fun SplashScreen() {
 
         launch {
             circleScale.animateTo(
-                targetValue = 1f,
-                animationSpec = spring(
-                    dampingRatio = Spring.DampingRatioMediumBouncy,
-                    stiffness = Spring.StiffnessLow
+                targetValue = 1f, animationSpec = spring(
+                    dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessLow
                 )
             )
         }
@@ -100,11 +101,10 @@ fun SplashScreen() {
                     .size(200.dp)
                     .graphicsLayer(scaleX = circleScale.value, scaleY = circleScale.value)
                     .clip(CircleShape)
-                    .background(Color.White),
-                contentAlignment = Alignment.Center
+                    .background(Color.White), contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text =stringResource(R.string.app_name),
+                    text = stringResource(R.string.app_name),
                     style = MaterialTheme.typography.displayMedium,
                     fontWeight = FontWeight.Bold,
                     color = colorResource(id = R.color.z_red),
@@ -117,8 +117,7 @@ fun SplashScreen() {
             Text(
                 text = stringResource(R.string.SplashScreen_Text),
                 modifier = Modifier.graphicsLayer(
-                    alpha = taglineAlpha.value,
-                    translationY = taglineTranslationY.value
+                    alpha = taglineAlpha.value, translationY = taglineTranslationY.value
                 ),
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.SemiBold,
