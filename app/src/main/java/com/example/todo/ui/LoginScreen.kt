@@ -1,6 +1,7 @@
 package com.example.todo.ui
 
 import android.annotation.SuppressLint
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,6 +19,9 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
+import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -28,7 +32,10 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -42,6 +49,7 @@ import com.example.todo.navigation.Routes
 import com.example.todo.viewmodel.AuthViewModel
 
 
+@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
 fun LoginScreen(
@@ -64,14 +72,13 @@ fun LoginScreen(
         }
     }
 
-    val configuration = LocalConfiguration.current
-    val screenWidth = configuration.screenWidthDp
+    val context= LocalContext.current
+    val windowSizeClass = calculateWindowSizeClass(context as ComponentActivity)
 
-    // Dynamically calculate font size
-    val fontSize = when {
-        screenWidth > 400 -> 20.sp   // large screen/tablet
-        screenWidth > 320 -> 16.sp   // normal phone
-        else -> 12.sp                 // small phone
+    val fontSize = when (windowSizeClass.widthSizeClass) {
+        WindowWidthSizeClass.Expanded -> 24.sp
+        WindowWidthSizeClass.Medium -> 20.sp
+        else -> 16.sp
     }
 
 
@@ -135,14 +142,16 @@ fun LoginScreen(
                             vm.onMobileChange(it)
                         }
                     },
-                    label = { Text(stringResource(R.string.TextFields_MobileNumber)) },
-                    leadingIcon = { Text("+91 ") },
+                    label = { Text(stringResource(R.string.TextFields_MobileNumber), modifier = Modifier.alpha(0.5f)) },
+                    leadingIcon = { Text("+91")},
                     keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                     colors= OutlinedTextFieldDefaults.colors(
-                        focusedTextColor = MaterialTheme.colorScheme.primary,
-                        unfocusedTextColor = MaterialTheme.colorScheme.primary,
-                        focusedBorderColor = MaterialTheme.colorScheme.primary,
-                        unfocusedBorderColor = MaterialTheme.colorScheme.primary
+                        focusedBorderColor = Color.Black,
+                        focusedLabelColor =Color.Black,
+                        unfocusedBorderColor = Color.Black,
+                        unfocusedLabelColor = Color.Black,
+                        cursorColor = Color.Black,
+                        focusedTextColor = Color.Black
                     )
                 )
 
@@ -152,18 +161,18 @@ fun LoginScreen(
                 TextButton( onClick = {
                         vm.validateAndLogin(state.mobile)
                 }) {
-                    Text(stringResource(R.string.Buttons_Login))
+                    Text(stringResource(R.string.Buttons_Login),color=Color.Black, fontWeight = FontWeight.SemiBold)
                 }
 
                 if (!vm.loginError.isNullOrEmpty())
-                    Text(vm.loginError!!, color = MaterialTheme.colorScheme.error)
+                    Text(vm.loginError!!, color = MaterialTheme.colorScheme.primary )
 
                 TextButton(onClick = {
                     vm.clearLoginState()
                     navController.navigate(Routes.REGISTER.route)
 
                 }) {
-                    Text(stringResource(R.string.LoginScreen_Registration))
+                    Text(stringResource(R.string.LoginScreen_Registration), color = Color.Black,fontWeight = FontWeight.Bold)
                 }
             }
         }
@@ -173,7 +182,7 @@ fun LoginScreen(
            .fillMaxSize()
            .weight(1f),
            contentAlignment = Alignment.BottomCenter){
-           Row() {
+           Row(verticalAlignment = Alignment.CenterVertically){
                Text(text = stringResource(R.string.LoginScreen_Terms))
            }
        }

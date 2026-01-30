@@ -1,6 +1,8 @@
 package com.example.todo.ui
 
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -9,10 +11,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Person2
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -23,19 +26,24 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
+import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -43,6 +51,7 @@ import com.example.todo.R
 import com.example.todo.navigation.Routes
 import com.example.todo.viewmodel.AuthViewModel
 
+@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
 fun RegisterScreen(vm: AuthViewModel, navController: NavController) {
 
@@ -59,17 +68,16 @@ fun RegisterScreen(vm: AuthViewModel, navController: NavController) {
 
         }
     }
+    val context = LocalContext.current
+    val windowSizeClass = calculateWindowSizeClass(context as ComponentActivity)
 
-    val configurations=LocalConfiguration.current
-
-    val screenWidth=configurations.screenWidthDp
-
-    val fontSize = when {
-        screenWidth > 400 -> 24.sp
-        screenWidth > 320 -> 20.sp
+    val dynamicFontSize = when (windowSizeClass.widthSizeClass) {
+        WindowWidthSizeClass.Expanded -> 24.sp
+        WindowWidthSizeClass.Medium -> 20.sp
         else -> 16.sp
     }
-    val dynamicFontSize = (screenWidth / 18).sp
+
+
 
     Column(
         modifier = Modifier
@@ -80,8 +88,16 @@ fun RegisterScreen(vm: AuthViewModel, navController: NavController) {
         verticalArrangement = Arrangement.Center
     ) {
 
-        Text(stringResource(R.string.registerScreen_Title), style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
-        Text(stringResource(R.string.registerScreen_Heading),style=MaterialTheme.typography.headlineSmall ,fontSize=dynamicFontSize)
+        Text(
+            stringResource(R.string.registerScreen_Title),
+            style = MaterialTheme.typography.headlineMedium,
+            fontWeight = FontWeight.Bold
+        )
+        Text(
+            stringResource(R.string.registerScreen_Heading),
+            style = MaterialTheme.typography.headlineSmall,
+            fontSize = dynamicFontSize
+        )
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -100,10 +116,23 @@ fun RegisterScreen(vm: AuthViewModel, navController: NavController) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                Text(stringResource(R.string.registerScreen_CardTitle), style = MaterialTheme.typography.headlineSmall)
+                Text(
+                    stringResource(R.string.registerScreen_CardTitle),
+                    style = MaterialTheme.typography.headlineSmall
+                )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
+                val isFieldError = rememberSaveable { mutableStateOf(false) }
+
+                isFieldError.value = !vm.RegisterError.isNullOrEmpty()
+
+               val textFieldBorderColor= if(isSystemInDarkTheme()){
+                    Color.White
+                }
+                else{
+                    Color.Black
+               }
 
                 OutlinedTextField(
                     value = state.name,
@@ -111,15 +140,27 @@ fun RegisterScreen(vm: AuthViewModel, navController: NavController) {
                         vm.onNameChange(it)
                     },
                     leadingIcon = { Icon(Icons.Default.Person, contentDescription = "Name") },
-                    label = { Text(stringResource(R.string.TextFields_Name)) },
+                    label = {
+                        Text(
+                            stringResource(R.string.TextFields_Name),
+                            modifier = Modifier.alpha(0.5f)
+                        )
+                    },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
-                    colors= OutlinedTextFieldDefaults.colors(
-                        focusedLeadingIconColor = MaterialTheme.colorScheme.primary
-                    )
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = textFieldBorderColor,
+                        focusedLabelColor = textFieldBorderColor,
+                        unfocusedBorderColor = textFieldBorderColor,
+                        unfocusedLabelColor = textFieldBorderColor,
+                        cursorColor = textFieldBorderColor,
+                        focusedTextColor = textFieldBorderColor
+                        )
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
+
+
 
                 OutlinedTextField(
                     value = state.mobile,
@@ -129,17 +170,31 @@ fun RegisterScreen(vm: AuthViewModel, navController: NavController) {
                         }
                     },
                     leadingIcon = { Icon(Icons.Default.Phone, contentDescription = "Mobile") },
-                    label = { Text(stringResource(R.string.TextFields_MobileNumber)) },
+                    label = {
+                        Text(
+                            stringResource(R.string.TextFields_MobileNumber),
+                            modifier = Modifier.alpha(0.5f)
+                        )
+                    },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
-                    colors= OutlinedTextFieldDefaults.colors(
-                        focusedLeadingIconColor = MaterialTheme.colorScheme.primary
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = textFieldBorderColor,
+                        focusedLabelColor = textFieldBorderColor,
+                        unfocusedBorderColor = textFieldBorderColor,
+                        unfocusedLabelColor = textFieldBorderColor,
+                        cursorColor = textFieldBorderColor,
+                        focusedTextColor = textFieldBorderColor
+                    ),
+                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+                    keyboardActions= KeyboardActions(
+                        onDone = {  vm.validateAndRegister(state.name, state.mobile) }
                     )
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                if (!vm.RegisterError.isNullOrEmpty()) {
+                if (isFieldError.value) {
                     Text(
                         text = vm.RegisterError!!,
                         color = MaterialTheme.colorScheme.error,
@@ -150,7 +205,7 @@ fun RegisterScreen(vm: AuthViewModel, navController: NavController) {
 
                 Button(
                     onClick = {
-                        vm.validateAndRegister(state.name,state.mobile)
+                        vm.validateAndRegister(state.name, state.mobile)
                     },
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(
