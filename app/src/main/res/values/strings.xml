@@ -24,9 +24,9 @@
     <string name="LoginScreen_Terms">All rights reserved</string>
     <string name="LoginScreen_MobileValidation">Enter mobile number</string>
     <string name="LoginScreen_MobileLengthValidation">Enter valid 10 digit number</string>
+    <string name="LoginScreen_LeadingText">+91</string>
 
 
-    "
 
 
     <string name="HomeScreen_Title">To-Do Reminder</string>
@@ -51,5 +51,6 @@
     <string name="Buttons_SelectDate">Select Date and time</string>
     <string name="Buttons_Save">Save</string>
     <string name="Buttons_Cancel">Cancel</string>
+
 
 </resources>

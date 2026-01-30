@@ -1,5 +1,6 @@
 package com.example.todo.ui
 
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -8,8 +9,14 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.example.todo.navigation.BottomNavItem
+import com.example.todo.navigation.Routes
 
 @Composable
 fun BottomBar(nav: NavHostController) {
@@ -24,16 +31,17 @@ fun BottomBar(nav: NavHostController) {
     val currentRoute = backStack?.destination?.route
 
     NavigationBar(
-        containerColor = MaterialTheme.colorScheme.primary
+        containerColor = MaterialTheme.colorScheme.primary,
+        contentColor = MaterialTheme.colorScheme.onPrimary
     ) {
         items.forEach { item ->
-            val selected = currentRoute == item.route
+            val selected = currentRoute == item.screen.route
 
             NavigationBarItem(
                 selected = selected,
                 onClick = {
-                    nav.navigate(item.route) {
-                        popUpTo("home")
+                    nav.navigate(item.screen.route) {
+                        popUpTo(Routes.HOME.route)
                         launchSingleTop = true
                     }
                 },
@@ -49,9 +57,9 @@ fun BottomBar(nav: NavHostController) {
                 colors = NavigationBarItemDefaults.colors(
                     selectedIconColor = MaterialTheme.colorScheme.onPrimary,
                     selectedTextColor = MaterialTheme.colorScheme.onPrimary,
-                    unselectedIconColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f),
-                    unselectedTextColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f),
-                    indicatorColor = MaterialTheme.colorScheme.primaryContainer
+                    indicatorColor = MaterialTheme.colorScheme.primaryContainer,
+                    unselectedIconColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.6f),
+                    unselectedTextColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.6f)
                 )
             )
         }
