@@ -40,7 +40,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
@@ -58,7 +57,7 @@ import com.example.todo.viewmodel.AuthViewModel
 fun RegisterScreen(vm: AuthViewModel, navController: NavController,activity: ComponentActivity) {
 
 
-    val state by vm.LoginRegister.collectAsState()
+    val state by vm.loginRegister.collectAsState()
 
     val scrollState = rememberScrollState()
 
@@ -134,14 +133,13 @@ fun RegisterScreen(vm: AuthViewModel, navController: NavController,activity: Com
 
                 val isFieldError = rememberSaveable { mutableStateOf(false) }
 
-                isFieldError.value = !vm.RegisterError.isNullOrEmpty()
+                isFieldError.value = !vm.registerError.isNullOrEmpty()
 
-               val textFieldBorderColor= if(isSystemInDarkTheme()){
+                val textFieldBorderColor = if (isSystemInDarkTheme()) {
                     Color.White
-                }
-                else{
+                } else {
                     Color.Black
-               }
+                }
 
                 OutlinedTextField(
                     value = state.name,
@@ -200,17 +198,15 @@ fun RegisterScreen(vm: AuthViewModel, navController: NavController,activity: Com
                         errorBorderColor = MaterialTheme.colorScheme.error
                     ),
                     keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
-                    keyboardActions= KeyboardActions(
-                        onDone = { focus.clearFocus()
-                        }
-                    )
+                    keyboardActions = KeyboardActions(
+                        onDone = { focus.clearFocus(),vm.validateAndRegister(state.name, state.mobile) })
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
                 if (isFieldError.value) {
                     Text(
-                        text = vm.RegisterError!!,
+                        text = vm.registerError!!,
                         color = MaterialTheme.colorScheme.error,
                         style = MaterialTheme.typography.bodySmall,
                         modifier = Modifier.padding(bottom = 8.dp)
@@ -220,9 +216,7 @@ fun RegisterScreen(vm: AuthViewModel, navController: NavController,activity: Com
                 Button(
                     onClick = {
                         vm.validateAndRegister(state.name, state.mobile)
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.buttonColors(
+                    }, modifier = Modifier.fillMaxWidth(), colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.primary,
                         contentColor = MaterialTheme.colorScheme.onPrimary
                     )

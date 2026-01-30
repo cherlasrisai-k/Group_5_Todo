@@ -5,9 +5,8 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
@@ -32,8 +31,8 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.todo.navigation.MainNavGraph
-import com.example.todo.ui.BottomBar
 import com.example.todo.navigation.Routes
+import com.example.todo.ui.BottomBar
 import com.example.todo.viewmodel.AuthViewModel
 import com.example.todo.viewmodel.TaskViewModel
 
@@ -49,7 +48,7 @@ fun MainScaffold(
     val bottomNavController = rememberNavController()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
-    val currentScreen= bottomNavController.currentBackStackEntryAsState().value?.destination?.route
+    val currentScreen = bottomNavController.currentBackStackEntryAsState().value?.destination?.route
 
     val isBarVisible by remember {
         derivedStateOf {
@@ -65,30 +64,28 @@ fun MainScaffold(
         topBar = {
             TopAppBar(
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    scrolledContainerColor = MaterialTheme.colorScheme.primary,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimary,
-                    actionIconContentColor = MaterialTheme.colorScheme.onPrimary
-                ),
+                containerColor = MaterialTheme.colorScheme.primary,
+                scrolledContainerColor = MaterialTheme.colorScheme.primary,
+                titleContentColor = MaterialTheme.colorScheme.onPrimary,
+                actionIconContentColor = MaterialTheme.colorScheme.onPrimary
+            ),
 
                 title = {
-                    if(currentScreen== Routes.HOME.route) {
-                               Text(
-                                text = "Welcome ${authVM.user?.name}",
-                                modifier = Modifier.padding( vertical = 8.dp),
-                                style = MaterialTheme.typography.titleMedium,
-                                color = MaterialTheme.colorScheme.onPrimary
-                            )
-                    }
-                    else{
+                    if (currentScreen == Routes.HOME.route) {
+                        Text(
+                            text = "Welcome ${authVM.user?.name}",
+                            modifier = Modifier.padding(vertical = 8.dp),
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
+                    } else {
                         IconButton(onClick = {
                             bottomNavController.popBackStack()
                         }, modifier = Modifier.size(30.dp)) {
                             Icon(Icons.Default.ArrowBack, contentDescription = "NavigateBack")
                         }
                     }
-                },
-                actions = {
+                }, actions = {
                     IconButton(onClick = {
                         authVM.logout()
 
@@ -98,8 +95,7 @@ fun MainScaffold(
                     }) {
                         Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = "Logout")
                     }
-                },
-                scrollBehavior = scrollBehavior
+                }, scrollBehavior = scrollBehavior
             )
         },
 

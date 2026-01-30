@@ -8,10 +8,17 @@ import androidx.work.WorkManager
 import androidx.work.workDataOf
 import com.example.todo.data.Task
 import com.example.todo.data.TaskDao
+import com.example.todo.states.AddEditUiState
+import com.example.todo.states.HomeUiState
+import com.example.todo.states.TasksUiState
+import com.example.todo.worker.ReminderWorker
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
@@ -28,7 +35,6 @@ class TaskViewModel(
     private val dao: TaskDao,
     private val context: Context
 ) : ViewModel() {
-
 
 
     private val currentUser = MutableStateFlow<String?>(null)
@@ -118,7 +124,7 @@ class TaskViewModel(
             heading = task.heading,
             dateTime = task.dateTime
         )
-        _activeUiState.value = TasksUiState(showDialog = true, editingTask=task)
+        _activeUiState.value = TasksUiState(showDialog = true, editingTask = task)
     }
 
     fun onEditTopicChange(value: String) {
@@ -170,7 +176,7 @@ class TaskViewModel(
     fun onDialogDismiss() {
         editingTask = null
         _addEditState.value = AddEditUiState()
-        _activeUiState.value = _activeUiState.value.copy(showDialog = false,editingTask=null)
+        _activeUiState.value = _activeUiState.value.copy(showDialog = false, editingTask = null)
     }
 
 
@@ -185,10 +191,8 @@ class TaskViewModel(
     }
 
 
-
     private val _events = MutableSharedFlow<String>()
     val events = _events.asSharedFlow()
-
 
 
     private fun scheduleReminder(task: Task) {

@@ -35,7 +35,7 @@
     <string name="HomeScreen_TextFields_Heading">Heading</string>
     <string name="HomeScreen_TopicValidation">Topic cannot be empty</string>
     <string name="HomeScreen_HeadingValidation">Heading cannot be empty</string>
-    <string name="HomeScreen_TimeValidation">Please select a future time"></string>4
+    <string name="HomeScreen_TimeValidation">Please select a future time"</string>
 
 
     <string name="ActiveTasksScreen_Title">Active Tasks</string>
@@ -51,5 +51,6 @@
     <string name="Buttons_Save">Save</string>
     <string name="Buttons_Cancel">Cancel</string>
 
+    <string name="AuthViewModel_loginError">User does not exist. Please register</string>
 
 </resources>

@@ -6,6 +6,16 @@ import androidx.activity.ComponentActivity
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -17,6 +27,23 @@ import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSiz
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.*
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -30,6 +57,11 @@ import com.example.todo.R
 import com.example.todo.viewmodel.TaskViewModel
 import java.text.DateFormat
 import java.util.*
+import com.example.todo.ui.utils.showDateTimePicker
+import com.example.todo.viewmodel.TaskViewModel
+import java.text.DateFormat
+import java.util.Date
+
 
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
@@ -79,6 +111,7 @@ fun HomeScreen(vm: TaskViewModel, activity: ComponentActivity) {
                     .padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+
                 Text(
                     stringResource(R.string.HomeScreen_CardTitle),
                     style = MaterialTheme.typography.headlineSmall
@@ -132,11 +165,12 @@ fun HomeScreen(vm: TaskViewModel, activity: ComponentActivity) {
                         unfocusedBorderColor = textFieldBorderColor,
                         unfocusedLabelColor = textFieldBorderColor,
                         cursorColor = textFieldBorderColor,
-                        focusedTextColor = textFieldBorderColor,
+                       focusedTextColor = textFieldBorderColor,
                         errorBorderColor = MaterialTheme.colorScheme.error,
                     )
                 )
 
+                  
                 if (state.headingError.isNotEmpty()) {
                     Text(
                         text = state.headingError,
@@ -145,14 +179,14 @@ fun HomeScreen(vm: TaskViewModel, activity: ComponentActivity) {
                         textAlign = TextAlign.Start
                     )
                 }
+                
 
                 Spacer(modifier = Modifier.height(12.dp))
 
                 Text(
                     text = DateFormat.getDateTimeInstance().format(Date(state.dateTime)),
                     style = MaterialTheme.typography.bodyLarge,
-                    color = if (state.timeError.isNotEmpty())
-                        MaterialTheme.colorScheme.error
+                    color = if (state.timeError.isNotEmpty()) MaterialTheme.colorScheme.error
                     else MaterialTheme.colorScheme.onSurface
                 )
 
@@ -164,51 +198,37 @@ fun HomeScreen(vm: TaskViewModel, activity: ComponentActivity) {
 
                 OutlinedButton(
                     onClick = {
-                        val cal = Calendar.getInstance()
-                        DatePickerDialog(
-                            context,
-                            { _, y, m, d ->
-                                val timeCal = Calendar.getInstance()
-                                timeCal.set(y, m, d)
-                                TimePickerDialog(
-                                    context,
-                                    { _, h, min ->
-                                        timeCal.set(Calendar.HOUR_OF_DAY, h)
-                                        timeCal.set(Calendar.MINUTE, min)
-                                        timeCal.set(Calendar.SECOND, 0)
-                                        vm.onDateTimeChange(timeCal.timeInMillis)
-                                    },
-                                    timeCal.get(Calendar.HOUR_OF_DAY),
-                                    timeCal.get(Calendar.MINUTE),
-                                    false
-                                ).show()
-                            },
-                            cal.get(Calendar.YEAR),
-                            cal.get(Calendar.MONTH),
-                            cal.get(Calendar.DAY_OF_MONTH)
-                        ).show()
-                    },
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        contentColor = MaterialTheme.colorScheme.onSurface
-                    ),
-                    modifier = Modifier.fillMaxWidth()
+                        showDateTimePicker(context) { selectedMillis ->
+                            vm.onDateTimeChange(
+                                selectedMillis
+                            )
+                        }
+                    }, colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.surface,
+                        contentColor = MaterialTheme.colorScheme.onSurface,
+                        disabledContainerColor = textFieldBorderColor
+
+
+                    ), modifier = Modifier.fillMaxWidth()
                 ) {
                     Icon(
-                        Icons.Default.DateRange,
+                        imageVector = Icons.Default.DateRange,
                         contentDescription = null,
                         modifier = Modifier.padding(end = 8.dp)
                     )
+
                     Text(stringResource(R.string.Buttons_SelectDate))
                 }
 
                 Spacer(modifier = Modifier.height(12.dp))
 
                 OutlinedButton(
-                    onClick = vm::saveTask,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.secondary,
-                        contentColor = Color.Black
-                    ),
+                    onClick = vm::saveTask, colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.surface,
+                        contentColor = MaterialTheme.colorScheme.onSurface,
+
+                        ),
+
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(stringResource(R.string.HomeScreen_Buttons_SaveTask))
@@ -223,7 +243,9 @@ fun HomeScreen(vm: TaskViewModel, activity: ComponentActivity) {
                 .padding(16.dp)
         ) { snackbarData ->
             Snackbar(modifier = Modifier.fillMaxWidth()) {
-                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                Box(
+                    modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center
+                ) {
                     Text(
                         text = snackbarData.visuals.message,
                         style = MaterialTheme.typography.bodyMedium,
@@ -233,4 +255,8 @@ fun HomeScreen(vm: TaskViewModel, activity: ComponentActivity) {
             }
         }
     }
+
 }
+
+
+
