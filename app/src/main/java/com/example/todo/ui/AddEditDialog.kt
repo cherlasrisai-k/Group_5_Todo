@@ -2,6 +2,7 @@ package com.example.todo.ui
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
@@ -11,6 +12,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
@@ -48,15 +50,25 @@ fun AddEditDialog(vm: TaskViewModel) {
 
                 val focusManager = LocalFocusManager.current
 
+                val textFieldBorderColor= if(isSystemInDarkTheme()){
+                    Color.White
+                }
+                else{
+                    Color.Black
+                }
+
                 OutlinedTextField(
                     value = state.topic,
                     onValueChange = vm::onEditTopicChange,
                     label = { Text(stringResource(R.string.EditDialog_Topic)) },
                     isError = state.topicError.isNotEmpty(),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = MaterialTheme.colorScheme.primary,
-                        unfocusedBorderColor = MaterialTheme.colorScheme.secondary,
-                        errorBorderColor = MaterialTheme.colorScheme.error
+                        focusedBorderColor = textFieldBorderColor,
+                        focusedLabelColor = textFieldBorderColor,
+                        unfocusedBorderColor = textFieldBorderColor,
+                        unfocusedLabelColor = textFieldBorderColor,
+                        cursorColor = textFieldBorderColor,
+                        focusedTextColor = textFieldBorderColor
                     ),
                     keyboardOptions = KeyboardOptions(
                         imeAction = ImeAction.Done,
@@ -72,15 +84,20 @@ fun AddEditDialog(vm: TaskViewModel) {
                 if (state.topicError.isNotEmpty())
                     Text(state.topicError, color = MaterialTheme.colorScheme.error)
 
+
+
                 OutlinedTextField(
                     value = state.heading,
                     onValueChange = vm::onEditHeadingChange,
                     label = { Text(stringResource(R.string.EditDialog_Heading)) },
                     isError = state.headingError.isNotEmpty(),
                     colors= OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = MaterialTheme.colorScheme.primary,
-                        unfocusedBorderColor = MaterialTheme.colorScheme.secondary,
-                        errorBorderColor = MaterialTheme.colorScheme.error),
+                        focusedBorderColor = textFieldBorderColor,
+                        focusedLabelColor = textFieldBorderColor,
+                        unfocusedBorderColor = textFieldBorderColor,
+                        unfocusedLabelColor = textFieldBorderColor,
+                        cursorColor = textFieldBorderColor,
+                        focusedTextColor = textFieldBorderColor),
                     keyboardOptions = KeyboardOptions(
                         imeAction = ImeAction.Done,
                         keyboardType = KeyboardType.Text

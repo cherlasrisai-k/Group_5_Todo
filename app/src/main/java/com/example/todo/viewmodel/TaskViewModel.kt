@@ -20,6 +20,7 @@ import com.example.todo.States.HomeUiState
 import com.example.todo.States.TasksUiState
 import com.example.todo.States.AddEditUiState
 import com.example.todo.worker.ReminderWorker
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import java.util.concurrent.TimeUnit
 
@@ -38,11 +39,13 @@ class TaskViewModel(
 
 
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     val todayTasks :StateFlow<List<Task>>  = currentUser.flatMapLatest { mobile ->
         if (mobile == null) flowOf(emptyList())
         else dao.todayTasks(mobile)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     val completedTasks = currentUser.flatMapLatest { mobile ->
         if (mobile == null) flowOf(emptyList())
         else dao.completedTasks(mobile)
@@ -97,7 +100,7 @@ class TaskViewModel(
         scheduleReminder(task)
 
         _homeState.value = HomeUiState()
-        _events.emit("Task added successfully ✅")
+        _events.emit("Task-${task.topic} added successfully ✅")
     }
 
 
@@ -158,7 +161,7 @@ class TaskViewModel(
         )
 
         dao.update(updatedTask)
-        _events.emit("Task updated ✏️")
+        _events.emit("Task-${updatedTask.topic} updated ✏️")
 
         _addEditState.value = AddEditUiState()
         onDialogDismiss()
@@ -173,12 +176,12 @@ class TaskViewModel(
 
     fun completeTask(task: Task) = viewModelScope.launch {
         dao.update(task.copy(isCompleted = true))
-        _events.emit("Hurray! Task completed 🎉")
+        _events.emit("Hurray! Task-${task.topic} completed 🎉")
     }
 
     fun deleteTask(task: Task) = viewModelScope.launch {
         dao.delete(task)
-        _events.emit("Task deleted 🗑️")
+        _events.emit("Task-${task.topic} deleted 🗑️")
     }
 
 
