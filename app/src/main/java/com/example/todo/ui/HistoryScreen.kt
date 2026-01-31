@@ -45,6 +45,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.todo.data.Task
@@ -53,8 +54,10 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
-fun HistoryScreen(vm: TaskViewModel, activity: ComponentActivity) {
+fun HistoryScreen(vm: TaskViewModel) {
     val tasks by vm.completedTasks.collectAsState()
+    val context = LocalContext.current
+    val activity = context as ComponentActivity
     val windowSizeClass = calculateWindowSizeClass(activity)
     val scope = rememberCoroutineScope()
 

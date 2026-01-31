@@ -43,7 +43,6 @@ fun MainScaffold(
     taskVM: TaskViewModel,
     authVM: AuthViewModel,
     appNavController : NavController,
-    activity: ComponentActivity
 ) {
     val bottomNavController = rememberNavController()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -87,6 +86,8 @@ fun MainScaffold(
                     }
                 }, actions = {
                     IconButton(onClick = {
+
+
                         authVM.logout()
 
                         appNavController.navigate(Routes.LOGIN.route) {
@@ -113,8 +114,7 @@ fun MainScaffold(
         MainNavGraph(
             navController = bottomNavController,
             taskVM = taskVM,
-            modifier = Modifier.padding(padding),
-            activity
+            modifier = Modifier.padding(padding)
         )
 
     }

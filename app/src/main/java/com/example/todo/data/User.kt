@@ -7,5 +7,5 @@ import androidx.room.PrimaryKey
 data class User(
     @PrimaryKey val mobile: String,
     val name: String,
-    val isLoggedIn: Boolean = false
+    val isLoggedIn:Boolean = false
 )

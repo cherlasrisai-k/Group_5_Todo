@@ -1,13 +1,13 @@
 package com.example.todo.navigation
 
-import androidx.activity.ComponentActivity
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -20,46 +20,51 @@ import com.example.todo.viewmodel.TaskViewModel
 @Composable
 fun AppNavGraph(
     navController: NavHostController,
-    authVM: AuthViewModel,
-    taskVM: TaskViewModel,
-    startDestination: String,
-    activity: ComponentActivity
+    authViewModel: AuthViewModel,
+    startDestination: String
 ) {
-    var savedMobile by rememberSaveable { mutableStateOf<String?>(null) }
-
-    LaunchedEffect(savedMobile) {
-        savedMobile?.let { taskVM.setUser(it) }
-    }
-
     NavHost(
-        navController = navController, startDestination = startDestination
+        navController = navController,
+        startDestination = startDestination
     ) {
+        composable(Routes.SPLASH.route) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+
+            LaunchedEffect(Unit) {
+                val loggedInUser = authViewModel.getLoggedInUser()
+                if (loggedInUser != null) {
+                    authViewModel.autoLogin(loggedInUser)
+                    navController.navigate(Routes.MAIN.withUser(loggedInUser.mobile)) {
+                        popUpTo(Routes.SPLASH.route) { inclusive = true }
+                    }
+                } else {
+                    navController.navigate(Routes.LOGIN.route) {
+                        popUpTo(Routes.SPLASH.route) { inclusive = true }
+                    }
+                }
+            }
+        }
 
         composable(Routes.LOGIN.route) {
-            LoginScreen(
-                vm = authVM,
-                navController = navController,
-                activity
-            )
+            LoginScreen(vm = authViewModel, navController = navController)
         }
 
         composable(Routes.REGISTER.route) {
-            RegisterScreen(authVM,navController = navController,activity)
+            RegisterScreen(vm = authViewModel, navController = navController)
         }
 
         composable(Routes.MAIN.route) {
-            LaunchedEffect(authVM.user) {
-                authVM.user?.let {
-                    taskVM.setUser(it.mobile)
-                }
-            }
-
+            val taskVM: TaskViewModel = hiltViewModel()
 
             MainScaffold(
                 taskVM = taskVM,
-                authVM = authVM,
-                appNavController = navController,
-                activity
+                authVM = authViewModel,
+                appNavController = navController
             )
         }
     }
