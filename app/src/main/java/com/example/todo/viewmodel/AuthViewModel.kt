@@ -1,6 +1,5 @@
 package com.example.todo.viewmodel
 
-import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -8,13 +7,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.todo.data.User
 import com.example.todo.data.UserDao
-import com.example.todo.session.SessionManager
 import com.example.todo.states.LoginRegisterUIStates
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class AuthViewModel(private val dao: UserDao, private val context: Context) : ViewModel() {
+@HiltViewModel
+class AuthViewModel @Inject constructor(
+    private val dao: UserDao
+) : ViewModel() {
 
     private val _loginRegister = MutableStateFlow(LoginRegisterUIStates())
     val loginRegister = _loginRegister.asStateFlow()
@@ -33,10 +36,10 @@ class AuthViewModel(private val dao: UserDao, private val context: Context) : Vi
         if (result == null) {
             loginError = "User does not exist. Please register."
         } else {
-            user = result
+            user = result.copy(isLoggedIn = true)
+            dao.updateUser(user!!)
             loginError = null
             _loginRegister.value = LoginRegisterUIStates()
-            SessionManager.saveUser(context, result.mobile)
         }
     }
 
@@ -46,28 +49,23 @@ class AuthViewModel(private val dao: UserDao, private val context: Context) : Vi
 
         if (existingUser == null) {
             // New user → insert
-            dao.register(User(mobile, name))
+            val newUser = User(mobile, name, isLoggedIn = true)
+            dao.register(newUser)
 
             // Fetch again after insert
             user = dao.login(mobile)
-            //Log.d("REGISTER_DEBUG", "New user created = $user")
-            user?.let {
-                SessionManager.saveUser(context, it.mobile)
-            }
-
 
         } else {
             // Already exists
             user = null
             registerError = "User already exists. Please login."
-            //Log.d("REGISTER_DEBUG", "User already exists")
         }
     }
 
 
     fun logout() = viewModelScope.launch {
+        dao.logout()
         user = null
-        SessionManager.clear(context)
     }
 
     fun validateAndLogin(mobile: String) {
@@ -80,10 +78,7 @@ class AuthViewModel(private val dao: UserDao, private val context: Context) : Vi
 
 
     fun validateAndRegister(name: String, mobile: String) {
-        //Log.d("VM_TEST", "Register clicked: $name , $mobile")
-
         registerError = null
-        //Log.d("REGISTER_DEBUG", "Clicked: $name , $mobile")
 
         when {
             name.isBlank() -> registerError = "Name cannot be empty"
@@ -105,12 +100,18 @@ class AuthViewModel(private val dao: UserDao, private val context: Context) : Vi
         loginError = null
     }
 
-    fun autoLogin(mobile: String) = viewModelScope.launch {
-        user = dao.login(mobile)
+    fun clearRegisterState() {
+        _loginRegister.value = LoginRegisterUIStates()
+        registerError = null
+    }
+
+    suspend fun getLoggedInUser(): User? {
+        return dao.getLoggedInUser()
+    }
+    fun autoLogin(loggedInUser: User) {
+        user = loggedInUser
     }
 
 
+
 }
-
-
-

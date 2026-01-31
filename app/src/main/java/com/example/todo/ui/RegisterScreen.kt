@@ -1,6 +1,7 @@
 package com.example.todo.ui
 
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
@@ -43,10 +44,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.todo.R
 import com.example.todo.navigation.Routes
@@ -54,8 +57,12 @@ import com.example.todo.viewmodel.AuthViewModel
 
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
-fun RegisterScreen(vm: AuthViewModel, navController: NavController,activity: ComponentActivity) {
+fun RegisterScreen(vm: AuthViewModel = hiltViewModel(), navController: NavController) {
 
+    BackHandler {
+        vm.clearLoginState()
+        navController.popBackStack()
+    }
 
     val state by vm.loginRegister.collectAsState()
 
@@ -63,13 +70,16 @@ fun RegisterScreen(vm: AuthViewModel, navController: NavController,activity: Com
 
     LaunchedEffect(vm.user) {
         if (vm.user != null) {
-            navController.navigate(Routes.MAIN.route) {
-                popUpTo(Routes.REGISTER.route) { inclusive = true }
+            navController.navigate(
+                Routes.MAIN.withUser(vm.user!!.mobile)
+            ) {
+                popUpTo(Routes.LOGIN.route) { inclusive = true }
             }
-
         }
     }
 
+    val context = LocalContext.current
+    val activity = context as ComponentActivity
     val windowSizeClass = calculateWindowSizeClass(activity)
 
    val focus= LocalFocusManager.current
@@ -135,12 +145,6 @@ fun RegisterScreen(vm: AuthViewModel, navController: NavController,activity: Com
 
                 isFieldError.value = !vm.registerError.isNullOrEmpty()
 
-                val textFieldBorderColor = if (isSystemInDarkTheme()) {
-                    Color.White
-                } else {
-                    Color.Black
-                }
-
                 OutlinedTextField(
                     value = state.name,
                     onValueChange = {
@@ -156,14 +160,13 @@ fun RegisterScreen(vm: AuthViewModel, navController: NavController,activity: Com
                     },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
+                    textStyle = TextStyle(color = Color.Black),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = textFieldBorderColor,
-                        focusedLabelColor = textFieldBorderColor,
-                        unfocusedBorderColor = textFieldBorderColor,
-                        unfocusedLabelColor = textFieldBorderColor,
-                        cursorColor = textFieldBorderColor,
-                        focusedTextColor = textFieldBorderColor,
-                        errorBorderColor = MaterialTheme.colorScheme.error
+                        cursorColor = Color.Black,
+                        focusedBorderColor = Color.Black,
+                        unfocusedBorderColor = Color.Black,
+                        errorBorderColor = MaterialTheme.colorScheme.error,
+                        focusedLabelColor = Color.Black,
                     )
                 )
 
@@ -188,14 +191,13 @@ fun RegisterScreen(vm: AuthViewModel, navController: NavController,activity: Com
                     isError = !vm.RegisterError.isNullOrEmpty(),
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
+                    textStyle = TextStyle(color = Color.Black),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = textFieldBorderColor,
-                        focusedLabelColor = textFieldBorderColor,
-                        unfocusedBorderColor = textFieldBorderColor,
-                        unfocusedLabelColor = textFieldBorderColor,
-                        cursorColor = textFieldBorderColor,
-                        focusedTextColor = textFieldBorderColor,
-                        errorBorderColor = MaterialTheme.colorScheme.error
+                        cursorColor = Color.Black,
+                        focusedBorderColor = Color.Black,
+                        unfocusedBorderColor = Color.Black,
+                        errorBorderColor = MaterialTheme.colorScheme.error,
+                        focusedLabelColor = Color.Black,
                     ),
                     keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                     keyboardActions = KeyboardActions(

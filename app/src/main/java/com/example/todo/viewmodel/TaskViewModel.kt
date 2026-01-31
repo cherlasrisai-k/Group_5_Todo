@@ -1,6 +1,7 @@
 package com.example.todo.viewmodel
 
-import android.content.Context
+import android.app.Application
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.work.OneTimeWorkRequestBuilder
@@ -12,6 +13,7 @@ import com.example.todo.states.AddEditUiState
 import com.example.todo.states.HomeUiState
 import com.example.todo.states.TasksUiState
 import com.example.todo.worker.ReminderWorker
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,33 +32,28 @@ import com.example.todo.worker.ReminderWorker
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
-class TaskViewModel(
+@HiltViewModel
+class TaskViewModel @Inject constructor(
     private val dao: TaskDao,
-    private val context: Context
+    savedStateHandle: SavedStateHandle,
+    private val application: Application
 ) : ViewModel() {
 
-
-    private val currentUser = MutableStateFlow<String?>(null)
-
-    fun setUser(mobile: String) {
-        currentUser.value = mobile
-    }
-
-
+    private val currentUser: StateFlow<String?> = savedStateHandle.getStateFlow("user", null)
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val todayTasks :StateFlow<List<Task>>  = currentUser.flatMapLatest { mobile ->
+    val todayTasks: StateFlow<List<Task>> = currentUser.flatMapLatest { mobile ->
         if (mobile == null) flowOf(emptyList())
         else dao.todayTasks(mobile)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val completedTasks = currentUser.flatMapLatest { mobile ->
+    val completedTasks: StateFlow<List<Task>> = currentUser.flatMapLatest { mobile ->
         if (mobile == null) flowOf(emptyList())
         else dao.completedTasks(mobile)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
-
 
     private val _homeState = MutableStateFlow(HomeUiState())
     val homeState = _homeState.asStateFlow()
@@ -109,8 +106,6 @@ class TaskViewModel(
         _events.emit("Task-${task.topic} added successfully ✅")
     }
 
-
-    private var editingTask: Task? = null
     private val _addEditState = MutableStateFlow(AddEditUiState())
     val addEditState = _addEditState.asStateFlow()
 
@@ -118,7 +113,6 @@ class TaskViewModel(
     val activeUiState = _activeUiState.asStateFlow()
 
     fun startEdit(task: Task) {
-        editingTask = task
         _addEditState.value = AddEditUiState(
             topic = task.topic,
             heading = task.heading,
@@ -174,11 +168,9 @@ class TaskViewModel(
     }
 
     fun onDialogDismiss() {
-        editingTask = null
         _addEditState.value = AddEditUiState()
         _activeUiState.value = _activeUiState.value.copy(showDialog = false, editingTask = null)
     }
-
 
     fun completeTask(task: Task) = viewModelScope.launch {
         dao.update(task.copy(isCompleted = true))
@@ -190,15 +182,13 @@ class TaskViewModel(
         _events.emit("Task-${task.topic} deleted 🗑️")
     }
 
-
     private val _events = MutableSharedFlow<String>()
     val events = _events.asSharedFlow()
 
-
     private fun scheduleReminder(task: Task) {
         val reminderTime = task.dateTime - (5 * 60 * 1000)
-        val delay = reminderTime - System.currentTimeMillis()
-        if (delay <= 0) return
+        var delay = reminderTime - System.currentTimeMillis()
+        if (delay <= 0) delay = -delay
 
         val data = workDataOf(
             "topic" to task.topic,
@@ -210,8 +200,6 @@ class TaskViewModel(
             .setInputData(data)
             .build()
 
-        WorkManager.getInstance(context).enqueue(request)
+        WorkManager.getInstance(application).enqueue(request)
     }
 }
-
-

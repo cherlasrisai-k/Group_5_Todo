@@ -48,7 +48,9 @@ import com.example.todo.viewmodel.AuthViewModel
 @SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
 fun LoginScreen(
-    vm: AuthViewModel, navController: NavController
+    vm: AuthViewModel,
+    navController: NavController,
+    activity: ComponentActivity
 ) {
 
     val state by vm.loginRegister.collectAsState()
@@ -66,8 +68,8 @@ fun LoginScreen(
         }
     }
 
-    val context = LocalContext.current
-    val windowSizeClass = calculateWindowSizeClass(context as ComponentActivity)
+
+    val windowSizeClass = calculateWindowSizeClass(activity)
 
     val fontSize = when (windowSizeClass.widthSizeClass) {
         WindowWidthSizeClass.Expanded -> 24.sp
@@ -150,6 +152,7 @@ fun LoginScreen(
                         )
                     },
                     leadingIcon = { Text(stringResource(R.string.LoginScreen_LeadingText)) },
+                  isError =!vm.loginError.isNullOrEmpty(),
                     keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = Color.Black,
@@ -157,7 +160,8 @@ fun LoginScreen(
                         unfocusedBorderColor = Color.Black,
                         unfocusedLabelColor = Color.Black,
                         cursorColor = Color.Black,
-                        focusedTextColor = Color.Black
+                        focusedTextColor = Color.Black,
+                        errorBorderColor = MaterialTheme.colorScheme.error
                     )
                 )
 
