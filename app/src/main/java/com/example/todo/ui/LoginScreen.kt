@@ -1,7 +1,7 @@
 package com.example.todo.ui
 
 import android.annotation.SuppressLint
-import androidx.activity.ComponentActivity
+import android.app.Activity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -38,6 +38,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -57,7 +58,6 @@ fun LoginScreen(
 
     val state by vm.loginRegister.collectAsState()
 
-    val scrollState = rememberScrollState()
     LaunchedEffect(vm.user) {
         if (vm.user != null) {
             navController.navigate(
@@ -68,12 +68,38 @@ fun LoginScreen(
         }
     }
 
+    LoginScreenContent(
+        mobile = state.mobile,
+        loginError = vm.loginError,
+        onMobileChange = vm::onMobileChange,
+        onLogin = { vm.validateAndLogin(state.mobile) },
+        onGoToRegister = {
+            vm.clearLoginState()
+            navController.navigate(Routes.REGISTER.route)
+        }
+    )
+}
+
+@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
+@Composable
+fun LoginScreenContent(
+    mobile: String,
+    loginError: String?,
+    onMobileChange: (String) -> Unit,
+    onLogin: () -> Unit,
+    onGoToRegister: () -> Unit
+) {
+    val scrollState = rememberScrollState()
 
     val context = LocalContext.current
-    val activity = context as ComponentActivity
-    val windowSizeClass = calculateWindowSizeClass(activity)
+    val windowSizeClass = if (context is Activity) {
+        calculateWindowSizeClass(activity = context)
+    } else {
+        // Provide a default for previews
+        null
+    }
 
-    val fontSize = when (windowSizeClass.widthSizeClass) {
+    val fontSize = when (windowSizeClass?.widthSizeClass) {
         WindowWidthSizeClass.Expanded -> 24.sp
         WindowWidthSizeClass.Medium -> 20.sp
         else -> 16.sp
@@ -87,7 +113,8 @@ fun LoginScreen(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(4f), verticalArrangement = Arrangement.Top
+                .weight(4f),
+            verticalArrangement = Arrangement.Top
         ) {
             Image(
                 modifier = Modifier.fillMaxWidth(),
@@ -101,10 +128,11 @@ fun LoginScreen(
         Box(
             modifier = Modifier
                 .padding(16.dp)
-                .weight(2f), contentAlignment = Alignment.Center
+                .weight(2f),
+            contentAlignment = Alignment.Center
         ) {
             Column(
-                modifier = Modifier.fillMaxSize().verticalScroll(scrollState),
+                modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -139,12 +167,8 @@ fun LoginScreen(
                 )
 
                 OutlinedTextField(
-                    value = state.mobile,
-                    onValueChange = {
-                        if (it.length <= 10 && it.all { ch -> ch.isDigit() }) {
-                            vm.onMobileChange(it)
-                        }
-                    },
+                    value = mobile,
+                    onValueChange = onMobileChange,
                     label = {
                         Text(
                             stringResource(R.string.TextFields_MobileNumber),
@@ -152,7 +176,7 @@ fun LoginScreen(
                         )
                     },
                     leadingIcon = { Text(stringResource(R.string.LoginScreen_LeadingText)) },
-                    isError = !vm.loginError.isNullOrEmpty(),
+                    isError = !loginError.isNullOrEmpty(),
                     textStyle = TextStyle(color = Color.Black),
                     keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                     colors = OutlinedTextFieldDefaults.colors(
@@ -164,12 +188,7 @@ fun LoginScreen(
                     )
                 )
 
-
-
-
-                TextButton(onClick = {
-                    vm.validateAndLogin(state.mobile)
-                }) {
+                TextButton(onClick = onLogin) {
                     Text(
                         stringResource(R.string.Buttons_Login),
                         color = Color.Black,
@@ -177,15 +196,11 @@ fun LoginScreen(
                     )
                 }
 
-                if (!vm.loginError.isNullOrEmpty()) Text(
-                    vm.loginError!!, color = MaterialTheme.colorScheme.primary
+                if (!loginError.isNullOrEmpty()) Text(
+                    loginError, color = MaterialTheme.colorScheme.primary
                 )
 
-                TextButton(onClick = {
-                    vm.clearLoginState()
-                    navController.navigate(Routes.REGISTER.route)
-
-                }) {
+                TextButton(onClick = onGoToRegister) {
                     Text(
                         stringResource(R.string.LoginScreen_Registration),
                         color = Color.Black,
@@ -199,13 +214,36 @@ fun LoginScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .weight(1f), contentAlignment = Alignment.BottomCenter
+                .weight(1f),
+            contentAlignment = Alignment.BottomCenter
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(text = stringResource(R.string.LoginScreen_Terms))
             }
         }
-
-
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun LoginScreenPreview() {
+    LoginScreenContent(
+        mobile = "",
+        loginError = null,
+        onMobileChange = {},
+        onLogin = {},
+        onGoToRegister = {}
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun LoginScreenErrorPreview() {
+    LoginScreenContent(
+        mobile = "12345",
+        loginError = "User does not exist. Please register.",
+        onMobileChange = {},
+        onLogin = {},
+        onGoToRegister = {}
+    )
 }

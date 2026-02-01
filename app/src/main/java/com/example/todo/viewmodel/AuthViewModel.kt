@@ -102,7 +102,10 @@ class AuthViewModel @Inject constructor(
     }
 
     fun onMobileChange(value: String) {
-        _loginRegister.value = _loginRegister.value.copy(mobile = value)
+        val digitsOnly = value.filter { it.isDigit() }
+        if (digitsOnly.length <= 10) {
+            _loginRegister.value = _loginRegister.value.copy(mobile = digitsOnly)
+        }
     }
 
     fun onNameChange(value: String) {

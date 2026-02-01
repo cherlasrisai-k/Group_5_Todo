@@ -1,6 +1,6 @@
 package com.example.todo.ui
 
-import androidx.activity.ComponentActivity
+import android.app.Activity
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -34,66 +34,82 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.todo.R
 import com.example.todo.navigation.Routes
+import com.example.todo.states.LoginRegisterUIStates
 import com.example.todo.viewmodel.AuthViewModel
 
-@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
 fun RegisterScreen(vm: AuthViewModel = hiltViewModel(), navController: NavController) {
 
-    BackHandler {
-        vm.clearLoginState()
-        navController.popBackStack()
-    }
-
-    LaunchedEffect(Unit) {
-        vm.clearRegisterState()
-    }
-
     val state by vm.loginRegister.collectAsState()
-
-    val scrollState = rememberScrollState()
 
     LaunchedEffect(vm.user) {
         if (vm.user != null) {
             navController.navigate(
                 Routes.MAIN.withUser(vm.user!!.mobile)
             ) {
+
                 popUpTo(Routes.LOGIN.route) { inclusive = true }
             }
         }
     }
 
+    RegisterScreenContent(
+        state = state,
+        registerError = vm.registerError,
+        onNameChange = vm::onNameChange,
+        onMobileChange = vm::onMobileChange,
+        onRegister = { vm.validateAndRegister(state.name, state.mobile) },
+        onBack = {
+            vm.clearLoginState()
+            vm.clearRegisterState()
+            navController.popBackStack()
+        }
+    )
+}
+
+@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
+@Composable
+fun RegisterScreenContent(
+    state: LoginRegisterUIStates,
+    registerError: String?,
+    onNameChange: (String) -> Unit,
+    onMobileChange: (String) -> Unit,
+    onRegister: () -> Unit,
+    onBack: () -> Unit
+) {
+    BackHandler { onBack() }
+
+    val scrollState = rememberScrollState()
+
     val context = LocalContext.current
-    val activity = context as ComponentActivity
-    val windowSizeClass = calculateWindowSizeClass(activity)
+    val windowSizeClass = if (context is Activity) {
+        calculateWindowSizeClass(activity = context)
+    } else {
+        null
+    }
 
-   val focus= LocalFocusManager.current
-
-    val dynamicFontSize = when (windowSizeClass.widthSizeClass) {
+    val dynamicFontSize = when (windowSizeClass?.widthSizeClass) {
         WindowWidthSizeClass.Expanded -> 24.sp
         WindowWidthSizeClass.Medium -> 20.sp
         else -> 16.sp
     }
-    val cardWidthMultiplier = when (windowSizeClass.widthSizeClass) {
+    val cardWidthMultiplier = when (windowSizeClass?.widthSizeClass) {
         WindowWidthSizeClass.Compact -> 1f
         WindowWidthSizeClass.Medium -> 0.7f
         WindowWidthSizeClass.Expanded -> 0.5f
@@ -145,16 +161,12 @@ fun RegisterScreen(vm: AuthViewModel = hiltViewModel(), navController: NavContro
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                val isFieldError = rememberSaveable { mutableStateOf(false) }
-
-                isFieldError.value = !vm.registerError.isNullOrEmpty()
+                val isFieldError = !registerError.isNullOrEmpty()
 
                 OutlinedTextField(
                     value = state.name,
-                    onValueChange = {
-                        vm.onNameChange(it)
-                    },
-                    isError = !vm.registerError.isNullOrEmpty(),
+                    onValueChange = onNameChange,
+                    isError = isFieldError,
                     leadingIcon = { Icon(Icons.Default.Person, contentDescription = "Name") },
                     label = {
                         Text(
@@ -176,15 +188,9 @@ fun RegisterScreen(vm: AuthViewModel = hiltViewModel(), navController: NavContro
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-
-
                 OutlinedTextField(
                     value = state.mobile,
-                    onValueChange = {
-                        if (it.length <= 10 && it.all { ch -> ch.isDigit() }) {
-                            vm.onMobileChange(it)
-                        }
-                    },
+                    onValueChange = onMobileChange,
                     leadingIcon = { Icon(Icons.Default.Phone, contentDescription = "Mobile") },
                     label = {
                         Text(
@@ -192,7 +198,7 @@ fun RegisterScreen(vm: AuthViewModel = hiltViewModel(), navController: NavContro
                             modifier = Modifier.alpha(0.5f)
                         )
                     },
-                    isError = !vm.registerError.isNullOrEmpty(),
+                    isError = isFieldError,
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     textStyle = TextStyle(color = Color.Black),
@@ -204,16 +210,14 @@ fun RegisterScreen(vm: AuthViewModel = hiltViewModel(), navController: NavContro
                         focusedLabelColor = Color.Black,
                     ),
                     keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
-                    keyboardActions = KeyboardActions(
-                        onDone = { vm.validateAndRegister(state.name, state.mobile) })
-                    //focus.clearFocus(),
+                    keyboardActions = KeyboardActions(onDone = { onRegister() })
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                if (isFieldError.value) {
+                if (isFieldError) {
                     Text(
-                        text = vm.registerError!!,
+                        text = registerError!!,
                         color = MaterialTheme.colorScheme.error,
                         style = MaterialTheme.typography.bodySmall,
                         modifier = Modifier.padding(bottom = 8.dp)
@@ -221,9 +225,9 @@ fun RegisterScreen(vm: AuthViewModel = hiltViewModel(), navController: NavContro
                 }
 
                 Button(
-                    onClick = {
-                        vm.validateAndRegister(state.name, state.mobile)
-                    }, modifier = Modifier.fillMaxWidth(), colors = ButtonDefaults.buttonColors(
+                    onClick = onRegister, 
+                    modifier = Modifier.fillMaxWidth(), 
+                    colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.primary,
                         contentColor = MaterialTheme.colorScheme.onPrimary
                     )
@@ -233,4 +237,30 @@ fun RegisterScreen(vm: AuthViewModel = hiltViewModel(), navController: NavContro
             }
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun RegisterScreenPreview() {
+    RegisterScreenContent(
+        state = LoginRegisterUIStates(),
+        registerError = null,
+        onNameChange = {},
+        onMobileChange = {},
+        onRegister = {},
+        onBack = {}
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun RegisterScreenErrorPreview() {
+    RegisterScreenContent(
+        state = LoginRegisterUIStates(name = "John Doe", mobile = "123"),
+        registerError = "Enter a valid 10-digit mobile number",
+        onNameChange = {},
+        onMobileChange = {},
+        onRegister = {},
+        onBack = {}
+    )
 }
