@@ -64,6 +64,10 @@ fun RegisterScreen(vm: AuthViewModel = hiltViewModel(), navController: NavContro
         navController.popBackStack()
     }
 
+    LaunchedEffect(Unit) {
+        vm.clearRegisterState()
+    }
+
     val state by vm.loginRegister.collectAsState()
 
     val scrollState = rememberScrollState()
