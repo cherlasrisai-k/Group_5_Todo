@@ -35,6 +35,9 @@ interface TaskDao {
     )
     fun completedTasks(mobile: String): Flow<List<Task>>
 
+    @Query("DELETE FROM tasks WHERE userMobile = :userMobile")
+    suspend fun deleteTasksByUser(userMobile: String)
+
     // For reminder
     @Query(
         """

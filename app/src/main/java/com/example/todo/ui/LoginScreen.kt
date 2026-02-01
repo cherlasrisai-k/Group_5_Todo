@@ -182,7 +182,7 @@ fun LoginScreen(
                 )
 
                 TextButton(onClick = {
-                    vm.clearRegisterState()
+                    vm.clearLoginState()
                     navController.navigate(Routes.REGISTER.route)
 
                 }) {
