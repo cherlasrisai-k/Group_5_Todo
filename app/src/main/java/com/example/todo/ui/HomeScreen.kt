@@ -27,6 +27,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
@@ -54,13 +55,15 @@ import java.util.Date
 
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
-fun HomeScreen(vm: TaskViewModel, activity: ComponentActivity) {
+fun HomeScreen(vm: TaskViewModel = hiltViewModel()) {
 
     val state by vm.homeState.collectAsState()
-    val context = LocalContext.current
     val scrollState = rememberScrollState()
     val snackbarHostState = remember { SnackbarHostState() }
     val focus = LocalFocusManager.current
+    val context = LocalContext.current
+    val activity = context as ComponentActivity
+    val windowSizeClass = calculateWindowSizeClass(activity)
 
     LaunchedEffect(Unit) {
         vm.events.collect { msg ->
@@ -69,7 +72,7 @@ fun HomeScreen(vm: TaskViewModel, activity: ComponentActivity) {
     }
 
     val textFieldBorderColor = if (isSystemInDarkTheme()) Color.White else Color.Black
-    val windowSizeClass = calculateWindowSizeClass(activity)
+
 
     val cardWidthMultiplier = when (windowSizeClass.widthSizeClass) {
         WindowWidthSizeClass.Compact -> 1f

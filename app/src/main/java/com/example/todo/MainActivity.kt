@@ -1,73 +1,48 @@
 package com.example.todo
 
+import android.Manifest
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.navigation.compose.rememberNavController
-import com.example.todo.data.AppDatabase
 import com.example.todo.navigation.AppNavGraph
 import com.example.todo.navigation.Routes
-import com.example.todo.session.SessionManager
 import com.example.todo.ui.theme.TodoTheme
 import com.example.todo.viewmodel.AuthViewModel
-import com.example.todo.viewmodel.TaskViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    private lateinit var authVM: AuthViewModel
-    private lateinit var taskVM: TaskViewModel
+    private val authViewModel: AuthViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val db = AppDatabase.get(applicationContext)
-        authVM = AuthViewModel(db.userDao(), applicationContext)
-        taskVM = TaskViewModel(db.taskDao(), applicationContext)
-
         setContent {
-            TodoTheme {
-                var startRoute by rememberSaveable { mutableStateOf<String?>(null) }
-
+            // Notification Permission
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                val permissionLauncher = rememberLauncherForActivityResult(
+                    contract = ActivityResultContracts.RequestPermission(),
+                    onResult = { /* isGranted -> can be used later if needed */ }
+                )
                 LaunchedEffect(Unit) {
-                    try {
-                        val savedUser = SessionManager.getUser(applicationContext)
-
-                        startRoute = if (savedUser != null) {
-                            authVM.autoLogin(savedUser)
-                            taskVM.setUser(savedUser)
-                            Routes.MAIN.route
-                        } else {
-                            Routes.LOGIN.route
-                        }
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                        startRoute = Routes.LOGIN.route
-                    }
+                    permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
                 }
+            }
 
-
-                    val navController = rememberNavController()
-
-                    AppNavGraph(
-                        navController = navController,
-                        authVM = authVM,
-                        taskVM = taskVM,
-                        startDestination = Routes.LOGIN.route,
-                        activity = this
-                    )
-                }
+            TodoTheme {
+                AppNavGraph(
+                    navController = rememberNavController(),
+                    authViewModel = authViewModel,
+                    startDestination = Routes.SPLASH.route
+                )
             }
         }
-
-            }
-
-
-
-
-
-
+    }
+}

@@ -1,9 +1,12 @@
 plugins {
-    id("com.android.application")
-    id("org.jetbrains.kotlin.android")
-    id("org.jetbrains.kotlin.kapt")
-    id("org.jetbrains.kotlin.plugin.compose")
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.kapt)
+
+    id("com.google.dagger.hilt.android")
 }
+
+
 
 android {
     namespace = "com.example.todo"
@@ -29,6 +32,10 @@ android {
     kotlinOptions {
         jvmTarget = "21"
     }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.14"
+    }
 }
 
 kotlin {
@@ -40,49 +47,48 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
-    implementation("androidx.datastore:datastore-preferences:1.1.1")
     // Compose BOM (single place, no duplicates)
-    implementation(platform("androidx.compose:compose-bom:2024.02.00"))
-
+    implementation(platform(libs.androidx.compose.bom))
+    implementation("com.google.dagger:hilt-android:2.51.1")
+    kapt("com.google.dagger:hilt-android-compiler:2.51.1")
     // Compose UI + Material3 + Foundation
     implementation("androidx.compose.ui:ui")
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.foundation:foundation")
     implementation("androidx.compose.ui:ui-tooling-preview")
-    implementation(libs.androidx.compose.foundation)
     implementation(libs.androidx.compose.animation)
-    implementation(libs.androidx.material3)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.compose.foundation.layout)
-    implementation(libs.androidx.compose.runtime.saveable) // for previews
+    implementation(libs.androidx.compose.runtime.saveable)
+    implementation(libs.androidx.lifecycle.viewmodel.savedstate)
+    implementation(libs.transport.runtime)
+    //implementation(libs.play.services.cast.framework) // for previews
     debugImplementation("androidx.compose.ui:ui-tooling")   // debug tooling
 
     // Icons
     implementation("androidx.compose.material:material-icons-extended")
 
     // Navigation
-    implementation("androidx.navigation:navigation-compose:2.7.3")
+    implementation("androidx.navigation:navigation-compose:2.7.7")
 
     // ViewModel in Compose
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.0")
 
     // Room
     implementation(libs.androidx.room.ktx)
-    implementation("androidx.room:room-ktx:2.6.1")
-    //implementation(libs.androidx.room.common.jvm)
-    kapt("androidx.room:room-compiler:2.8.4")
-
+    kapt("androidx.room:room-compiler:2.6.1")
     // WorkManager
     implementation(libs.androidx.work.runtime.ktx)
     implementation("androidx.concurrent:concurrent-futures-ktx:1.2.0")
 
     implementation("androidx.compose.material3:material3-window-size-class")
 
+
     // Testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(platform("androidx.compose:compose-bom:2024.02.00"))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)

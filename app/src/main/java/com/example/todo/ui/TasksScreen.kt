@@ -57,6 +57,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -70,13 +71,16 @@ import java.util.Date
 
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
-fun TasksScreen(vm: TaskViewModel, activity: ComponentActivity) {
+fun TasksScreen(vm: TaskViewModel) {
 
     val tasks: List<Task> by vm.todayTasks.collectAsState(initial = emptyList())
     val uiState by vm.activeUiState.collectAsState()
 
 
+    val context = LocalContext.current
+    val activity = context as ComponentActivity
     val windowSizeClass = calculateWindowSizeClass(activity)
+
     val columns = when (windowSizeClass.widthSizeClass) {
         WindowWidthSizeClass.Compact -> 1
         WindowWidthSizeClass.Medium -> 2

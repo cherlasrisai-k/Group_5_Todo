@@ -1,20 +1,27 @@
 package com.example.todo.viewmodel
 
-import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.todo.data.TaskDao
 import com.example.todo.data.User
 import com.example.todo.data.UserDao
-import com.example.todo.session.SessionManager
 import com.example.todo.states.LoginRegisterUIStates
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class AuthViewModel(private val dao: UserDao, private val context: Context) : ViewModel() {
+@HiltViewModel
+class AuthViewModel @Inject constructor(
+    private val userDao: UserDao,
+    private val taskDao: TaskDao
+) : ViewModel() {
 
     private val _loginRegister = MutableStateFlow(LoginRegisterUIStates())
     val loginRegister = _loginRegister.asStateFlow()
@@ -29,45 +36,50 @@ class AuthViewModel(private val dao: UserDao, private val context: Context) : Vi
         private set
 
     fun login(mobile: String) = viewModelScope.launch {
-        val result = dao.login(mobile)
+        val result = userDao.login(mobile)
         if (result == null) {
             loginError = "User does not exist. Please register."
         } else {
-            user = result
+            user = result.copy(isLoggedIn = true)
+            userDao.updateUser(user!!)
             loginError = null
             _loginRegister.value = LoginRegisterUIStates()
-            SessionManager.saveUser(context, result.mobile)
         }
     }
 
     fun register(name: String, mobile: String) = viewModelScope.launch {
         registerError = null
-        val existingUser = dao.login(mobile)
+        val existingUser = userDao.login(mobile)
 
         if (existingUser == null) {
             // New user → insert
-            dao.register(User(mobile, name))
+            val newUser = User(mobile, name, isLoggedIn = true)
+            userDao.register(newUser)
 
             // Fetch again after insert
-            user = dao.login(mobile)
-            //Log.d("REGISTER_DEBUG", "New user created = $user")
-            user?.let {
-                SessionManager.saveUser(context, it.mobile)
-            }
-
+            user = userDao.login(mobile)
 
         } else {
             // Already exists
             user = null
             registerError = "User already exists. Please login."
-            //Log.d("REGISTER_DEBUG", "User already exists")
         }
     }
 
 
     fun logout() = viewModelScope.launch {
+        userDao.logout()
         user = null
-        SessionManager.clear(context)
+        loginError = null
+        registerError = null
+    }
+
+    suspend fun deleteAccount() = withContext(Dispatchers.IO) {
+        user?.let {
+            taskDao.deleteTasksByUser(it.mobile)
+            userDao.deleteUser(it)
+            user = null
+        }
     }
 
     fun validateAndLogin(mobile: String) {
@@ -80,10 +92,7 @@ class AuthViewModel(private val dao: UserDao, private val context: Context) : Vi
 
 
     fun validateAndRegister(name: String, mobile: String) {
-        //Log.d("VM_TEST", "Register clicked: $name , $mobile")
-
         registerError = null
-        //Log.d("REGISTER_DEBUG", "Clicked: $name , $mobile")
 
         when {
             name.isBlank() -> registerError = "Name cannot be empty"
@@ -105,12 +114,18 @@ class AuthViewModel(private val dao: UserDao, private val context: Context) : Vi
         loginError = null
     }
 
-    fun autoLogin(mobile: String) = viewModelScope.launch {
-        user = dao.login(mobile)
+    fun clearRegisterState() {
+        _loginRegister.value = LoginRegisterUIStates()
+        registerError = null
+    }
+
+    suspend fun getLoggedInUser(): User? {
+        return userDao.getLoggedInUser()
+    }
+    fun autoLogin(loggedInUser: User) {
+        user = loggedInUser
     }
 
 
+
 }
-
-
-

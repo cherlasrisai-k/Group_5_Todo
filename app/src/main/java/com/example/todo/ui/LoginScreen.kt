@@ -30,14 +30,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale.Companion.FillWidth
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.todo.R
 import com.example.todo.navigation.Routes
@@ -48,27 +51,26 @@ import com.example.todo.viewmodel.AuthViewModel
 @SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
 fun LoginScreen(
-    vm: AuthViewModel,
+    vm: AuthViewModel = hiltViewModel(),
     navController: NavController,
-    activity: ComponentActivity
 ) {
 
     val state by vm.loginRegister.collectAsState()
 
-    val error = vm.loginError
-
-
     val scrollState = rememberScrollState()
     LaunchedEffect(vm.user) {
         if (vm.user != null) {
-            navController.navigate(Routes.MAIN.route) {
+            navController.navigate(
+                Routes.MAIN.withUser(vm.user!!.mobile)
+            ) {
                 popUpTo(Routes.LOGIN.route) { inclusive = true }
             }
-
         }
     }
 
 
+    val context = LocalContext.current
+    val activity = context as ComponentActivity
     val windowSizeClass = calculateWindowSizeClass(activity)
 
     val fontSize = when (windowSizeClass.widthSizeClass) {
@@ -76,8 +78,6 @@ fun LoginScreen(
         WindowWidthSizeClass.Medium -> 20.sp
         else -> 16.sp
     }
-
-
 
     Column(
         modifier = Modifier
@@ -93,7 +93,7 @@ fun LoginScreen(
                 modifier = Modifier.fillMaxWidth(),
                 painter = painterResource(R.drawable.updatedtodo),
                 contentDescription = "TODOImage",
-                contentScale = androidx.compose.ui.layout.ContentScale.FillWidth
+                contentScale = FillWidth
             )
         }
 
@@ -104,7 +104,7 @@ fun LoginScreen(
                 .weight(2f), contentAlignment = Alignment.Center
         ) {
             Column(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier.fillMaxSize().verticalScroll(scrollState),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -152,16 +152,15 @@ fun LoginScreen(
                         )
                     },
                     leadingIcon = { Text(stringResource(R.string.LoginScreen_LeadingText)) },
-                  isError =!vm.loginError.isNullOrEmpty(),
+                    isError = !vm.loginError.isNullOrEmpty(),
+                    textStyle = TextStyle(color = Color.Black),
                     keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = Color.Black,
-                        focusedLabelColor = Color.Black,
-                        unfocusedBorderColor = Color.Black,
-                        unfocusedLabelColor = Color.Black,
                         cursorColor = Color.Black,
-                        focusedTextColor = Color.Black,
-                        errorBorderColor = MaterialTheme.colorScheme.error
+                        focusedBorderColor = Color.Black,
+                        unfocusedBorderColor = Color.Black,
+                        errorBorderColor = MaterialTheme.colorScheme.error,
+                        focusedLabelColor = Color.Black,
                     )
                 )
 
@@ -210,4 +209,3 @@ fun LoginScreen(
 
     }
 }
-

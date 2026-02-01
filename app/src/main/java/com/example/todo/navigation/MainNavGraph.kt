@@ -17,8 +17,7 @@ import com.example.todo.viewmodel.TaskViewModel
 fun MainNavGraph(
     navController: NavHostController,
     taskVM: TaskViewModel,
-    modifier: Modifier = Modifier,
-    activity: ComponentActivity
+    modifier: Modifier
 ) {
     NavHost(
         navController = navController,
@@ -26,7 +25,7 @@ fun MainNavGraph(
         modifier = modifier
     ) {
         composable(BottomNavItem.Home.screen.route) {
-            HomeScreen(taskVM,activity)
+            HomeScreen(taskVM)
         }
 
         composable(
@@ -37,11 +36,11 @@ fun MainNavGraph(
                 }
             )
         ) {
-            TasksScreen(taskVM,activity)
+            TasksScreen(taskVM)
         }
 
         composable(BottomNavItem.History.screen.route) {
-            HistoryScreen(taskVM,activity)
+            HistoryScreen(taskVM)
         }
     }
 }
