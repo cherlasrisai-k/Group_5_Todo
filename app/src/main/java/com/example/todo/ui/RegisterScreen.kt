@@ -205,7 +205,8 @@ fun RegisterScreen(vm: AuthViewModel = hiltViewModel(), navController: NavContro
                     ),
                     keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                     keyboardActions = KeyboardActions(
-                        onDone = { focus.clearFocus(),vm.validateAndRegister(state.name, state.mobile) })
+                        onDone = { focus.clearFocus()
+                            vm.validateAndRegister(state.name, state.mobile) })
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))

@@ -23,7 +23,6 @@ fun AppNavGraph(
     authVM: AuthViewModel,
     taskVM: TaskViewModel,
     startDestination: String,
-    activity: ComponentActivity
 ) {
     var savedMobile by rememberSaveable { mutableStateOf<String?>(null) }
 
@@ -38,8 +37,7 @@ fun AppNavGraph(
         composable(Routes.LOGIN.route) {
             LoginScreen(
                 vm = authVM,
-                navController = navController,
-                activity
+                navController = navController
             )
         }
 
@@ -59,7 +57,7 @@ fun AppNavGraph(
                 taskVM = taskVM,
                 authVM = authVM,
                 appNavController = navController,
-                activity
+
             )
         }
     }
