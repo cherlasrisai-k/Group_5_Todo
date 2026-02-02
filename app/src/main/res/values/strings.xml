@@ -16,7 +16,7 @@
 
     <string name="Buttons_Login">Login</string>
 
-    <string name="LoginScreen_Title">Welcome Back 👋</string>
+    <string name="LoginScreen_Title">Welcome Back </string>
     <string name="LoginScreen_Heading">Let’s plan something great today</string>
     <string name="LoginScreen_Registration">New user? Register </string>
     <string name="LoginScreen_LoginText">Log in or sign up</string>
@@ -24,15 +24,17 @@
     <string name="LoginScreen_MobileValidation">Enter mobile number</string>
     <string name="LoginScreen_MobileLengthValidation">Enter valid 10 digit number</string>
     <string name="LoginScreen_LeadingText">+91</string>
+    <string name="TextFields_Password">Password</string>
+    <string name="TextFields_ConfirmPassword">Confirm Password</string>
 
 
 
 
-    <string name="HomeScreen_Title">To-Do Reminder</string>
+    <string name="HomeScreen_Title">To-x`Do Reminder</string>
     <string name="HomeScreen_CardTitle">Create New Task</string>
     <string name="HomeScreen_Buttons_SaveTask">Save Task</string>
     <string name="HomeScreen_TextFields_Topic">Topic</string>
-    <string name="HomeScreen_TextFields_Heading">Heading</string>
+    <string name="HomeScreen_TextFields_Heading">Description</string>
     <string name="HomeScreen_TopicValidation">Topic cannot be empty</string>
     <string name="HomeScreen_HeadingValidation">Heading cannot be empty</string>
     <string name="HomeScreen_TimeValidation">Please select a future time"</string>
@@ -43,14 +45,21 @@
 
     <string name="EditDialog_Title">Edit Task</string>
     <string name="EditDialog_Topic">Topic</string>
-    <string name="EditDialog_Heading">Heading</string>
+    <string name="EditDialog_Heading">Description</string>
 
+    <string name="LogoutDialog_Title">Logout></string>
+    <string name="LogoutDialog_Text">Are you sure you want to logout?</string>
 
+    <string name="DeleteAccountDialog_Title">Delete Account</string>
+    <string name="DeleteAccountDialog_Text">This action is irreversible. Are you sure you want to delete your account?</string>
 
     <string name="Buttons_SelectDate">Select Date and time</string>
     <string name="Buttons_Save">Save</string>
     <string name="Buttons_Cancel">Cancel</string>
 
     <string name="AuthViewModel_loginError">User does not exist. Please register</string>
+
+    <string name="TasksScreen_Empty">No tasks for today!</string>
+    <string name="HistoryScreen_Empty">No completed tasks yet!</string>
 
 </resources>

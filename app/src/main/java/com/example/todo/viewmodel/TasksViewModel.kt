@@ -1,18 +1,12 @@
 package com.example.todo.viewmodel
 
-import android.app.Application
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkManager
-import androidx.work.workDataOf
 import com.example.todo.data.Task
 import com.example.todo.data.TaskDao
 import com.example.todo.states.AddEditUiState
-import com.example.todo.states.HomeUiState
 import com.example.todo.states.TasksUiState
-import com.example.todo.worker.ReminderWorker
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -25,14 +19,12 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @HiltViewModel
-class TaskViewModel @Inject constructor(
+class TasksViewModel @Inject constructor(
     private val dao: TaskDao,
-    savedStateHandle: SavedStateHandle,
-    private val application: Application
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     private val currentUser: StateFlow<String?> = savedStateHandle.getStateFlow("user", null)
@@ -43,68 +35,14 @@ class TaskViewModel @Inject constructor(
         else dao.todayTasks(mobile)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    val completedTasks: StateFlow<List<Task>> = currentUser.flatMapLatest { mobile ->
-        if (mobile == null) flowOf(emptyList())
-        else dao.completedTasks(mobile)
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
-
-    private val _homeState = MutableStateFlow(HomeUiState())
-    val homeState = _homeState.asStateFlow()
-
-    fun onTopicChange(value: String) {
-        _homeState.value = _homeState.value.copy(topic = value, topicError = "")
-    }
-
-    fun onHeadingChange(value: String) {
-        _homeState.value = _homeState.value.copy(heading = value, headingError = "")
-    }
-
-    fun onDateTimeChange(value: Long) {
-        _homeState.value = _homeState.value.copy(dateTime = value, timeError = "")
-    }
-
-    fun saveTask() = viewModelScope.launch {
-        val s = _homeState.value
-
-        var topicErr = ""
-        var headingErr = ""
-        var timeErr = ""
-
-        if (s.topic.isBlank()) topicErr = "Topic cannot be empty"
-        if (s.heading.isBlank()) headingErr = "Heading cannot be empty"
-        if (s.dateTime <= System.currentTimeMillis()) timeErr = "Please select a future time"
-
-        if (topicErr.isNotEmpty() || headingErr.isNotEmpty() || timeErr.isNotEmpty()) {
-            _homeState.value = s.copy(
-                topicError = topicErr,
-                headingError = headingErr,
-                timeError = timeErr
-            )
-            return@launch
-        }
-
-        val userMobile = currentUser.value ?: return@launch
-
-        val task = Task(
-            userMobile = userMobile,
-            topic = s.topic,
-            heading = s.heading,
-            dateTime = s.dateTime
-        )
-
-        dao.insert(task)
-        scheduleReminder(task)
-
-        _homeState.value = HomeUiState()
-        _events.emit("Task-${task.topic} added successfully ✅")
-    }
-
     private val _addEditState = MutableStateFlow(AddEditUiState())
     val addEditState = _addEditState.asStateFlow()
 
     private val _activeUiState = MutableStateFlow(TasksUiState())
     val activeUiState = _activeUiState.asStateFlow()
+
+    private val _events = MutableSharedFlow<String>()
+    val events = _events.asSharedFlow()
 
     fun startEdit(task: Task) {
         _addEditState.value = AddEditUiState(
@@ -136,7 +74,7 @@ class TaskViewModel @Inject constructor(
         var timeErr = ""
 
         if (s.topic.isBlank()) topicErr = "Topic cannot be empty"
-        if (s.heading.isBlank()) headingErr = "Heading cannot be empty"
+        if (s.heading.isBlank()) headingErr = "Description cannot be empty"
         if (s.dateTime <= System.currentTimeMillis()) timeErr = "Please select a future time"
 
         if (topicErr.isNotEmpty() || headingErr.isNotEmpty() || timeErr.isNotEmpty()) {
@@ -155,7 +93,7 @@ class TaskViewModel @Inject constructor(
         )
 
         dao.update(updatedTask)
-        _events.emit("Task-${updatedTask.topic} updated ✏️")
+        _events.emit("Task updated !!")
 
         _addEditState.value = AddEditUiState()
         onDialogDismiss()
@@ -167,33 +105,12 @@ class TaskViewModel @Inject constructor(
     }
 
     fun completeTask(task: Task) = viewModelScope.launch {
-        dao.update(task.copy(isCompleted = true))
-        _events.emit("Hurray! Task-${task.topic} completed 🎉")
+        dao.update(task.copy(isCompleted = true, completionTime = System.currentTimeMillis()))
+        _events.emit("Hurray! Task completed !!")
     }
 
     fun deleteTask(task: Task) = viewModelScope.launch {
         dao.delete(task)
-        _events.emit("Task-${task.topic} deleted 🗑️")
-    }
-
-    private val _events = MutableSharedFlow<String>()
-    val events = _events.asSharedFlow()
-
-    private fun scheduleReminder(task: Task) {
-        val reminderTime = task.dateTime - (5 * 60 * 1000)
-        var delay = reminderTime - System.currentTimeMillis()
-        if (delay <= 0) delay = -delay
-
-        val data = workDataOf(
-            "topic" to task.topic,
-            "heading" to task.heading
-        )
-
-        val request = OneTimeWorkRequestBuilder<ReminderWorker>()
-            .setInitialDelay(delay, TimeUnit.MILLISECONDS)
-            .setInputData(data)
-            .build()
-
-        WorkManager.getInstance(application).enqueue(request)
+        _events.emit("Task deleted !!")
     }
 }

@@ -10,6 +10,6 @@ data class Task(
     val topic: String,
     val heading: String,
     val dateTime: Long,
-    val isCompleted: Boolean = false
+    val isCompleted: Boolean = false,
+    val completionTime: Long = 0
 )
-

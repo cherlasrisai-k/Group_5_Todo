@@ -13,8 +13,11 @@ interface UserDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun register(user: User)
 
+    @Query("SELECT * FROM users WHERE mobile = :mobile AND password = :password LIMIT 1")
+    suspend fun login(mobile: String, password: String): User?
+
     @Query("SELECT * FROM users WHERE mobile = :mobile LIMIT 1")
-    suspend fun login(mobile: String): User?
+    suspend fun getUserByMobile(mobile: String): User?
 
     @Query("SELECT * FROM users WHERE isLoggedIn = 1 LIMIT 1")
     suspend fun getLoggedInUser(): User?
@@ -27,5 +30,10 @@ interface UserDao {
 
     @Delete
     suspend fun deleteUser(user: User)
+
+    // IMPORTANT: Storing plain text passwords is a security risk.
+    // In a real application, you should hash and salt passwords before storing them.
+    @Query("UPDATE users SET password = :password WHERE mobile = :mobile")
+    suspend fun updatePassword(mobile: String, password: String)
 
 }

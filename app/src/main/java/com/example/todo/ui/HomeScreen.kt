@@ -27,7 +27,6 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
@@ -46,16 +45,17 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.todo.R
 import com.example.todo.ui.utils.showDateTimePicker
-import com.example.todo.viewmodel.TaskViewModel
+import com.example.todo.viewmodel.HomeViewModel
 import java.text.DateFormat
 import java.util.Date
 
 
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
-fun HomeScreen(vm: TaskViewModel = hiltViewModel()) {
+fun HomeScreen(vm: HomeViewModel = hiltViewModel()) {
 
     val state by vm.homeState.collectAsState()
     val scrollState = rememberScrollState()
@@ -157,12 +157,12 @@ fun HomeScreen(vm: TaskViewModel = hiltViewModel()) {
                         unfocusedBorderColor = textFieldBorderColor,
                         unfocusedLabelColor = textFieldBorderColor,
                         cursorColor = textFieldBorderColor,
-                       focusedTextColor = textFieldBorderColor,
+                        focusedTextColor = textFieldBorderColor,
                         errorBorderColor = MaterialTheme.colorScheme.error,
                     )
                 )
 
-                  
+
                 if (state.headingError.isNotEmpty()) {
                     Text(
                         text = state.headingError,
@@ -171,7 +171,7 @@ fun HomeScreen(vm: TaskViewModel = hiltViewModel()) {
                         textAlign = TextAlign.Start
                     )
                 }
-                
+
 
                 Spacer(modifier = Modifier.height(12.dp))
 
@@ -195,13 +195,12 @@ fun HomeScreen(vm: TaskViewModel = hiltViewModel()) {
                                 selectedMillis
                             )
                         }
-                    }, colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.surface,
-                        contentColor = MaterialTheme.colorScheme.onSurface,
-                        disabledContainerColor = textFieldBorderColor
-
-
-                    ), modifier = Modifier.fillMaxWidth()
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary,
+                    )
                 ) {
                     Icon(
                         imageVector = Icons.Default.DateRange,
@@ -216,8 +215,8 @@ fun HomeScreen(vm: TaskViewModel = hiltViewModel()) {
 
                 OutlinedButton(
                     onClick = vm::saveTask, colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.surface,
-                        contentColor = MaterialTheme.colorScheme.onSurface,
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary,
 
                         ),
 
@@ -249,6 +248,3 @@ fun HomeScreen(vm: TaskViewModel = hiltViewModel()) {
     }
 
 }
-
-
-
