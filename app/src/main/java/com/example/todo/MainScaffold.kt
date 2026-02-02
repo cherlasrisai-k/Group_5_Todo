@@ -47,21 +47,24 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.todo.R
 import com.example.todo.navigation.MainNavGraph
 import com.example.todo.navigation.Routes
 import com.example.todo.ui.BottomBar
 import com.example.todo.viewmodel.AuthViewModel
-import com.example.todo.viewmodel.TaskViewModel
+import com.example.todo.viewmodel.HistoryViewModel
+import com.example.todo.viewmodel.HomeViewModel
+import com.example.todo.viewmodel.TasksViewModel
 import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScaffold(
-    taskVM: TaskViewModel,
     authVM: AuthViewModel,
     appNavController: NavController,
+    homeViewModel: HomeViewModel,
+    tasksViewModel: TasksViewModel,
+    historyViewModel: HistoryViewModel
 ) {
     val bottomNavController = rememberNavController()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -82,8 +85,8 @@ fun MainScaffold(
     if (showLogoutDialog) {
         AlertDialog(
             onDismissRequest = { showLogoutDialog = false },
-            title = { Text(text = "Logout") },
-            text = { Text(text = "Are you sure you want to logout?") },
+            title = { Text(text = stringResource(R.string.LogoutDialog_Title)) },
+            text = { Text(text = stringResource(R.string.LogoutDialog_Text)) },
             confirmButton = {
                 TextButton(
                     onClick = {
@@ -110,8 +113,8 @@ fun MainScaffold(
     if (showDeleteDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
-            title = { Text(text = "Delete Account") },
-            text = { Text(text = "This action is irreversible. Are you sure you want to delete your account?") },
+            title = { Text(text = stringResource(R.string.DeleteAccountDialog_Title)) },
+            text = { Text(text = stringResource(R.string.DeleteAccountDialog_Text)) },
             confirmButton = {
                 TextButton(
                     onClick = {
@@ -151,7 +154,10 @@ fun MainScaffold(
                     label = {
                         Column {
                             Text(authVM.user?.name ?: "User")
-                            Text(authVM.user?.mobile ?: "", style = MaterialTheme.typography.bodySmall)
+                            Text(
+                                authVM.user?.mobile ?: "",
+                                style = MaterialTheme.typography.bodySmall
+                            )
                         }
                     },
                     selected = false,
@@ -223,8 +229,10 @@ fun MainScaffold(
         ) { padding ->
             MainNavGraph(
                 navController = bottomNavController,
-                taskVM = taskVM,
-                modifier = Modifier.padding(padding)
+                modifier = Modifier.padding(padding),
+                homeViewModel = homeViewModel,
+                tasksViewModel = tasksViewModel,
+                historyViewModel = historyViewModel
             )
         }
     }

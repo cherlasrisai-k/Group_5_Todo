@@ -32,12 +32,12 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.todo.R
 import com.example.todo.ui.utils.showDateTimePicker
-import com.example.todo.viewmodel.TaskViewModel
+import com.example.todo.viewmodel.TasksViewModel
 import java.text.DateFormat
 import java.util.Date
 
 @Composable
-fun AddEditDialog(vm: TaskViewModel) {
+fun AddEditDialog(vm: TasksViewModel) {
 
     val state by vm.addEditState.collectAsState()
     val context = LocalContext.current
@@ -57,13 +57,12 @@ fun AddEditDialog(vm: TaskViewModel) {
         ) {
 
             val focusManager = LocalFocusManager.current
-          
-          val textFieldBorderColor= if(isSystemInDarkTheme()){
-                    Color.White
-                }
-                else{
-                    Color.Black
-                }
+
+            val textFieldBorderColor = if (isSystemInDarkTheme()) {
+                Color.White
+            } else {
+                Color.Black
+            }
 
             OutlinedTextField(
                 value = state.topic,
@@ -71,9 +70,13 @@ fun AddEditDialog(vm: TaskViewModel) {
                 label = { Text(stringResource(R.string.EditDialog_Topic)) },
                 isError = state.topicError.isNotEmpty(),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = MaterialTheme.colorScheme.primary,
-                    unfocusedBorderColor = MaterialTheme.colorScheme.secondary,
-                    errorBorderColor = MaterialTheme.colorScheme.error
+                    focusedBorderColor = textFieldBorderColor,
+                    focusedLabelColor = textFieldBorderColor,
+                    unfocusedBorderColor = textFieldBorderColor,
+                    unfocusedLabelColor = textFieldBorderColor,
+                    cursorColor = textFieldBorderColor,
+                    focusedTextColor = textFieldBorderColor,
+                    errorBorderColor = MaterialTheme.colorScheme.error,
                 ),
                 keyboardOptions = KeyboardOptions(
                     imeAction = ImeAction.Done, keyboardType = KeyboardType.Text
@@ -94,9 +97,13 @@ fun AddEditDialog(vm: TaskViewModel) {
                 label = { Text(stringResource(R.string.EditDialog_Heading)) },
                 isError = state.headingError.isNotEmpty(),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = MaterialTheme.colorScheme.primary,
-                    unfocusedBorderColor = MaterialTheme.colorScheme.secondary,
-                    errorBorderColor = MaterialTheme.colorScheme.error
+                    focusedBorderColor = textFieldBorderColor,
+                    focusedLabelColor = textFieldBorderColor,
+                    unfocusedBorderColor = textFieldBorderColor,
+                    unfocusedLabelColor = textFieldBorderColor,
+                    cursorColor = textFieldBorderColor,
+                    focusedTextColor = textFieldBorderColor,
+                    errorBorderColor = MaterialTheme.colorScheme.error,
                 ),
                 keyboardOptions = KeyboardOptions(
                     imeAction = ImeAction.Done, keyboardType = KeyboardType.Text
@@ -109,11 +116,14 @@ fun AddEditDialog(vm: TaskViewModel) {
             )
 
             Text(DateFormat.getDateTimeInstance().format(Date(state.dateTime)))
+            if (state.timeError.isNotEmpty()) {
+                Text(state.timeError, color = MaterialTheme.colorScheme.error)
+            }
 
             Button(
                 onClick = {
                     showDateTimePicker(context) { selectedMillis ->
-                        vm.onDateTimeChange(selectedMillis)
+                        vm.onEditDateTimeChange(selectedMillis)
                     }
                 }, modifier = Modifier.fillMaxWidth()
             ) {

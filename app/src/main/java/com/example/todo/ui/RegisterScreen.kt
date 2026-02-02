@@ -16,6 +16,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material3.Button
@@ -43,6 +44,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -74,7 +76,16 @@ fun RegisterScreen(vm: AuthViewModel = hiltViewModel(), navController: NavContro
         registerError = vm.registerError,
         onNameChange = vm::onNameChange,
         onMobileChange = vm::onMobileChange,
-        onRegister = { vm.validateAndRegister(state.name, state.mobile) },
+        onPasswordChange = vm::onPasswordChange,
+        onConfirmPasswordChange = vm::onConfirmPasswordChange,
+        onRegister = {
+            vm.validateAndRegister(
+                state.name,
+                state.mobile,
+                state.password,
+                state.confirmPassword
+            )
+        },
         onBack = {
             vm.clearLoginState()
             vm.clearRegisterState()
@@ -90,6 +101,8 @@ fun RegisterScreenContent(
     registerError: String?,
     onNameChange: (String) -> Unit,
     onMobileChange: (String) -> Unit,
+    onPasswordChange: (String) -> Unit,
+    onConfirmPasswordChange: (String) -> Unit,
     onRegister: () -> Unit,
     onBack: () -> Unit
 ) {
@@ -162,6 +175,7 @@ fun RegisterScreenContent(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 val isFieldError = !registerError.isNullOrEmpty()
+                val textFieldColors = if (isSystemInDarkTheme()) Color.White else Color.Black
 
                 OutlinedTextField(
                     value = state.name,
@@ -176,13 +190,13 @@ fun RegisterScreenContent(
                     },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
-                    textStyle = TextStyle(color = Color.Black),
+                    textStyle = TextStyle(color = textFieldColors),
                     colors = OutlinedTextFieldDefaults.colors(
-                        cursorColor = Color.Black,
-                        focusedBorderColor = Color.Black,
-                        unfocusedBorderColor = Color.Black,
+                        cursorColor = textFieldColors,
+                        focusedBorderColor = textFieldColors,
+                        unfocusedBorderColor = textFieldColors,
                         errorBorderColor = MaterialTheme.colorScheme.error,
-                        focusedLabelColor = Color.Black,
+                        focusedLabelColor = textFieldColors,
                     )
                 )
 
@@ -201,15 +215,74 @@ fun RegisterScreenContent(
                     isError = isFieldError,
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
-                    textStyle = TextStyle(color = Color.Black),
+                    textStyle = TextStyle(color = textFieldColors),
                     colors = OutlinedTextFieldDefaults.colors(
-                        cursorColor = Color.Black,
-                        focusedBorderColor = Color.Black,
-                        unfocusedBorderColor = Color.Black,
+                        cursorColor = textFieldColors,
+                        focusedBorderColor = textFieldColors,
+                        unfocusedBorderColor = textFieldColors,
                         errorBorderColor = MaterialTheme.colorScheme.error,
-                        focusedLabelColor = Color.Black,
+                        focusedLabelColor = textFieldColors,
                     ),
-                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                OutlinedTextField(
+                    value = state.password,
+                    onValueChange = onPasswordChange,
+                    label = {
+                        Text(
+                            stringResource(R.string.TextFields_Password),
+                            modifier = Modifier.alpha(0.5f)
+                        )
+                    },
+                    leadingIcon = { Icon(Icons.Default.Lock, contentDescription = "Password") },
+                    visualTransformation = PasswordVisualTransformation(),
+                    isError = isFieldError,
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    textStyle = TextStyle(color = textFieldColors),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        cursorColor = textFieldColors,
+                        focusedBorderColor = textFieldColors,
+                        unfocusedBorderColor = textFieldColors,
+                        errorBorderColor = MaterialTheme.colorScheme.error,
+                        focusedLabelColor = textFieldColors,
+                    ),
+                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Password)
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                OutlinedTextField(
+                    value = state.confirmPassword,
+                    onValueChange = onConfirmPasswordChange,
+                    label = {
+                        Text(
+                            stringResource(R.string.TextFields_ConfirmPassword),
+                            modifier = Modifier.alpha(0.5f)
+                        )
+                    },
+                    leadingIcon = {
+                        Icon(
+                            Icons.Default.Lock,
+                            contentDescription = "Confirm Password"
+                        )
+                    },
+                    visualTransformation = PasswordVisualTransformation(),
+                    isError = isFieldError,
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    textStyle = TextStyle(color = textFieldColors),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        cursorColor = textFieldColors,
+                        focusedBorderColor = textFieldColors,
+                        unfocusedBorderColor = textFieldColors,
+                        errorBorderColor = MaterialTheme.colorScheme.error,
+                        focusedLabelColor = textFieldColors,
+                    ),
+                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Password),
                     keyboardActions = KeyboardActions(onDone = { onRegister() })
                 )
 
@@ -225,8 +298,8 @@ fun RegisterScreenContent(
                 }
 
                 Button(
-                    onClick = onRegister, 
-                    modifier = Modifier.fillMaxWidth(), 
+                    onClick = onRegister,
+                    modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.primary,
                         contentColor = MaterialTheme.colorScheme.onPrimary
@@ -247,6 +320,8 @@ fun RegisterScreenPreview() {
         registerError = null,
         onNameChange = {},
         onMobileChange = {},
+        onPasswordChange = {},
+        onConfirmPasswordChange = {},
         onRegister = {},
         onBack = {}
     )
@@ -260,6 +335,8 @@ fun RegisterScreenErrorPreview() {
         registerError = "Enter a valid 10-digit mobile number",
         onNameChange = {},
         onMobileChange = {},
+        onPasswordChange = {},
+        onConfirmPasswordChange = {},
         onRegister = {},
         onBack = {}
     )

@@ -14,6 +14,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -37,6 +40,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -70,9 +74,11 @@ fun LoginScreen(
 
     LoginScreenContent(
         mobile = state.mobile,
+        password = state.password,
         loginError = vm.loginError,
         onMobileChange = vm::onMobileChange,
-        onLogin = { vm.validateAndLogin(state.mobile) },
+        onPasswordChange = vm::onPasswordChange,
+        onLogin = { vm.validateAndLogin(state.mobile, state.password) },
         onGoToRegister = {
             vm.clearLoginState()
             navController.navigate(Routes.REGISTER.route)
@@ -84,8 +90,10 @@ fun LoginScreen(
 @Composable
 fun LoginScreenContent(
     mobile: String,
+    password: String,
     loginError: String?,
     onMobileChange: (String) -> Unit,
+    onPasswordChange: (String) -> Unit,
     onLogin: () -> Unit,
     onGoToRegister: () -> Unit
 ) {
@@ -105,56 +113,49 @@ fun LoginScreenContent(
         else -> 16.sp
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(scrollState)
-    ) {
+    Column(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
+                .weight(1f)
                 .fillMaxWidth()
-                .weight(4f),
-            verticalArrangement = Arrangement.Top
-        ) {
-            Image(
-                modifier = Modifier.fillMaxWidth(),
-                painter = painterResource(R.drawable.updatedtodo),
-                contentDescription = "TODOImage",
-                contentScale = FillWidth
-            )
-        }
-
-
-        Box(
-            modifier = Modifier
-                .padding(16.dp)
-                .weight(2f),
-            contentAlignment = Alignment.Center
+                .verticalScroll(scrollState),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Column(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.Top
             ) {
-                Text(
-                    text = stringResource(R.string.LoginScreen_Title),
-                    style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.Bold
-                )
-                Spacer(modifier = Modifier.padding(8.dp))
-                Text(
-                    text = stringResource(R.string.LoginScreen_Heading),
-                    style = MaterialTheme.typography.headlineSmall.copy(fontSize = fontSize),
-                    overflow = TextOverflow.Ellipsis,
+                Image(
+                    modifier = Modifier.fillMaxWidth(),
+                    painter = painterResource(R.drawable.updatedtodo),
+                    contentDescription = "TODOImage",
+                    contentScale = FillWidth
                 )
             }
-        }
 
-        Box(
-            contentAlignment = Alignment.Center, modifier = Modifier
-                .fillMaxSize()
-                .weight(4f)
-        ) {
+
+            Box(
+                modifier = Modifier.padding(16.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = stringResource(R.string.LoginScreen_Title),
+                        style = MaterialTheme.typography.headlineMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(modifier = Modifier.padding(8.dp))
+                    Text(
+                        text = stringResource(R.string.LoginScreen_Heading),
+                        style = MaterialTheme.typography.headlineSmall.copy(fontSize = fontSize),
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
+            }
+
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
@@ -188,6 +189,29 @@ fun LoginScreenContent(
                     )
                 )
 
+                OutlinedTextField(
+                    value = password,
+                    onValueChange = onPasswordChange,
+                    label = {
+                        Text(
+                            stringResource(R.string.TextFields_Password),
+                            modifier = Modifier.alpha(0.5f)
+                        )
+                    },
+                    leadingIcon = { Icon(Icons.Default.Lock, contentDescription = "Password") },
+                    visualTransformation = PasswordVisualTransformation(),
+                    isError = !loginError.isNullOrEmpty(),
+                    textStyle = TextStyle(color = Color.Black),
+                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Password),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        cursorColor = Color.Black,
+                        focusedBorderColor = Color.Black,
+                        unfocusedBorderColor = Color.Black,
+                        errorBorderColor = MaterialTheme.colorScheme.error,
+                        focusedLabelColor = Color.Black,
+                    )
+                )
+
                 TextButton(onClick = onLogin) {
                     Text(
                         stringResource(R.string.Buttons_Login),
@@ -209,17 +233,14 @@ fun LoginScreenContent(
                 }
             }
         }
-
-
-        Box(
+        Row(
             modifier = Modifier
-                .fillMaxSize()
-                .weight(1f),
-            contentAlignment = Alignment.BottomCenter
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(text = stringResource(R.string.LoginScreen_Terms))
-            }
+            Text(text = stringResource(R.string.LoginScreen_Terms))
         }
     }
 }
@@ -229,8 +250,10 @@ fun LoginScreenContent(
 fun LoginScreenPreview() {
     LoginScreenContent(
         mobile = "",
+        password = "",
         loginError = null,
         onMobileChange = {},
+        onPasswordChange = {},
         onLogin = {},
         onGoToRegister = {}
     )
@@ -241,8 +264,10 @@ fun LoginScreenPreview() {
 fun LoginScreenErrorPreview() {
     LoginScreenContent(
         mobile = "12345",
+        password = "",
         loginError = "User does not exist. Please register.",
         onMobileChange = {},
+        onPasswordChange = {},
         onLogin = {},
         onGoToRegister = {}
     )

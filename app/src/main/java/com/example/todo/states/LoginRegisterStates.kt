@@ -1,6 +1,9 @@
 package com.example.todo.states
 
 data class LoginRegisterUIStates(
-    var mobile: String = "",
-    var name: String = "",
+    val name: String = "",
+    val mobile: String = "",
+    val otp: String = "",
+    val password: String = "",
+    val confirmPassword: String = ""
 )

@@ -3,40 +3,38 @@ package com.example.todo.ui
 import androidx.activity.ComponentActivity
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandIn
-import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkOut
-import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material3.*
-import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
-import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
-import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
-import androidx.compose.runtime.*
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
+import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
@@ -46,15 +44,20 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.todo.R
 import com.example.todo.data.Task
-import com.example.todo.viewmodel.TaskViewModel
+import com.example.todo.viewmodel.HistoryViewModel
 import kotlinx.coroutines.launch
+import java.text.DateFormat
+import java.util.Date
 
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
-fun HistoryScreen(vm: TaskViewModel) {
+fun HistoryScreen(vm: HistoryViewModel = hiltViewModel()) {
     val tasks by vm.completedTasks.collectAsState()
     val context = LocalContext.current
     val activity = context as ComponentActivity
@@ -81,7 +84,14 @@ fun HistoryScreen(vm: TaskViewModel) {
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        if (columns == 1) {
+        if (tasks.isEmpty()) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text(
+                    text = stringResource(R.string.HistoryScreen_Empty), // You'll need to add this to your strings.xml
+                    style = MaterialTheme.typography.headlineSmall
+                )
+            }
+        } else if (columns == 1) {
             LazyColumn(
                 state = listState,
                 modifier = Modifier.fillMaxSize(),
@@ -157,6 +167,15 @@ fun HistoryItemCard(item: Task) {
                 text = item.heading,
                 style = MaterialTheme.typography.bodyMedium
             )
+            if (item.completionTime > 0) {
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "Completed: ${
+                        DateFormat.getDateTimeInstance().format(Date(item.completionTime))
+                    }",
+                    style = MaterialTheme.typography.bodySmall,
+                )
+            }
         }
     }
 }

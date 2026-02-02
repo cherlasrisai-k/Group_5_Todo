@@ -65,7 +65,7 @@ dependencies {
     implementation(libs.transport.runtime)
     //implementation(libs.play.services.cast.framework) // for previews
     debugImplementation("androidx.compose.ui:ui-tooling")   // debug tooling
-
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.1")
     // Icons
     implementation("androidx.compose.material:material-icons-extended")
 
@@ -83,6 +83,8 @@ dependencies {
     implementation("androidx.concurrent:concurrent-futures-ktx:1.2.0")
 
     implementation("androidx.compose.material3:material3-window-size-class")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.1")
+    testImplementation("app.cash.turbine:turbine:0.12.1")
 
 
     // Testing

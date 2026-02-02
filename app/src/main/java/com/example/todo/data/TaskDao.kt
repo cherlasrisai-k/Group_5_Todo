@@ -38,6 +38,9 @@ interface TaskDao {
     @Query("DELETE FROM tasks WHERE userMobile = :userMobile")
     suspend fun deleteTasksByUser(userMobile: String)
 
+    @Query("DELETE FROM tasks WHERE userMobile = :mobile AND isCompleted = 1")
+    suspend fun deleteCompletedTasks(mobile: String)
+
     // For reminder
     @Query(
         """

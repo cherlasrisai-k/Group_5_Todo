@@ -15,7 +15,9 @@ import com.example.todo.MainScaffold
 import com.example.todo.ui.LoginScreen
 import com.example.todo.ui.RegisterScreen
 import com.example.todo.viewmodel.AuthViewModel
-import com.example.todo.viewmodel.TaskViewModel
+import com.example.todo.viewmodel.HistoryViewModel
+import com.example.todo.viewmodel.HomeViewModel
+import com.example.todo.viewmodel.TasksViewModel
 
 @Composable
 fun AppNavGraph(
@@ -59,12 +61,15 @@ fun AppNavGraph(
         }
 
         composable(Routes.MAIN.route) {
-            val taskVM: TaskViewModel = hiltViewModel()
-
+            val homeViewModel: HomeViewModel = hiltViewModel()
+            val tasksViewModel: TasksViewModel = hiltViewModel()
+            val historyViewModel: HistoryViewModel = hiltViewModel()
             MainScaffold(
-                taskVM = taskVM,
                 authVM = authViewModel,
-                appNavController = navController
+                appNavController = navController,
+                homeViewModel = homeViewModel,
+                tasksViewModel = tasksViewModel,
+                historyViewModel = historyViewModel
             )
         }
     }

@@ -10,25 +10,42 @@ fun showDateTimePicker(
 ) {
     val cal = Calendar.getInstance()
 
-    DatePickerDialog(
+    val datePickerDialog = DatePickerDialog(
         context, { _, year, month, day ->
-
-            val timeCal = Calendar.getInstance().apply {
-                set(Calendar.YEAR, year)
-                set(Calendar.MONTH, month)
-                set(Calendar.DAY_OF_MONTH, day)
-            }
+            val now = Calendar.getInstance()
+            val isToday = year == now.get(Calendar.YEAR) &&
+                    month == now.get(Calendar.MONTH) &&
+                    day == now.get(Calendar.DAY_OF_MONTH)
 
             TimePickerDialog(
                 context, { _, hour, minute ->
-                    timeCal.apply {
+                    val selectedDateTime = Calendar.getInstance().apply {
+                        set(Calendar.YEAR, year)
+                        set(Calendar.MONTH, month)
+                        set(Calendar.DAY_OF_MONTH, day)
                         set(Calendar.HOUR_OF_DAY, hour)
                         set(Calendar.MINUTE, minute)
                         set(Calendar.SECOND, 0)
+                        set(Calendar.MILLISECOND, 0)
                     }
-                    onDateTimeSelected(timeCal.timeInMillis)
-                }, timeCal.get(Calendar.HOUR_OF_DAY), timeCal.get(Calendar.MINUTE), false
+
+                    // For today, check if selected time is in the past.
+                    if (isToday && selectedDateTime.timeInMillis < now.timeInMillis) {
+                        onDateTimeSelected(now.timeInMillis)
+                    } else {
+                        onDateTimeSelected(selectedDateTime.timeInMillis)
+                    }
+                },
+                now.get(Calendar.HOUR_OF_DAY),
+                now.get(Calendar.MINUTE),
+                false
             ).show()
-        }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH)
-    ).show()
+        },
+        cal.get(Calendar.YEAR),
+        cal.get(Calendar.MONTH),
+        cal.get(Calendar.DAY_OF_MONTH)
+    )
+
+    datePickerDialog.datePicker.minDate = cal.timeInMillis
+    datePickerDialog.show()
 }

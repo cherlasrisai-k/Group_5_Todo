@@ -28,17 +28,16 @@ class AuthViewModel @Inject constructor(
 
     var user by mutableStateOf<User?>(null)
         private set
-
     var loginError by mutableStateOf<String?>(null)
         private set
 
     var registerError by mutableStateOf<String?>(null)
         private set
 
-    fun login(mobile: String) = viewModelScope.launch {
-        val result = userDao.login(mobile)
+    fun login(mobile: String, password: String) = viewModelScope.launch {
+        val result = userDao.login(mobile, password)
         if (result == null) {
-            loginError = "User does not exist. Please register."
+            loginError = "Invalid mobile number or password."
         } else {
             user = result.copy(isLoggedIn = true)
             userDao.updateUser(user!!)
@@ -47,23 +46,10 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-    fun register(name: String, mobile: String) = viewModelScope.launch {
-        registerError = null
-        val existingUser = userDao.login(mobile)
-
-        if (existingUser == null) {
-            // New user → insert
-            val newUser = User(mobile, name, isLoggedIn = true)
-            userDao.register(newUser)
-
-            // Fetch again after insert
-            user = userDao.login(mobile)
-
-        } else {
-            // Already exists
-            user = null
-            registerError = "User already exists. Please login."
-        }
+    fun register(name: String, mobile: String, password: String) = viewModelScope.launch {
+        val newUser = User(mobile, name, password, isLoggedIn = true)
+        userDao.register(newUser)
+        user = userDao.getUserByMobile(mobile)
     }
 
 
@@ -82,22 +68,40 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-    fun validateAndLogin(mobile: String) {
+    fun validateAndLogin(mobile: String, password: String) {
         when {
             mobile.isBlank() -> loginError = "Enter mobile number"
             mobile.length != 10 -> loginError = "Enter valid 10 digit number"
-            else -> login(mobile)
+            password.isBlank() -> loginError = "Enter password"
+            else -> login(mobile, password)
         }
     }
 
 
-    fun validateAndRegister(name: String, mobile: String) {
+    fun validateAndRegister(
+        name: String,
+        mobile: String,
+        password: String,
+        confirmPassword: String
+    ) {
         registerError = null
 
         when {
             name.isBlank() -> registerError = "Name cannot be empty"
             mobile.length != 10 -> registerError = "Enter a valid 10-digit mobile number"
-            else -> register(name, mobile)
+            password.isBlank() -> registerError = "Enter password"
+            confirmPassword.isBlank() -> registerError = "Confirm password"
+            password != confirmPassword -> registerError = "Passwords do not match"
+            else -> {
+                viewModelScope.launch {
+                    val existingUser = userDao.getUserByMobile(mobile)
+                    if (existingUser != null) {
+                        registerError = "User already exists. Please login."
+                    } else {
+                        register(name, mobile, password)
+                    }
+                }
+            }
         }
     }
 
@@ -110,6 +114,14 @@ class AuthViewModel @Inject constructor(
 
     fun onNameChange(value: String) {
         _loginRegister.value = _loginRegister.value.copy(name = value)
+    }
+
+    fun onPasswordChange(value: String) {
+        _loginRegister.value = _loginRegister.value.copy(password = value)
+    }
+
+    fun onConfirmPasswordChange(value: String) {
+        _loginRegister.value = _loginRegister.value.copy(confirmPassword = value)
     }
 
     fun clearLoginState() {
@@ -125,10 +137,10 @@ class AuthViewModel @Inject constructor(
     suspend fun getLoggedInUser(): User? {
         return userDao.getLoggedInUser()
     }
+
     fun autoLogin(loggedInUser: User) {
         user = loggedInUser
     }
-
 
 
 }

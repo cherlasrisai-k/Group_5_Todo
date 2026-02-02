@@ -1,20 +1,21 @@
 package com.example.todo.ui
 
 import androidx.activity.ComponentActivity
-import androidx.compose.animation.*
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandIn
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkOut
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -30,11 +31,6 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material3.*
-import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
-import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
-import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
-import androidx.compose.runtime.*
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FloatingActionButton
@@ -45,6 +41,9 @@ import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
+import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -58,20 +57,21 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.todo.R
 import com.example.todo.data.Task
-import com.example.todo.viewmodel.TaskViewModel
+import com.example.todo.viewmodel.TasksViewModel
 import kotlinx.coroutines.launch
 import java.text.DateFormat
-import java.util.*
 import java.util.Date
 
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
-fun TasksScreen(vm: TaskViewModel) {
+fun TasksScreen(vm: TasksViewModel = hiltViewModel()) {
 
     val tasks: List<Task> by vm.todayTasks.collectAsState(initial = emptyList())
     val uiState by vm.activeUiState.collectAsState()
@@ -108,11 +108,18 @@ fun TasksScreen(vm: TaskViewModel) {
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        if (columns == 1) {
+        if (tasks.isEmpty()) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text(
+                    text = stringResource(R.string.TasksScreen_Empty),
+                    style = MaterialTheme.typography.headlineSmall
+                )
+            }
+        } else if (columns == 1) {
             LazyColumn(
                 state = listState,
                 modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(bottom = 80.dp)
+                contentPadding = PaddingValues(top = 16.dp, bottom = 80.dp)
             ) {
                 items(tasks) { task ->
                     TaskCard(task = task, vm = vm)
@@ -123,7 +130,7 @@ fun TasksScreen(vm: TaskViewModel) {
                 columns = GridCells.Fixed(columns),
                 state = gridState,
                 modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(bottom = 80.dp)
+                contentPadding = PaddingValues(top = 16.dp, bottom = 80.dp)
             ) {
                 items(tasks) { task ->
                     TaskCard(task = task, vm = vm)
@@ -134,7 +141,9 @@ fun TasksScreen(vm: TaskViewModel) {
         // Snackbar
         SnackbarHost(
             hostState = snackbarHostState,
-            modifier = Modifier.align(Alignment.BottomCenter).padding(16.dp)
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(16.dp)
         ) { snackbarData ->
             Snackbar(modifier = Modifier.fillMaxWidth()) {
                 Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
@@ -152,12 +161,14 @@ fun TasksScreen(vm: TaskViewModel) {
             visible = showButton,
             enter = fadeIn() + expandIn(),
             exit = fadeOut() + shrinkOut(),
-            modifier = Modifier.align(Alignment.BottomEnd).padding(24.dp)
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(24.dp)
         ) {
             FloatingActionButton(
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary,
-                shape= CircleShape,
+                shape = CircleShape,
                 modifier = Modifier.size(56.dp),
                 onClick = {
                     scope.launch {
@@ -177,7 +188,7 @@ fun TasksScreen(vm: TaskViewModel) {
 }
 
 @Composable
-fun TaskCard(task: Task, vm: TaskViewModel) {
+fun TaskCard(task: Task, vm: TasksViewModel) {
     Card(
         Modifier.padding(5.dp),
         colors = CardDefaults.cardColors(
@@ -186,14 +197,21 @@ fun TaskCard(task: Task, vm: TaskViewModel) {
         elevation = CardDefaults.cardElevation(8.dp)
     ) {
         Row(
-            Modifier.fillMaxWidth().padding(10.dp),
+            Modifier
+                .fillMaxWidth()
+                .padding(10.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Column(Modifier.weight(1f)) {
-                Text(task.topic, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.headlineMedium)
-                Text(task.heading)
-                val isTaskPending=task.dateTime<System.currentTimeMillis()
-
+                Text(
+                    task.topic,
+                    fontWeight = FontWeight.Normal,
+                    style = MaterialTheme.typography.headlineMedium
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(task.heading, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f))
+                val isTaskPending = task.dateTime < System.currentTimeMillis()
+                Spacer(modifier = Modifier.height(8.dp))
                 val timeColor = if (isTaskPending)
                     Color.Red
                 else
@@ -204,8 +222,8 @@ fun TaskCard(task: Task, vm: TaskViewModel) {
                     color = timeColor,
                     style = MaterialTheme.typography.bodySmall
                 )
-                if(isTaskPending){
-                    Text(text = "(Pending Task)",color=timeColor)
+                if (isTaskPending) {
+                    Text(text = "Pending Task", color = timeColor)
                 }
             }
 
@@ -215,8 +233,14 @@ fun TaskCard(task: Task, vm: TaskViewModel) {
             ) {
                 // Action Buttons
                 TaskActionButton(Icons.Default.Check, Color.Green) { vm.completeTask(task) }
-                TaskActionButton(Icons.Default.Delete, MaterialTheme.colorScheme.error) { vm.deleteTask(task) }
-                TaskActionButton(Icons.Default.Edit, MaterialTheme.colorScheme.secondary) { vm.startEdit(task) }
+                TaskActionButton(
+                    Icons.Default.Delete,
+                    MaterialTheme.colorScheme.error
+                ) { vm.deleteTask(task) }
+                TaskActionButton(
+                    Icons.Default.Edit,
+                    MaterialTheme.colorScheme.secondary
+                ) { vm.startEdit(task) }
             }
         }
     }
