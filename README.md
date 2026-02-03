@@ -7,7 +7,8 @@ This project is an Android To-Do application built using Kotlin and Jetpack Comp
 # Project Structure
 
 data/
-
+    AppDatabase.kt
+    DatabaseModule.kt
     User.kt
     Task.kt
     UserDao.kt
@@ -20,21 +21,23 @@ navigation/
     BottomNavItem.kt
     MainNavItem.kt
     Routes.kt
-session/
+splash/
 
-    SessionManager.kt
+    SplashScreen.kt
 
 States/
 
-    ActiveTasksUiState.kt
+    TasksUiState.kt
     AddEditUiState.kt
     HomeScreenStates.kt
     LoginRegisterStates.kt
         
 viewmodel/
 
+    HomeViewModel.kt
+    TasksViewModel.kt
+    HistoryViewModel.kt
     AuthViewModel.kt
-    TaskViewModel.kt
 
 worker/
 
@@ -45,7 +48,7 @@ ui/
     LoginScreen.kt
     RegisterScreen.kt
     HomeScreen.kt
-    ActiveTasksScreen.kt
+    TasksScreen.kt
     HistoryScreen.kt
     AddEditDialog.kt
     BottomBar.kt
@@ -54,3 +57,4 @@ MainActivity.kt
 
 MainScaffold.kt
 
+TodoApplication.kt
