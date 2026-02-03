@@ -156,7 +156,10 @@ fun LoginScreenContent(
                 }
             }
 
+            Spacer(modifier = Modifier.padding(16.dp))
+
             Column(
+                modifier = Modifier.padding(horizontal = 32.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
@@ -168,6 +171,7 @@ fun LoginScreenContent(
                 )
 
                 OutlinedTextField(
+                    modifier = Modifier.fillMaxWidth(),
                     value = mobile,
                     onValueChange = onMobileChange,
                     label = {
@@ -190,6 +194,7 @@ fun LoginScreenContent(
                 )
 
                 OutlinedTextField(
+                    modifier = Modifier.fillMaxWidth(),
                     value = password,
                     onValueChange = onPasswordChange,
                     label = {

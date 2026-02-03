@@ -97,14 +97,14 @@ fun MainScaffold(
                         }
                     }
                 ) {
-                    Text("Yes")
+                    Text(stringResource(R.string.MainScaffold_Yes))
                 }
             },
             dismissButton = {
                 TextButton(
                     onClick = { showLogoutDialog = false }
                 ) {
-                    Text("No")
+                    Text(stringResource(R.string.MainScaffold_No))
                 }
             }
         )
@@ -127,14 +127,14 @@ fun MainScaffold(
                         }
                     }
                 ) {
-                    Text("Yes, Delete")
+                    Text(stringResource(R.string.MainScaffold_YesDelete))
                 }
             },
             dismissButton = {
                 TextButton(
                     onClick = { showDeleteDialog = false }
                 ) {
-                    Text("No")
+                    Text(stringResource(R.string.MainScaffold_No))
                 }
             }
         )
@@ -145,7 +145,7 @@ fun MainScaffold(
         drawerContent = {
             ModalDrawerSheet {
                 Column(modifier = Modifier.padding(12.dp)) {
-                    Text("Profile", style = MaterialTheme.typography.titleLarge)
+                    Text(stringResource(R.string.MainScaffold_Profile), style = MaterialTheme.typography.titleLarge)
                 }
                 HorizontalDivider()
                 Spacer(modifier = Modifier.height(12.dp))
@@ -167,7 +167,7 @@ fun MainScaffold(
                 HorizontalDivider()
                 NavigationDrawerItem(
                     icon = { Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = null) },
-                    label = { Text("Logout") },
+                    label = { Text(stringResource(R.string.MainScaffold_Logout)) },
                     selected = false,
                     onClick = {
                         scope.launch { drawerState.close() }
@@ -176,7 +176,7 @@ fun MainScaffold(
                 )
                 NavigationDrawerItem(
                     icon = { Icon(Icons.Default.Delete, contentDescription = null) },
-                    label = { Text("Delete Account") },
+                    label = { Text(stringResource(R.string.MainScaffold_DeleteAccount)) },
                     selected = false,
                     onClick = {
                         scope.launch { drawerState.close() }
@@ -204,11 +204,11 @@ fun MainScaffold(
                     navigationIcon = {
                         if (currentScreen == Routes.HOME.route) {
                             IconButton(onClick = { scope.launch { drawerState.open() } }) {
-                                Icon(Icons.Default.Menu, contentDescription = "Menu")
+                                Icon(Icons.Default.Menu, contentDescription = stringResource(R.string.MainScaffold_Menu))
                             }
                         } else {
                             IconButton(onClick = { bottomNavController.popBackStack() }) {
-                                Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                                Icon(Icons.Default.ArrowBack, contentDescription = stringResource(R.string.MainScaffold_Back))
                             }
                         }
                     },
