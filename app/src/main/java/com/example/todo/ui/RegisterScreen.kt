@@ -19,11 +19,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Phone
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -35,6 +38,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -45,6 +51,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -59,6 +66,8 @@ import com.example.todo.viewmodel.AuthViewModel
 fun RegisterScreen(vm: AuthViewModel = hiltViewModel(), navController: NavController) {
 
     val state by vm.loginRegister.collectAsState()
+    var passwordVisible by remember { mutableStateOf(false) }
+    var confirmPasswordVisible by remember { mutableStateOf(false) }
 
     LaunchedEffect(vm.user) {
         if (vm.user != null) {
@@ -90,7 +99,11 @@ fun RegisterScreen(vm: AuthViewModel = hiltViewModel(), navController: NavContro
             vm.clearLoginState()
             vm.clearRegisterState()
             navController.popBackStack()
-        }
+        },
+        passwordVisible = passwordVisible,
+        onPasswordVisibilityChange = { passwordVisible = !passwordVisible },
+        confirmPasswordVisible = confirmPasswordVisible,
+        onConfirmPasswordVisibilityChange = { confirmPasswordVisible = !confirmPasswordVisible }
     )
 }
 
@@ -104,7 +117,11 @@ fun RegisterScreenContent(
     onPasswordChange: (String) -> Unit,
     onConfirmPasswordChange: (String) -> Unit,
     onRegister: () -> Unit,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    passwordVisible: Boolean,
+    onPasswordVisibilityChange: () -> Unit,
+    confirmPasswordVisible: Boolean,
+    onConfirmPasswordVisibilityChange: () -> Unit
 ) {
     BackHandler { onBack() }
 
@@ -238,7 +255,16 @@ fun RegisterScreenContent(
                         )
                     },
                     leadingIcon = { Icon(Icons.Default.Lock, contentDescription = "Password") },
-                    visualTransformation = PasswordVisualTransformation(),
+                    trailingIcon = {
+                        val image = if (passwordVisible)
+                            Icons.Filled.Visibility
+                        else Icons.Filled.VisibilityOff
+
+                        IconButton(onClick = onPasswordVisibilityChange){
+                            Icon(imageVector  = image, "")
+                        }
+                    },
+                    visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                     isError = isFieldError,
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
@@ -270,7 +296,16 @@ fun RegisterScreenContent(
                             contentDescription = "Confirm Password"
                         )
                     },
-                    visualTransformation = PasswordVisualTransformation(),
+                    trailingIcon = {
+                        val image = if (confirmPasswordVisible)
+                            Icons.Filled.Visibility
+                        else Icons.Filled.VisibilityOff
+
+                        IconButton(onClick = onConfirmPasswordVisibilityChange){
+                            Icon(imageVector  = image, "")
+                        }
+                    },
+                    visualTransformation = if (confirmPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                     isError = isFieldError,
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
@@ -323,7 +358,11 @@ fun RegisterScreenPreview() {
         onPasswordChange = {},
         onConfirmPasswordChange = {},
         onRegister = {},
-        onBack = {}
+        onBack = {},
+        passwordVisible = false,
+        onPasswordVisibilityChange = {},
+        confirmPasswordVisible = false,
+        onConfirmPasswordVisibilityChange = {}
     )
 }
 
@@ -338,6 +377,10 @@ fun RegisterScreenErrorPreview() {
         onPasswordChange = {},
         onConfirmPasswordChange = {},
         onRegister = {},
-        onBack = {}
+        onBack = {},
+        passwordVisible = false,
+        onPasswordVisibilityChange = {},
+        confirmPasswordVisible = false,
+        onConfirmPasswordVisibilityChange = {}
     )
 }

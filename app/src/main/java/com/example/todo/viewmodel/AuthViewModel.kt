@@ -34,6 +34,26 @@ class AuthViewModel @Inject constructor(
     var registerError by mutableStateOf<String?>(null)
         private set
 
+    private fun getPasswordValidationErrors(password: String): List<String> {
+        val errors = mutableListOf<String>()
+        if (password.length < 8) {
+            errors.add("be at least 8 characters long")
+        }
+        if (!password.any { it.isUpperCase() }) {
+            errors.add("contain an uppercase letter")
+        }
+        if (!password.any { it.isLowerCase() }) {
+            errors.add("contain a lowercase letter")
+        }
+        if (!password.any { it.isDigit() }) {
+            errors.add("contain a number")
+        }
+        if (password.all { it.isLetterOrDigit() }) {
+            errors.add("contain a special character")
+        }
+        return errors
+    }
+
     fun login(mobile: String, password: String) = viewModelScope.launch {
         val result = userDao.login(mobile, password)
         if (result == null) {
@@ -69,10 +89,17 @@ class AuthViewModel @Inject constructor(
     }
 
     fun validateAndLogin(mobile: String, password: String) {
+        loginError = null
+        _loginRegister.value = _loginRegister.value.copy(passwordError = null)
+        val passwordErrors = getPasswordValidationErrors(password)
+
         when {
             mobile.isBlank() -> loginError = "Enter mobile number"
             mobile.length != 10 -> loginError = "Enter valid 10 digit number"
-            password.isBlank() -> loginError = "Enter password"
+            password.isBlank() -> _loginRegister.value = _loginRegister.value.copy(passwordError = "Enter password")
+            passwordErrors.isNotEmpty() -> {
+                _loginRegister.value = _loginRegister.value.copy(passwordError = "Password must " + passwordErrors.joinToString(", "))
+            }
             else -> login(mobile, password)
         }
     }
@@ -85,11 +112,15 @@ class AuthViewModel @Inject constructor(
         confirmPassword: String
     ) {
         registerError = null
+        val passwordErrors = getPasswordValidationErrors(password)
 
         when {
             name.isBlank() -> registerError = "Name cannot be empty"
             mobile.length != 10 -> registerError = "Enter a valid 10-digit mobile number"
             password.isBlank() -> registerError = "Enter password"
+            passwordErrors.isNotEmpty() -> {
+                registerError = "Password must " + passwordErrors.joinToString(", ")
+            }
             confirmPassword.isBlank() -> registerError = "Confirm password"
             password != confirmPassword -> registerError = "Passwords do not match"
             else -> {
@@ -117,7 +148,7 @@ class AuthViewModel @Inject constructor(
     }
 
     fun onPasswordChange(value: String) {
-        _loginRegister.value = _loginRegister.value.copy(password = value)
+        _loginRegister.value = _loginRegister.value.copy(password = value, passwordError = null)
     }
 
     fun onConfirmPasswordChange(value: String) {
