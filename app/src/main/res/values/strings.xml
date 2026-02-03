@@ -47,7 +47,7 @@
     <string name="EditDialog_Topic">Topic</string>
     <string name="EditDialog_Heading">Description</string>
 
-    <string name="LogoutDialog_Title">Logout></string>
+    <string name="LogoutDialog_Title">Logout</string>
     <string name="LogoutDialog_Text">Are you sure you want to logout?</string>
 
     <string name="DeleteAccountDialog_Title">Delete Account</string>
@@ -61,5 +61,14 @@
 
     <string name="TasksScreen_Empty">No tasks for today!</string>
     <string name="HistoryScreen_Empty">No completed tasks yet!</string>
+
+    <string name="MainScaffold_Profile">Profile</string>
+    <string name="MainScaffold_Logout">Logout</string>
+    <string name="MainScaffold_DeleteAccount">Delete Account</string>
+    <string name="MainScaffold_Yes">Yes</string>
+    <string name="MainScaffold_No">No</string>
+    <string name="MainScaffold_YesDelete">Yes, Delete</string>
+    <string name="MainScaffold_Menu">Menu</string>
+    <string name="MainScaffold_Back">Back</string>
 
 </resources>
