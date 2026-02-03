@@ -5,5 +5,6 @@ data class LoginRegisterUIStates(
     val mobile: String = "",
     val otp: String = "",
     val password: String = "",
-    val confirmPassword: String = ""
+    val confirmPassword: String = "",
+    val passwordError: String? = null
 )

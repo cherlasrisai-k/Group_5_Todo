@@ -16,7 +16,10 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -29,6 +32,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -41,6 +47,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -72,17 +79,22 @@ fun LoginScreen(
         }
     }
 
+    var passwordVisible by remember { mutableStateOf(false) }
+
     LoginScreenContent(
         mobile = state.mobile,
         password = state.password,
         loginError = vm.loginError,
+        passwordError = state.passwordError,
         onMobileChange = vm::onMobileChange,
         onPasswordChange = vm::onPasswordChange,
         onLogin = { vm.validateAndLogin(state.mobile, state.password) },
         onGoToRegister = {
             vm.clearLoginState()
             navController.navigate(Routes.REGISTER.route)
-        }
+        },
+        passwordVisible = passwordVisible,
+        onPasswordVisibilityChange = { passwordVisible = !passwordVisible }
     )
 }
 
@@ -92,10 +104,13 @@ fun LoginScreenContent(
     mobile: String,
     password: String,
     loginError: String?,
+    passwordError: String?,
     onMobileChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
     onLogin: () -> Unit,
-    onGoToRegister: () -> Unit
+    onGoToRegister: () -> Unit,
+    passwordVisible: Boolean,
+    onPasswordVisibilityChange: () -> Unit
 ) {
     val scrollState = rememberScrollState()
 
@@ -204,8 +219,17 @@ fun LoginScreenContent(
                         )
                     },
                     leadingIcon = { Icon(Icons.Default.Lock, contentDescription = "Password") },
-                    visualTransformation = PasswordVisualTransformation(),
-                    isError = !loginError.isNullOrEmpty(),
+                    trailingIcon = {
+                        val image = if (passwordVisible)
+                            Icons.Filled.Visibility
+                        else Icons.Filled.VisibilityOff
+
+                        IconButton(onClick = onPasswordVisibilityChange){
+                            Icon(imageVector  = image, "")
+                        }
+                    },
+                    visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                    isError = !loginError.isNullOrEmpty() || !passwordError.isNullOrEmpty(),
                     textStyle = TextStyle(color = Color.Black),
                     keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Password),
                     colors = OutlinedTextFieldDefaults.colors(
@@ -216,6 +240,14 @@ fun LoginScreenContent(
                         focusedLabelColor = Color.Black,
                     )
                 )
+                if (!passwordError.isNullOrEmpty()) {
+                    Text(
+                        text = passwordError,
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.padding(start = 16.dp)
+                    )
+                }
 
                 TextButton(onClick = onLogin) {
                     Text(
@@ -257,10 +289,13 @@ fun LoginScreenPreview() {
         mobile = "",
         password = "",
         loginError = null,
+        passwordError = null,
         onMobileChange = {},
         onPasswordChange = {},
         onLogin = {},
-        onGoToRegister = {}
+        onGoToRegister = {},
+        passwordVisible = false,
+        onPasswordVisibilityChange = {}
     )
 }
 
@@ -271,9 +306,12 @@ fun LoginScreenErrorPreview() {
         mobile = "12345",
         password = "",
         loginError = "User does not exist. Please register.",
+        passwordError = "Password cannot be empty",
         onMobileChange = {},
         onPasswordChange = {},
         onLogin = {},
-        onGoToRegister = {}
+        onGoToRegister = {},
+        passwordVisible = false,
+        onPasswordVisibilityChange = {}
     )
 }
